@@ -1,0 +1,18 @@
+# - Config file for the evalulater package
+# It defines the following variables
+#  EVALULATER_INCLUDE_DIRS	  - include directories for cppnetlib
+#  EVALULATER_LIBRARIES    	  - libraries to link against (full path)
+ 
+# Compute paths
+get_filename_component(EVALULATER_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(EVALULATER_INCLUDE_DIRS "@EVALULATER_INCLUDE_DIRS@")
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(    NOT TARGET evalulater
+   AND NOT EVALULATER_BINARY_DIR)
+  include("${EVALULATER_CMAKE_DIR}/evalulaterTargets.cmake")
+endif()
+ 
+# These are IMPORTED targets created by evalulaterTargets.cmake
+set(EVALULATER_LIBRARIES @EVALULATER_LIBRARIES@)
+
