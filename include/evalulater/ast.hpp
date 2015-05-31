@@ -35,7 +35,6 @@ namespace evalulater { namespace ast
 
 	typedef boost::variant<
 		nil
-		, unsigned int
 		, float
 		, boost::recursive_wrapper<signed_>
 		, boost::recursive_wrapper<expression>

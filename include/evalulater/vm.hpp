@@ -34,8 +34,7 @@ namespace evalulater
         op_sub,     //  subtract top two stack entries
         op_mul,     //  multiply top two stack entries
         op_div,     //  divide top two stack entries
-        op_int,		//  push constant integer onto the stack
-		op_flt,		//  push constant float onto
+    	op_flt,		//  push constant float onto the stack
     };
 
 	union byte_code
@@ -44,12 +43,12 @@ namespace evalulater
 			: op(v)
 		{}
 
-		byte_code(unsigned int v)
-			: i(v)
+		byte_code(float v)
+			: fltd(v)
 		{}
 
 		op_code		 op;
-		unsigned int i;
+		float		 fltd;
 	};
 
     class vmachine
@@ -61,13 +60,13 @@ namespace evalulater
           , stack_ptr(stack.begin())
         {}
 
-        int top() const { return stack_ptr[-1]; };
+        float top() const { return stack_ptr[-1]; };
         void execute(std::vector<byte_code> const& code);
 
     private:
 
-        std::vector<int> stack;
-        std::vector<int>::iterator stack_ptr;
+        std::vector<float> stack;
+        std::vector<float>::iterator stack_ptr;
     };
 
     void vmachine::execute(std::vector<byte_code> const& code)
@@ -75,11 +74,12 @@ namespace evalulater
         std::vector<byte_code>::const_iterator pc = code.begin();
         stack_ptr = stack.begin();
 
-        while (pc != code.end())
+        while(pc != code.end())
         {
-            switch (pc->op)
+			op_code op = pc->op;
+			++pc;
+            switch(op)
             {
-				++pc;
                 case op_neg:
                     stack_ptr[-1] = -stack_ptr[-1];
                     break;
@@ -104,8 +104,8 @@ namespace evalulater
                     stack_ptr[-1] /= stack_ptr[0];
                     break;
 
-                case op_int:
-                    *stack_ptr++ = pc->i;
+                case op_flt:
+                    *stack_ptr++ = pc->fltd;
 					++pc;
                     break;
             }

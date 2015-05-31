@@ -41,10 +41,10 @@ namespace evalulater
 			BOOST_ASSERT(0);
 		}
 		
-		void operator()(unsigned int n) const
+		void operator()(float f) const
 		{
-			code.push_back(op_int);
-			code.push_back(n);
+			code.push_back(op_flt);
+			code.push_back(f);
 		}
 
 		void operator()(ast::operation const& x) const
