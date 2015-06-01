@@ -28,25 +28,21 @@ int main()
     std::cout << "Type an expression...or [q or Q] to quit\n\n";
 
     typedef std::string::const_iterator iterator_type;
-    typedef evalulater::parser<iterator_type> parser;
-    typedef evalulater::ast::expression ast_expression;
-    typedef evalulater::compiler compiler;
-	typedef evalulater::vm::byte_code byte_code;
-
+ 
     std::string str;
     while (std::getline(std::cin, str))
     {
         if (str.empty() || str[0] == 'q' || str[0] == 'Q')
             break;
 
-		evalulater::vm::vmachine mach;		// Our virtual machine
-        std::vector<byte_code> code;	// Our VM code
-        parser calc;					// Our grammar
-        ast_expression expression;		// Our program (AST)
-        compiler compile(code);			// Compiles the program
+		evalulater::vm::vmachine machine;					// Our virtual machine
+        std::vector<evalulater::vm::byte_code> code;	// Our VM code
+        evalulater::parser<iterator_type> calc;			// Our grammar
+        evalulater::ast::expression expression;			// Our program (AST)
+        evalulater::compiler compile(code);				// Compiles the program
 
-        std::string::const_iterator iter = str.begin();
-        std::string::const_iterator end = str.end();
+        iterator_type iter = str.begin();
+        iterator_type end = str.end();
         boost::spirit::ascii::space_type space;
         bool r = phrase_parse(iter, end, calc, space, expression);
 
@@ -55,8 +51,8 @@ int main()
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
             compile(expression);
-            mach.execute(code);
-            std::cout << "\nResult: " << mach.top() << std::endl;
+            machine.execute(code);
+            std::cout << "\nResult: " << machine.top() << std::endl;
             std::cout << "-------------------------\n";
         }
         else

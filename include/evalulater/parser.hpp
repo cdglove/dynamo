@@ -26,7 +26,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Define this to enable debugging
-//#define BOOST_SPIRIT_QI_DEBUG
+#define BOOST_SPIRIT_QI_DEBUG
 
 #if defined(_MSC_VER)
 # pragma warning(disable: 4345)
@@ -78,7 +78,6 @@ namespace evalulater
 	{
 		parser() : parser::base_type(expression)
 		{
-			qi::char_type char_;
 			qi::float_type float_;
 			qi::_2_type _2;
 			qi::_3_type _3;
@@ -89,58 +88,72 @@ namespace evalulater
 
 			///////////////////////////////////////////////////////////////////////
 			// Tokens
-			binary_op.add
-				("+", ast::op_add)
-				("-", ast::op_subtract)
-				("*", ast::op_multiply)
-				("/", ast::op_divide)
+			binary_tok.add
+				("+", ast::bop_add)
+				("-", ast::bop_subtract)
+				("*", ast::bop_multiply)
+				("/", ast::bop_divide)
 				;
 
-			unary_op.add
-				("+", ast::op_positive)
-				("-", ast::op_negative)
+			unary_tok.add
+				("+", ast::uop_positive)
+				("-", ast::uop_negative)
 				;
 
-			intrinsic_op.add
-				("abs",	ast::op_abs)		
-				("pow",	ast::op_pow)
-				("add",	ast::op_add)
-				("sub",	ast::op_subtract)
-				("mul",	ast::op_multiply)
-				("div",	ast::op_divide)
-				("pos",	ast::op_positive)
-				("neg",	ast::op_negative)
+			intrinsic_tok.add
+				("abs",	ast::iop_abs)		
+				("pow",	ast::iop_pow)
+				("add",	ast::iop_add)
+				("sub",	ast::iop_subtract)
+				("mul",	ast::iop_multiply)
+				("div",	ast::iop_divide)
 				;
 
-            expression =
-                factor
-                >> *(binary_op > factor)
+			///////////////////////////////////////////////////////////////////////
+			// Grammer
+			
+			expression =
+                operand
+                >> *operand
                 ;
 
-			unary = unary_op > factor
+			operand =
+				 intrinsic_op
+				| binary_op
+				| unary_op
+				| float_
+				| '(' > expression > ')'
 				;
 
-            factor =
-					unary
-                |   float_
-				|  '(' > expression > ')'
-                ;
+			unary_op = 
+				unary_tok > operand
+				;
+
+			binary_op = 
+				operand	> binary_tok > operand
+				;
+
+			intrinsic_op =
+				intrinsic_tok >	'(' > *(operand % ',') > ')'
+				;
 
 			// Debugging and error handling and reporting support.
 			BOOST_SPIRIT_DEBUG_NODES(
-				(expression)(unary)(factor));
+				(expression)(operand)(unary_op)(binary_op)(intrinsic_op));
 
 			// Error handling
 			on_error<fail>(expression, error_handler(_4, _3, _2));
 		}
 
 		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
-		qi::rule<Iterator, ast::operand(), ascii::space_type> factor;
-		qi::rule<Iterator, ast::unary(), ascii::space_type> unary;
+		qi::rule<Iterator, ast::operand(), ascii::space_type> operand;
+		qi::rule<Iterator, ast::unary_op(), ascii::space_type> unary_op;
+		qi::rule<Iterator, ast::binary_op(), ascii::space_type> binary_op;
+		qi::rule<Iterator, ast::intrinsic_op(), ascii::space_type> intrinsic_op;
 
-		qi::symbols<char, ast::optoken>	unary_op;
-		qi::symbols<char, ast::optoken> binary_op;
-		qi::symbols<char, ast::optoken> intrinsic_op;
+		qi::symbols<char, ast::uop_token> unary_tok;
+		qi::symbols<char, ast::bop_token> binary_tok;
+		qi::symbols<char, ast::iop_token> intrinsic_tok;
 	};
 }
 

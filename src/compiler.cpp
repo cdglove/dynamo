@@ -32,31 +32,46 @@ namespace evalulater
 		code.push_back(f);
 	}
 
-	void compiler::operator()(ast::operation const& x) const
+	void compiler::operator()(ast::unary_op const& x) const
 	{
 		boost::apply_visitor(*this, x.operand_);
-		switch (x.operator_)
+		switch(x.operator_)
 		{
-		case ast::op_add:		code.push_back(vm::op_add); break; 
-		case ast::op_subtract:	code.push_back(vm::op_sub); break;	
-		case ast::op_multiply:	code.push_back(vm::op_mul); break;
-		case ast::op_divide:	code.push_back(vm::op_div); break;
-		case ast::op_assign:	 
-		case ast::op_abs:		 
-		case ast::op_pow:		 
-		case ast::op_positive:
-		case ast::op_negative:
+		case ast::uop_negative:	code.push_back(vm::op_neg); break;
+		case ast::uop_positive:	break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
 
-	void compiler::operator()(ast::unary const& x) const
+	void compiler::operator()(ast::binary_op const& x) const
 	{
-		boost::apply_visitor(*this, x.operand_);
+		boost::apply_visitor(*this, x.operand_1);
+		boost::apply_visitor(*this, x.operand_2);
 		switch (x.operator_)
 		{
-		case ast::op_negative: code.push_back(vm::op_neg); break;
-		case ast::op_positive: break;
+		case ast::bop_add:		code.push_back(vm::op_add); break; 
+		case ast::bop_subtract:	code.push_back(vm::op_sub); break;	
+		case ast::bop_multiply:	code.push_back(vm::op_mul); break;
+		case ast::bop_divide:	code.push_back(vm::op_div); break;
+		default: BOOST_ASSERT(0); break;
+		}
+	}
+
+	void compiler::operator()(ast::intrinsic_op const& x) const
+	{
+		BOOST_FOREACH(ast::operand const& arg, x.args)
+		{
+			boost::apply_visitor(*this, arg);
+		}
+		
+		switch (x.intrinsic)
+		{
+		case ast::iop_add:		code.push_back(vm::op_add); break; 
+		case ast::iop_subtract: code.push_back(vm::op_sub); break;	
+		case ast::iop_multiply: code.push_back(vm::op_mul); break;
+		case ast::iop_divide:   code.push_back(vm::op_div); break;
+		case ast::iop_pow:		code.push_back(vm::op_pow); break; 
+		case ast::iop_abs:		code.push_back(vm::op_abs); break; 
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -64,15 +79,13 @@ namespace evalulater
 	void compiler::operator()(ast::expression const& x) const
 	{
 		boost::apply_visitor(*this, x.first);
-		BOOST_FOREACH(ast::operation const& oper, x.rest)
+		BOOST_FOREACH(ast::operand const& oper, x.rest)
 		{
-			(*this)(oper);
+			boost::apply_visitor(*this, oper);
 		}
 	}
 
 	void compiler::operator()(ast::identifier const& x) const
 	{}
 
-	void compiler::operator()(ast::intrinsic const& x) const
-	{}
 }

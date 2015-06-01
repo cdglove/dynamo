@@ -38,11 +38,11 @@ namespace evalulater
 
 		void operator()(ast::nil) const;
 		void operator()(float f) const;
-		void operator()(ast::operation const& x) const;
-		void operator()(ast::unary const& x) const;
+		void operator()(ast::unary_op const& x) const;
+		void operator()(ast::binary_op const& x) const;
+		void operator()(ast::intrinsic_op const& x) const;
 		void operator()(ast::expression const& x) const;
 		void operator()(ast::identifier const& x) const;
-		void operator()(ast::intrinsic const& x) const;
 	};
 }
 

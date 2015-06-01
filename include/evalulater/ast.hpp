@@ -60,7 +60,7 @@ namespace evalulater { namespace ast
 	///////////////////////////////////////////////////////////////////////////
 	enum bop_token
 	{
-		// cglover-todo: Need to express precidence somehow.
+		// cglover-todo: Need to express precedence somehow.
 		bop_assign,
 		bop_add,
 		bop_subtract,
@@ -70,9 +70,9 @@ namespace evalulater { namespace ast
 
 	struct binary_op
 	{
-		binary_op_token operator_;
-		operand		    operand_1;
-		operand		    operand_2;
+		bop_token operator_;
+		operand	  operand_1;
+		operand	  operand_2;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -86,8 +86,8 @@ namespace evalulater { namespace ast
 
 	struct unary_op
 	{
-		unary_op_token operator_;
-		operand		   operand_;
+		uop_token operator_;
+		operand	  operand_;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ namespace evalulater { namespace ast
 
 	struct intrinsic_op
 	{
-		intrinsic_op_token intrinsic;
+		iop_token intrinsic;
 		std::vector<operand> args;
 	};
 
@@ -138,14 +138,14 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::binary_op,
-	(evalulater::ast::bop_token, operator_)
 	(evalulater::ast::operand, operand_1)
+	(evalulater::ast::bop_token, operator_)
 	(evalulater::ast::operand, operand_2)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::intrinsic_op,
-	(evalulater::ast::iop_token, intr)
+	(evalulater::ast::iop_token, intrinsic)
 	(std::vector<evalulater::ast::operand>, args)
 )
 
