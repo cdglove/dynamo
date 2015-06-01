@@ -30,8 +30,9 @@ namespace evalulater { namespace ast
 	//  The AST
 	///////////////////////////////////////////////////////////////////////////
 	struct nil {};
-	struct unary;
-	struct intrinsic;
+	struct unary_op;
+	struct binary_op;
+	struct intrinsic_op;
 	struct expression;
 
 	struct identifier
@@ -47,52 +48,74 @@ namespace evalulater { namespace ast
 		  nil
 		, float
 		, identifier
-		, boost::recursive_wrapper<unary>
-		, boost::recursive_wrapper<intrinsic>
+		, boost::recursive_wrapper<unary_op>
+		, boost::recursive_wrapper<binary_op>
+		, boost::recursive_wrapper<intrinsic_op>
 		, boost::recursive_wrapper<expression>
 	>
 	operand;
 
-	enum optoken
+	///////////////////////////////////////////////////////////////////////////
+	// Binary ops
+	///////////////////////////////////////////////////////////////////////////
+	enum bop_token
 	{
 		// cglover-todo: Need to express precidence somehow.
-		op_assign,
-
-		op_abs,
-		op_pow,
-
-		op_add,
-		op_subtract,
-
-		op_multiply,
-		op_divide,
-
-		op_positive,
-		op_negative,
+		bop_assign,
+		bop_add,
+		bop_subtract,
+		bop_multiply,
+		bop_divide,
 	};
 
-	struct unary
+	struct binary_op
 	{
-		optoken operator_;
-		operand operand_;
+		binary_op_token operator_;
+		operand		    operand_1;
+		operand		    operand_2;
 	};
 
-	struct operation
+	///////////////////////////////////////////////////////////////////////////
+	// Unary ops
+	///////////////////////////////////////////////////////////////////////////
+	enum uop_token
 	{
-		optoken operator_;
-		operand operand_;
+		uop_positive,
+		uop_negative,
 	};
 
-	struct intrinsic
+	struct unary_op
 	{
-		optoken intr;
-		std::vector<expression> args;
+		unary_op_token operator_;
+		operand		   operand_;
 	};
 
+	///////////////////////////////////////////////////////////////////////////
+	// Intrinsic ops
+	///////////////////////////////////////////////////////////////////////////
+	enum iop_token
+	{
+		iop_add,
+		iop_subtract,
+		iop_multiply,
+		iop_divide,
+		iop_pow,
+		iop_abs,
+	};
+
+	struct intrinsic_op
+	{
+		intrinsic_op_token intrinsic;
+		std::vector<operand> args;
+	};
+
+	///////////////////////////////////////////////////////////////////////////
+	// Combination of ops
+	///////////////////////////////////////////////////////////////////////////
 	struct expression
 	{
 		operand first;
-		std::vector<operation> rest;
+		std::vector<operand> rest;
 	};
 
 	// print functions for debugging
@@ -108,27 +131,28 @@ namespace evalulater { namespace ast
 }}
 
 BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::unary,
-	(evalulater::ast::optoken, operator_)
+	evalulater::ast::unary_op,
+	(evalulater::ast::uop_token, operator_)
 	(evalulater::ast::operand, operand_)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::operation,
-	(evalulater::ast::optoken, operator_)
-	(evalulater::ast::operand, operand_)
+	evalulater::ast::binary_op,
+	(evalulater::ast::bop_token, operator_)
+	(evalulater::ast::operand, operand_1)
+	(evalulater::ast::operand, operand_2)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::intrinsic,
-	(evalulater::ast::optoken, intr)
-	(std::vector<evalulater::ast::expression>, args)
+	evalulater::ast::intrinsic_op,
+	(evalulater::ast::iop_token, intr)
+	(std::vector<evalulater::ast::operand>, args)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::expression,
 	(evalulater::ast::operand, first)
-	(std::vector<evalulater::ast::operation>, rest)
+	(std::vector<evalulater::ast::operand>, rest)
 )
 
 #endif // _EVALULATER_AST_HPP_

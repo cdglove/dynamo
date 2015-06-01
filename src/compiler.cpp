@@ -37,10 +37,15 @@ namespace evalulater
 		boost::apply_visitor(*this, x.operand_);
 		switch (x.operator_)
 		{
-		case ast::op_add:	   code.push_back(vm::op_add); break;
-		case ast::op_subtract: code.push_back(vm::op_sub); break;
-		case ast::op_multiply: code.push_back(vm::op_mul); break;
-		case ast::op_divide:   code.push_back(vm::op_div); break;
+		case ast::op_add:		code.push_back(vm::op_add); break; 
+		case ast::op_subtract:	code.push_back(vm::op_sub); break;	
+		case ast::op_multiply:	code.push_back(vm::op_mul); break;
+		case ast::op_divide:	code.push_back(vm::op_div); break;
+		case ast::op_assign:	 
+		case ast::op_abs:		 
+		case ast::op_pow:		 
+		case ast::op_positive:
+		case ast::op_negative:
 		default: BOOST_ASSERT(0); break;
 		}
 	}
