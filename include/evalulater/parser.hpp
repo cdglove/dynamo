@@ -49,7 +49,7 @@ namespace evalulater
 	///////////////////////////////////////////////////////////////////////////////
 	struct error_handler_
 	{
-		template <typename, typename, typename>
+		template <typename T0 = void, typename T1 = void, typename T2 = void>
 		struct result { typedef void type; };
 
 		template <typename Iterator>
