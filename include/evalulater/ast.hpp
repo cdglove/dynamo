@@ -30,27 +30,74 @@ namespace evalulater { namespace ast
 	//  The AST
 	///////////////////////////////////////////////////////////////////////////
 	struct nil {};
-	struct signed_;
+	struct unary;
+	struct intrinsic;
 	struct expression;
 
+	struct identifier
+	{
+		identifier(std::string const& name = "") 
+			: name(name) 
+		{}
+		
+		std::string name;
+	};
+
 	typedef boost::variant<
-		nil
+		  nil
 		, float
-		, boost::recursive_wrapper<signed_>
+		, identifier
+		, boost::recursive_wrapper<unary>
+		, boost::recursive_wrapper<intrinsic>
 		, boost::recursive_wrapper<expression>
 	>
 	operand;
 
-	struct signed_
+	enum optoken
 	{
-		char sign;
+		// cglover-todo: Need to express precidence somehow.
+		op_assign,
+
+		op_plus,
+		op_minus,
+
+		op_multiply,
+		op_divide,
+
+		op_positive,
+		op_negative,
+	};
+
+	struct unary
+	{
+		optoken operator_;
 		operand operand_;
 	};
 
 	struct operation
 	{
-		char operator_;
+		optoken operator_;
 		operand operand_;
+	};
+
+	enum inttoken
+	{
+		// Unary intrinsics
+		int_abs,
+		int_neg,
+
+		// Binary intrinsics
+		int_mul,
+		int_div,
+		int_add,
+		int_sub,
+		int_pow,
+	};
+
+	struct intrinsic
+	{
+		inttoken intr;
+		std::vector<expression> args;
 	};
 
 	struct expression
@@ -59,20 +106,34 @@ namespace evalulater { namespace ast
 		std::vector<operation> rest;
 	};
 
-	// print function for debugging
-	inline std::ostream& operator<<(std::ostream& out, nil) { out << "nil"; return out; }
+	// print functions for debugging
+	inline std::ostream& operator<<(std::ostream& out, nil)
+	{ 
+		out << "nil"; return out; 
+	}
+
+	inline std::ostream& operator<<(std::ostream& out, identifier const& id)
+	{
+		out << id.name; return out;
+	}
 }}
 
 BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::signed_,
-	(char, sign)
+	evalulater::ast::unary,
+	(evalulater::ast::optoken, operator_)
 	(evalulater::ast::operand, operand_)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::operation,
-	(char, operator_)
+	(evalulater::ast::optoken, operator_)
 	(evalulater::ast::operand, operand_)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	evalulater::ast::intrinsic,
+	(evalulater::ast::inttoken, intr)
+	(std::vector<evalulater::ast::expression>, args)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(

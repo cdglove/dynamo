@@ -1,9 +1,11 @@
 // ****************************************************************************
 // evalulater/compiler.hpp
 //
-// Compiler for evalulater syntax.  Based on Boost.Spirit calc6 example
-// Generated a series of op codes to be consumed by the vm.
-//
+// Compiler for evalulater syntax
+// Converts the ast into a series of opcodes to be consumed by the vm.
+// 
+// Originally based on Boost.Spirit calc6 example
+// 
 // Copyright Chris Glover 2015
 //
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,9 +19,7 @@
 
 #include "evalulater/config.hpp"
 #include "evalulater/ast.hpp"
-#include "evalulater/vm.hpp"
-
-#include <boost/foreach.hpp>
+#include "evalulater/byte_code.hpp"
 #include <vector>
 
 namespace evalulater
@@ -31,54 +31,18 @@ namespace evalulater
 	{
 		typedef void result_type;
 
-		std::vector<byte_code>& code;
-		compiler(std::vector<byte_code>& code)
+		std::vector<vm::byte_code>& code;
+		compiler(std::vector<vm::byte_code>& code)
 			: code(code) 
 		{}
 
-		void operator()(ast::nil) const
-		{ 
-			BOOST_ASSERT(0);
-		}
-		
-		void operator()(float f) const
-		{
-			code.push_back(op_flt);
-			code.push_back(f);
-		}
-
-		void operator()(ast::operation const& x) const
-		{
-			boost::apply_visitor(*this, x.operand_);
-			switch (x.operator_)
-			{
-			case '+': code.push_back(op_add); break;
-			case '-': code.push_back(op_sub); break;
-			case '*': code.push_back(op_mul); break;
-			case '/': code.push_back(op_div); break;
-			default: BOOST_ASSERT(0); break;
-			}
-		}
-
-		void operator()(ast::signed_ const& x) const
-		{
-			boost::apply_visitor(*this, x.operand_);
-			switch (x.sign)
-			{
-			case '-': code.push_back(op_neg); break;
-			case '+': break;
-			default: BOOST_ASSERT(0); break;
-			}
-		}
-
-		void operator()(ast::expression const& x) const
-		{
-			boost::apply_visitor(*this, x.first);
-			BOOST_FOREACH(ast::operation const& oper, x.rest)
-			{
-				(*this)(oper);
-			}
-		}
+		void operator()(ast::nil) const;
+		void operator()(float f) const;
+		void operator()(ast::operation const& x) const;
+		void operator()(ast::unary const& x) const;
+		void operator()(ast::expression const& x) const;
+		void operator()(ast::identifier const& x) const;
+		void operator()(ast::intrinsic const& x) const;
 	};
 }
 

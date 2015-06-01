@@ -101,11 +101,15 @@ namespace evalulater
                     )
                 ;
 
+			unary = 
+				    (char_('-') > factor)
+				|   (char_('+') > factor)
+				;
+
             factor =
-                    float_
-                |   '(' > expression > ')'
-                |   (char_('-') > factor)
-                |   (char_('+') > factor)
+					unary
+                |   float_
+				|  '(' > expression > ')'
                 ;
 
 			// Debugging and error handling and reporting support.
@@ -119,6 +123,7 @@ namespace evalulater
 		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
 		qi::rule<Iterator, ast::expression(), ascii::space_type> term;
 		qi::rule<Iterator, ast::operand(), ascii::space_type> factor;
+		qi::rule<Iterator, ast::unary(), ascii::space_type> unary;
 	};
 }
 

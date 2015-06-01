@@ -31,6 +31,7 @@ int main()
     typedef evalulater::parser<iterator_type> parser;
     typedef evalulater::ast::expression ast_expression;
     typedef evalulater::compiler compiler;
+	typedef evalulater::vm::byte_code byte_code;
 
     std::string str;
     while (std::getline(std::cin, str))
@@ -38,11 +39,11 @@ int main()
         if (str.empty() || str[0] == 'q' || str[0] == 'Q')
             break;
 
-		evalulater::vmachine mach;					// Our virtual machine
-        std::vector<evalulater::byte_code> code;    // Our VM code
-        parser calc;								// Our grammar
-        ast_expression expression;					// Our program (AST)
-        compiler compile(code);						// Compiles the program
+		evalulater::vm::vmachine mach;		// Our virtual machine
+        std::vector<byte_code> code;	// Our VM code
+        parser calc;					// Our grammar
+        ast_expression expression;		// Our program (AST)
+        compiler compile(code);			// Compiles the program
 
         std::string::const_iterator iter = str.begin();
         std::string::const_iterator end = str.end();

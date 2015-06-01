@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project (evalulater)
  
 file(GLOB_RECURSE  PROJECT_SOURCES *.cpp)
-file(GLOB_RECURSE  PROJECT_HEADERS ../*.h)
+file(GLOB_RECURSE  PROJECT_HEADERS ../include/*.hpp)
  
 find_package( Boost )
 

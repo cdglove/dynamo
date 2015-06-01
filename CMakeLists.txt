@@ -59,13 +59,13 @@ configure_file(
   "${PROJECT_BINARY_DIR}/evalulater/config.hpp" )
  
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(EVALULATER_INCLUDE_DIRS 
+set(Evalulater_INCLUDE_DIRS 
   ${PROJECT_SOURCE_DIR}/include
    ${PROJECT_BINARY_DIR}
    ${Boost_INCLUDE_DIR}
 )
 
-#set(EVALULATER_LIBRARIES evalulater)
+set(Evalulater_LIBRARIES evalulater)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   include(CheckCXXCompilerFlag)
@@ -79,7 +79,7 @@ endif()
 
 enable_testing()
 
-#add_subdirectory(src)
+add_subdirectory(src)
 if(EVALULATER_BUILD_TESTS)
 	add_subdirectory(test)
 endif()
@@ -94,8 +94,8 @@ endif()
 ###############################################################################
 
 # Add all targets to the build-tree export set
-# export(TARGETS evalulater
-# 	FILE "${PROJECT_BINARY_DIR}/evalulaterTargets.cmake")
+export(TARGETS evalulater
+	FILE "${PROJECT_BINARY_DIR}/evalulaterTargets.cmake")
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE evalulater)
