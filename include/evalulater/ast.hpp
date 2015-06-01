@@ -58,8 +58,11 @@ namespace evalulater { namespace ast
 		// cglover-todo: Need to express precidence somehow.
 		op_assign,
 
-		op_plus,
-		op_minus,
+		op_abs,
+		op_pow,
+
+		op_add,
+		op_subtract,
 
 		op_multiply,
 		op_divide,
@@ -80,23 +83,9 @@ namespace evalulater { namespace ast
 		operand operand_;
 	};
 
-	enum inttoken
-	{
-		// Unary intrinsics
-		int_abs,
-		int_neg,
-
-		// Binary intrinsics
-		int_mul,
-		int_div,
-		int_add,
-		int_sub,
-		int_pow,
-	};
-
 	struct intrinsic
 	{
-		inttoken intr;
+		optoken intr;
 		std::vector<expression> args;
 	};
 
@@ -132,7 +121,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::intrinsic,
-	(evalulater::ast::inttoken, intr)
+	(evalulater::ast::optoken, intr)
 	(std::vector<evalulater::ast::expression>, args)
 )
 

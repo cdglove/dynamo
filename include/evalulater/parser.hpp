@@ -87,23 +87,37 @@ namespace evalulater
 			using qi::on_error;
 			using qi::fail;
 
+			///////////////////////////////////////////////////////////////////////
+			// Tokens
+			binary_op.add
+				("+", ast::op_add)
+				("-", ast::op_subtract)
+				("*", ast::op_multiply)
+				("/", ast::op_divide)
+				;
+
+			unary_op.add
+				("+", ast::op_positive)
+				("-", ast::op_negative)
+				;
+
+			intrinsic_op.add
+				("abs",	ast::op_abs)		
+				("pow",	ast::op_pow)
+				("add",	ast::op_add)
+				("sub",	ast::op_subtract)
+				("mul",	ast::op_multiply)
+				("div",	ast::op_divide)
+				("pos",	ast::op_positive)
+				("neg",	ast::op_negative)
+				;
+
             expression =
-                term
-                >> *(   (char_('+') > term)
-                    |   (char_('-') > term)
-                    )
-                ;
-
-            term =
                 factor
-                >> *(   (char_('*') > factor)
-                    |   (char_('/') > factor)
-                    )
+                >> *(binary_op > factor)
                 ;
 
-			unary = 
-				    (char_('-') > factor)
-				|   (char_('+') > factor)
+			unary = unary_op > factor
 				;
 
             factor =
@@ -114,16 +128,19 @@ namespace evalulater
 
 			// Debugging and error handling and reporting support.
 			BOOST_SPIRIT_DEBUG_NODES(
-				(expression)(term)(factor));
+				(expression)(unary)(factor));
 
 			// Error handling
 			on_error<fail>(expression, error_handler(_4, _3, _2));
 		}
 
 		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
-		qi::rule<Iterator, ast::expression(), ascii::space_type> term;
 		qi::rule<Iterator, ast::operand(), ascii::space_type> factor;
 		qi::rule<Iterator, ast::unary(), ascii::space_type> unary;
+
+		qi::symbols<char, ast::optoken>	unary_op;
+		qi::symbols<char, ast::optoken> binary_op;
+		qi::symbols<char, ast::optoken> intrinsic_op;
 	};
 }
 

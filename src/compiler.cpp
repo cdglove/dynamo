@@ -37,10 +37,10 @@ namespace evalulater
 		boost::apply_visitor(*this, x.operand_);
 		switch (x.operator_)
 		{
-		case '+': code.push_back(vm::op_add); break;
-		case '-': code.push_back(vm::op_sub); break;
-		case '*': code.push_back(vm::op_mul); break;
-		case '/': code.push_back(vm::op_div); break;
+		case ast::op_add:	   code.push_back(vm::op_add); break;
+		case ast::op_subtract: code.push_back(vm::op_sub); break;
+		case ast::op_multiply: code.push_back(vm::op_mul); break;
+		case ast::op_divide:   code.push_back(vm::op_div); break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -50,8 +50,8 @@ namespace evalulater
 		boost::apply_visitor(*this, x.operand_);
 		switch (x.operator_)
 		{
-		case '-': code.push_back(vm::op_neg); break;
-		case '+': break;
+		case ast::op_negative: code.push_back(vm::op_neg); break;
+		case ast::op_positive: break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
