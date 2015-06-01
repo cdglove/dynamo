@@ -55,6 +55,7 @@ namespace evalulater { namespace ast
 	>
 	operand;
 
+
 	///////////////////////////////////////////////////////////////////////////
 	// Binary ops
 	///////////////////////////////////////////////////////////////////////////
@@ -71,8 +72,7 @@ namespace evalulater { namespace ast
 	struct binary_op
 	{
 		bop_token operator_;
-		operand	  operand_1;
-		operand	  operand_2;
+		operand	  operand_;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -138,9 +138,8 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::binary_op,
-	(evalulater::ast::operand, operand_1)
 	(evalulater::ast::bop_token, operator_)
-	(evalulater::ast::operand, operand_2)
+	(evalulater::ast::operand, operand_)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(

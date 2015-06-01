@@ -45,8 +45,7 @@ namespace evalulater
 
 	void compiler::operator()(ast::binary_op const& x) const
 	{
-		boost::apply_visitor(*this, x.operand_1);
-		boost::apply_visitor(*this, x.operand_2);
+		boost::apply_visitor(*this, x.operand_);
 		switch (x.operator_)
 		{
 		case ast::bop_add:		code.push_back(vm::op_add); break; 

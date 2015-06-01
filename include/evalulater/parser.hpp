@@ -130,7 +130,7 @@ namespace evalulater
 				;
 
 			binary_op = 
-				operand	> binary_tok > operand
+				binary_tok > operand
 				;
 
 			intrinsic_op =
