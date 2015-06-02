@@ -27,30 +27,36 @@ int main()
     std::cout << "/////////////////////////////////////////////////////////\n\n";
     std::cout << "Type an expression...or [q or Q] to quit\n\n";
 
-    typedef std::string::const_iterator iterator_type;
- 
-    std::string str;
-    while (std::getline(std::cin, str))
+	typedef std::string::const_iterator iterator_type;
+	
+    std::string test_expr;
+    while (std::getline(std::cin, test_expr))
     {
-        if (str.empty() || str[0] == 'q' || str[0] == 'Q')
+        if (test_expr.empty() || test_expr[0] == 'q' || test_expr[0] == 'Q')
             break;
 
-		evalulater::vm::vmachine machine;					// Our virtual machine
-        std::vector<evalulater::vm::byte_code> code;	// Our VM code
-        evalulater::parser<iterator_type> calc;			// Our grammar
-        evalulater::ast::expression expression;			// Our program (AST)
-        evalulater::compiler compile(code);				// Compiles the program
+		iterator_type iter = test_expr.begin();
+        iterator_type end = test_expr.end();
 
-        iterator_type iter = str.begin();
-        iterator_type end = str.end();
+        evalulater::error_handler<						// Our diagnostic printer
+			iterator_type
+		> error_handler(iter, end);						
+
+		evalulater::parser<								// Our grammar
+			iterator_type
+		> eval(error_handler);
+
+        evalulater::ast::expression ast;				// Our program (as AST)
+		evalulater::vm::vmachine machine;				// Our virtual machine
+		evalulater::compiler compiler(error_handler);	// Compiles the program
         boost::spirit::ascii::space_type space;
-        bool r = phrase_parse(iter, end, calc, space, expression);
+        bool r = phrase_parse(iter, end, eval, space, ast);
 
         if (r && iter == end)
         {
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
-            compile(expression);
+			std::vector<evalulater::vm::byte_code> code = compiler.compile(ast);
             machine.execute(code);
             std::cout << "\nResult: " << machine.top() << std::endl;
             std::cout << "-------------------------\n";

@@ -21,18 +21,32 @@
 
 namespace evalulater
 {
-	void compiler::operator()(ast::nil) const
+	std::vector<vm::byte_code> compiler::compile(ast::expression const& x)
+	{
+		std::vector<vm::byte_code> code;
+		ast_visitor visitor(code, error_handler);
+		visitor(x);
+		return code;
+	}
+
+	void compiler::compile(ast::expression const& x, std::vector<vm::byte_code>& out_code)
+	{
+		ast_visitor visitor(out_code, error_handler);
+		visitor(x);
+	}
+
+	void compiler::ast_visitor::operator()(ast::nil) const
 	{ 
 		BOOST_ASSERT(0);
 	}
 
-	void compiler::operator()(float f) const
+	void compiler::ast_visitor::operator()(float f) const
 	{
 		code.push_back(vm::op_flt);
 		code.push_back(f);
 	}
 
-	void compiler::operator()(ast::binary_op const& x) const
+	void compiler::ast_visitor::operator()(ast::binary_op const& x) const
 	{
 		boost::apply_visitor(*this, x.operand_);
 		switch (x.operator_)
@@ -45,7 +59,7 @@ namespace evalulater
 		}
 	}
 
-	void compiler::operator()(ast::intrinsic_op const& x) const
+	void compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
 	{
 		BOOST_FOREACH(ast::operand const& arg, x.args)
 		{
@@ -64,7 +78,7 @@ namespace evalulater
 		}
 	}
 
-	void compiler::operator()(ast::expression const& x) const
+	void compiler::ast_visitor::operator()(ast::expression const& x) const
 	{
 		boost::apply_visitor(*this, x.first);
 		BOOST_FOREACH(ast::operand const& oper, x.rest)
@@ -73,6 +87,6 @@ namespace evalulater
 		}
 	}
 
-	void compiler::operator()(ast::identifier const& x) const
+	void compiler::ast_visitor::operator()(ast::identifier const& x) const
 	{}
 }

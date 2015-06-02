@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spirit v2.5 allows you to suppress automatic generation
-// of predefined terminals to speed up complation. With
+// of predefined terminals to speed up compilation. With
 // BOOST_SPIRIT_NO_PREDEFINED_TERMINALS defined, you are
 // responsible in creating instances of the terminals that
 // you need (e.g. see qi::uint_type uint_ below).
@@ -34,6 +34,7 @@
 
 #include "evalulater/config.hpp"
 #include "evalulater/ast.hpp"
+#include "evalulater/error_handler.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
@@ -42,33 +43,6 @@ namespace evalulater
 {
 	namespace qi = boost::spirit::qi;
 	namespace ascii = boost::spirit::ascii;
-	using boost::phoenix::function;
-
-	///////////////////////////////////////////////////////////////////////////////
-	//  The error handler - pretty prints a helful error when parsing fails
-	///////////////////////////////////////////////////////////////////////////////
-	struct error_handler_
-	{
-		template <typename T0 = void, typename T1 = void, typename T2 = void>
-		struct result { typedef void type; };
-
-		template <typename Iterator>
-		void operator()(
-			qi::info const& what
-			, Iterator err_pos, Iterator last) const
-		{
-			std::cout
-				<< "Error! Expecting "
-				<< what                         // what failed?
-				<< " here: \""
-				<< std::string(err_pos, last)   // iterators to error-pos, end
-				<< "\""
-				<< std::endl
-				;
-		}
-	};
-
-	function<error_handler_> const error_handler = error_handler_();
 
 	///////////////////////////////////////////////////////////////////////////////
 	//  The evalulater grammar
@@ -76,12 +50,15 @@ namespace evalulater
 	template <typename Iterator>
 	struct parser : qi::grammar<Iterator, ast::expression(), ascii::space_type>
 	{
-		parser() : parser::base_type(expression)
+		parser(error_handler<Iterator>& error_handler_) 
+			: parser::base_type(expression)
 		{
 			qi::float_type float_;
-			qi::_2_type _2;
 			qi::_3_type _3;
 			qi::_4_type _4;
+
+			namespace phx = boost::phoenix;
+			typedef phx::function<error_handler<Iterator>> error_handler_function;
 
 			using qi::on_error;
 			using qi::fail;
@@ -134,8 +111,11 @@ namespace evalulater
 				(intrinsic_op)
 			);
 
-			// Error handling
-			on_error<fail>(expression, error_handler(_4, _3, _2));
+			// Error handling: on error in expression, call error_handler.
+			on_error<fail>(expression,
+				error_handler_function(error_handler_)(
+                "Error! Expecting ", _4, _3)
+			);
 		}
 
 		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
