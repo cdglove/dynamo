@@ -53,13 +53,12 @@ namespace evalulater { namespace vm
 				break;
 
 			case op_abs:
-				--stack_ptr;
-				stack_ptr[0] = std::abs(stack_ptr[0]);
+				stack_ptr[-1] = std::abs(stack_ptr[-1]);
 				break;
 		
 			case op_pow:
 				--stack_ptr;
-				stack_ptr[-1] = std::pow(stack_ptr[1], stack_ptr[0]);
+				stack_ptr[-1] = std::pow(stack_ptr[-1], stack_ptr[0]);
 				break;
 
 			case op_flt:

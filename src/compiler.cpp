@@ -32,17 +32,6 @@ namespace evalulater
 		code.push_back(f);
 	}
 
-	void compiler::operator()(ast::unary_op const& x) const
-	{
-		boost::apply_visitor(*this, x.operand_);
-		switch(x.operator_)
-		{
-		case ast::uop_negative:	code.push_back(vm::op_neg); break;
-		case ast::uop_positive:	break;
-		default: BOOST_ASSERT(0); break;
-		}
-	}
-
 	void compiler::operator()(ast::binary_op const& x) const
 	{
 		boost::apply_visitor(*this, x.operand_);
@@ -86,5 +75,4 @@ namespace evalulater
 
 	void compiler::operator()(ast::identifier const& x) const
 	{}
-
 }

@@ -30,7 +30,6 @@ namespace evalulater { namespace ast
 	//  The AST
 	///////////////////////////////////////////////////////////////////////////
 	struct nil {};
-	struct unary_op;
 	struct binary_op;
 	struct intrinsic_op;
 	struct expression;
@@ -48,7 +47,6 @@ namespace evalulater { namespace ast
 		  nil
 		, float
 		, identifier
-		, boost::recursive_wrapper<unary_op>
 		, boost::recursive_wrapper<binary_op>
 		, boost::recursive_wrapper<intrinsic_op>
 		, boost::recursive_wrapper<expression>
@@ -72,21 +70,6 @@ namespace evalulater { namespace ast
 	struct binary_op
 	{
 		bop_token operator_;
-		operand	  operand_;
-	};
-
-	///////////////////////////////////////////////////////////////////////////
-	// Unary ops
-	///////////////////////////////////////////////////////////////////////////
-	enum uop_token
-	{
-		uop_positive,
-		uop_negative,
-	};
-
-	struct unary_op
-	{
-		uop_token operator_;
 		operand	  operand_;
 	};
 
@@ -129,12 +112,6 @@ namespace evalulater { namespace ast
 		out << id.name; return out;
 	}
 }}
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::unary_op,
-	(evalulater::ast::uop_token, operator_)
-	(evalulater::ast::operand, operand_)
-)
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::binary_op,

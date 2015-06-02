@@ -93,12 +93,7 @@ namespace evalulater
 				("-", ast::bop_subtract)
 				("*", ast::bop_multiply)
 				("/", ast::bop_divide)
-				;
-
-			unary_tok.add
-				("+", ast::uop_positive)
-				("-", ast::uop_negative)
-				;
+			;
 
 			intrinsic_tok.add
 				("abs",	ast::iop_abs)		
@@ -107,39 +102,37 @@ namespace evalulater
 				("sub",	ast::iop_subtract)
 				("mul",	ast::iop_multiply)
 				("div",	ast::iop_divide)
-				;
+			;
 
 			///////////////////////////////////////////////////////////////////////
 			// Grammer
-			
 			expression =
                 operand
                 >> *operand
-                ;
+            ;
 
-			operand =
-				 intrinsic_op
-				| binary_op
-				| unary_op
-				| float_
-				| '(' > expression > ')'
-				;
-
-			unary_op = 
-				unary_tok > operand
-				;
+			operand = 
+					float_
+				|	intrinsic_op
+				|   binary_op
+				|	'(' > expression > ')'
+			;
 
 			binary_op = 
 				binary_tok > operand
-				;
+			;
 
 			intrinsic_op =
 				intrinsic_tok >	'(' > *(operand % ',') > ')'
-				;
+			;
 
 			// Debugging and error handling and reporting support.
 			BOOST_SPIRIT_DEBUG_NODES(
-				(expression)(operand)(unary_op)(binary_op)(intrinsic_op));
+				(expression)
+				(operand)
+				(binary_op)
+				(intrinsic_op)
+			);
 
 			// Error handling
 			on_error<fail>(expression, error_handler(_4, _3, _2));
@@ -147,11 +140,9 @@ namespace evalulater
 
 		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
 		qi::rule<Iterator, ast::operand(), ascii::space_type> operand;
-		qi::rule<Iterator, ast::unary_op(), ascii::space_type> unary_op;
 		qi::rule<Iterator, ast::binary_op(), ascii::space_type> binary_op;
 		qi::rule<Iterator, ast::intrinsic_op(), ascii::space_type> intrinsic_op;
 
-		qi::symbols<char, ast::uop_token> unary_tok;
 		qi::symbols<char, ast::bop_token> binary_tok;
 		qi::symbols<char, ast::iop_token> intrinsic_tok;
 	};
