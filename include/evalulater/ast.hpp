@@ -56,60 +56,43 @@ namespace evalulater { namespace ast
 		, boost::recursive_wrapper<intrinsic_op>
 		, boost::recursive_wrapper<expression>
 	>
-	term;
+	operand;
 
 	///////////////////////////////////////////////////////////////////////////
-	// Unary ops
+	// Operation tokens
 	///////////////////////////////////////////////////////////////////////////
-	enum uop_token
+	enum op_token
 	{
 		// cglover-todo: Need to express precedence somehow.
-		uop_positive,
-		uop_negative,
-		uop_not,		
+		op_positive,
+		op_negative,
+		op_not,	
+
+		op_assign,
+		op_add,
+		op_subtract,
+		op_multiply,
+		op_divide,
+
+		op_pow,
+		op_abs,
 	};
 
 	struct unary_op
 	{
-		uop_token operator_;
-		term	  right;
-	};
-
-	///////////////////////////////////////////////////////////////////////////
-	// Binary ops
-	///////////////////////////////////////////////////////////////////////////
-	enum bop_token
-	{
-		// cglover-todo: Need to express precedence somehow.
-		bop_assign,
-		bop_add,
-		bop_subtract,
-		bop_multiply,
-		bop_divide,
+		op_token  operator_;
+		operand	  right;
 	};
 
 	struct binary_op
 	{
-		bop_token operator_;
-		term	  right;
-	};
-
-	///////////////////////////////////////////////////////////////////////////
-	// Intrinsic ops
-	///////////////////////////////////////////////////////////////////////////
-	enum iop_token
-	{
-		iop_add,
-		iop_subtract,
-		iop_multiply,
-		iop_divide,
-		iop_pow,
-		iop_abs,
+		op_token  operator_;
+		operand	  right;
 	};
 
 	struct intrinsic_op
 	{
-		iop_token intrinsic;
+		op_token intrinsic;
 		std::vector<expression> args;
 	};
 
@@ -118,8 +101,8 @@ namespace evalulater { namespace ast
 	///////////////////////////////////////////////////////////////////////////
 	struct expression
 	{
-		term first;
-		std::vector<term> rest;
+		operand first;
+		std::vector<binary_op> rest;
 	};
 
 	// print functions for debugging
@@ -136,26 +119,26 @@ namespace evalulater { namespace ast
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::unary_op,
-	(evalulater::ast::uop_token, operator_)
-	(evalulater::ast::term, right)
+	(evalulater::ast::op_token, operator_)
+	(evalulater::ast::operand, right)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::binary_op,
-	(evalulater::ast::bop_token, operator_)
-	(evalulater::ast::term, right)
+	(evalulater::ast::op_token, operator_)
+	(evalulater::ast::operand, right)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::intrinsic_op,
-	(evalulater::ast::iop_token, intrinsic)
+	(evalulater::ast::op_token, intrinsic)
 	(std::vector<evalulater::ast::expression>, args)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::expression,
-	(evalulater::ast::term, first)
-	(std::vector<evalulater::ast::term>, rest)
+	(evalulater::ast::operand, first)
+	(std::vector<evalulater::ast::operand>, rest)
 )
 
 #endif // _EVALULATER_AST_HPP_

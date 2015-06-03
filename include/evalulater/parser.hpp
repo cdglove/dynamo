@@ -73,25 +73,25 @@ namespace evalulater
 			///////////////////////////////////////////////////////////////////////
 			// Tokens
 			binary_tok.add
-				("+", ast::bop_add)
-				("-", ast::bop_subtract)
-				("*", ast::bop_multiply)
-				("/", ast::bop_divide)
+				("+", ast::op_add)
+				("-", ast::op_subtract)
+				("*", ast::op_multiply)
+				("/", ast::op_divide)
 			;
 
 			unary_tok.add
-				("+", ast::uop_positive)
-				("-", ast::uop_negative)
-				("!", ast::uop_not)
+				("+", ast::op_positive)
+				("-", ast::op_negative)
+				("!", ast::op_not)
 			;
 
 			intrinsic_tok.add
-				("abs",	ast::iop_abs)		
-				("pow",	ast::iop_pow)
-				("add",	ast::iop_add)
-				("sub",	ast::iop_subtract)
-				("mul",	ast::iop_multiply)
-				("div",	ast::iop_divide)
+				("abs",	ast::op_abs)		
+				("pow",	ast::op_pow)
+				("add",	ast::op_add)
+				("sub",	ast::op_subtract)
+				("mul",	ast::op_multiply)
+				("div",	ast::op_divide)
 			;
 
 			///////////////////////////////////////////////////////////////////////
@@ -158,8 +158,8 @@ namespace evalulater
 		typedef ascii::space_type skp;
 		
 		qi::rule<Iterator, ast::expression(), skp> expr;
-		qi::rule<Iterator, ast::term(), skp> primary_expr;
-		qi::rule<Iterator, ast::term(), skp> unary_expr;
+		qi::rule<Iterator, ast::operand(), skp> primary_expr;
+		qi::rule<Iterator, ast::operand(), skp> unary_expr;
 		qi::rule<Iterator, ast::unary_op(), skp> unary_op;
 		qi::rule<Iterator, ast::binary_op(), skp> binary_op;
 		qi::rule<Iterator, ast::intrinsic_op(), skp> intrinsic_op;
@@ -167,9 +167,9 @@ namespace evalulater
 
 		qi::rule<Iterator, std::vector<ast::expression>(), skp> argument_list;
 		
-		qi::symbols<char, ast::bop_token> binary_tok;
-		qi::symbols<char, ast::uop_token> unary_tok;
-		qi::symbols<char, ast::iop_token> intrinsic_tok;
+		qi::symbols<char, ast::op_token> binary_tok;
+		qi::symbols<char, ast::op_token> unary_tok;
+		qi::symbols<char, ast::op_token> intrinsic_tok;
 	};
 }
 

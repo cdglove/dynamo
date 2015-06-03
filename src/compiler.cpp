@@ -51,10 +51,10 @@ namespace evalulater
 		boost::apply_visitor(*this, x.right);
 		switch (x.operator_)
 		{
-		case ast::bop_add:		code.push_back(vm::op_add); break; 
-		case ast::bop_subtract:	code.push_back(vm::op_sub); break;	
-		case ast::bop_multiply:	code.push_back(vm::op_mul); break;
-		case ast::bop_divide:	code.push_back(vm::op_div); break;
+		case ast::op_add:		code.push_back(vm::op_add); break; 
+		case ast::op_subtract:	code.push_back(vm::op_sub); break;	
+		case ast::op_multiply:	code.push_back(vm::op_mul); break;
+		case ast::op_divide:	code.push_back(vm::op_div); break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -64,28 +64,28 @@ namespace evalulater
 		boost::apply_visitor(*this, x.right);
 		switch (x.operator_)
 		{
-		case ast::uop_negative:	code.push_back(vm::op_neg); break; 
-		case ast::uop_positive:								break;	
-		case ast::uop_not:		code.push_back(vm::op_not); break;
+		case ast::op_negative:	code.push_back(vm::op_neg); break; 
+		case ast::op_positive:								break;	
+		case ast::op_not:		code.push_back(vm::op_not); break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
 
 	void compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
 	{
-		BOOST_FOREACH(ast::term const& arg, x.args)
+		BOOST_FOREACH(ast::operand const& arg, x.args)
 		{
 			boost::apply_visitor(*this, arg);
 		}
 		
 		switch (x.intrinsic)
 		{
-		case ast::iop_add:		code.push_back(vm::op_add); break; 
-		case ast::iop_subtract: code.push_back(vm::op_sub); break;	
-		case ast::iop_multiply: code.push_back(vm::op_mul); break;
-		case ast::iop_divide:   code.push_back(vm::op_div); break;
-		case ast::iop_pow:		code.push_back(vm::op_pow); break; 
-		case ast::iop_abs:		code.push_back(vm::op_abs); break; 
+		case ast::op_add:		code.push_back(vm::op_add); break; 
+		case ast::op_subtract:  code.push_back(vm::op_sub); break;	
+		case ast::op_multiply:  code.push_back(vm::op_mul); break;
+		case ast::op_divide:    code.push_back(vm::op_div); break;
+		case ast::op_pow:		code.push_back(vm::op_pow); break; 
+		case ast::op_abs:		code.push_back(vm::op_abs); break; 
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -93,7 +93,7 @@ namespace evalulater
 	void compiler::ast_visitor::operator()(ast::expression const& x) const
 	{
 		boost::apply_visitor(*this, x.first);
-		BOOST_FOREACH(ast::term const& oper, x.rest)
+		BOOST_FOREACH(ast::operand const& oper, x.rest)
 		{
 			boost::apply_visitor(*this, oper);
 		}
