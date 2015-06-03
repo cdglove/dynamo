@@ -21,9 +21,6 @@
 #include "evalulater/ast.hpp"
 #include "evalulater/byte_code.hpp"
 #include "evalulater/error_handler.hpp"
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_function.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/function.hpp>
 #include <vector>
 
@@ -36,17 +33,13 @@ namespace evalulater
 	{
 	public:
 
-		// cglover-todo:  The use of phoenix here is pretty heavy handed for a
-		// header file.  Should be cleaned up.
 		template <typename ErrorHandler>
         compiler(ErrorHandler& error_handler_)
         {
-			using namespace boost::phoenix::arg_names;
-            namespace phx = boost::phoenix;
-            using boost::phoenix::function;
-
-            error_handler = function<ErrorHandler>(error_handler_)(
-                "Error! ", _2, phx::cref(error_handler_.iters)[_1]);
+            error_handler = [error_handler_](int tag, std::string const& what)
+			{
+				error_handler_("Error! ", what, error_handler_.iters[tag]);
+			};
         }
 
 		std::vector<vm::byte_code> compile(ast::expression const& x);
