@@ -18,8 +18,26 @@
 namespace evalulater { namespace vm
 {
 	state::state(byte_code const& code)
-	{
+	{}
 
+	state::state(byte_code const& code, std::map<std::string, float*> const& externs_)
+	{
+		std::map<std::string, int> const& code_externs = code.get_externs();
+		externs.resize(code_externs.size());
+		BOOST_FOREACH(std::map<std::string, int> ce, code_externs)
+		{
+			std::map<std::string, float*>::const_iterator i = externs_.find(ce.first);
+			if(i == externs_.end())
+			{
+				// Emit linker error?
+				// Allocate one from a small local buffer
+			}
+			else
+			{
+				// Link the variable in.
+				externs[ce.second] = i->second;
+			}
+		}
 	}
 	
 	void state::store_extern(int idx, float data)

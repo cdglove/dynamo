@@ -35,13 +35,14 @@ namespace evalulater { namespace vm
 	public:
 
 		state(byte_code const& code);
+		state(byte_code const& code, std::map<std::string, float*> externs_);
 
-		void store_extern(int idx, float data);
+		void  store_extern(int idx, float data);
 		float load_extern(int idx);
 
 	private:
 
-		std::vector<float*> extern_variables;
+		std::vector<float*> externs;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
