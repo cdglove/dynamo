@@ -33,6 +33,7 @@ namespace evalulater { namespace vm
 		op_div,     //  divide top two stack entries
 		op_abs,		//  calculate abs of the top stack entry
 		op_pow,		//  raise stack[-2] to power of the top 
+		op_not,		//  logically not the top of the stack 
 		op_flt,		//  push constant float onto the stack
 	};
 

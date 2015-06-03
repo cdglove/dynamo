@@ -48,7 +48,7 @@ namespace evalulater
 
 	void compiler::ast_visitor::operator()(ast::binary_op const& x) const
 	{
-		boost::apply_visitor(*this, x.operand_);
+		boost::apply_visitor(*this, x.right);
 		switch (x.operator_)
 		{
 		case ast::bop_add:		code.push_back(vm::op_add); break; 
@@ -59,9 +59,21 @@ namespace evalulater
 		}
 	}
 
+	void compiler::ast_visitor::operator()(ast::unary_op const& x) const
+	{
+		boost::apply_visitor(*this, x.right);
+		switch (x.operator_)
+		{
+		case ast::uop_negative:	code.push_back(vm::op_neg); break; 
+		case ast::uop_positive:								break;	
+		case ast::uop_not:		code.push_back(vm::op_not); break;
+		default: BOOST_ASSERT(0); break;
+		}
+	}
+
 	void compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
 	{
-		BOOST_FOREACH(ast::operand const& arg, x.args)
+		BOOST_FOREACH(ast::term const& arg, x.args)
 		{
 			boost::apply_visitor(*this, arg);
 		}
@@ -81,7 +93,7 @@ namespace evalulater
 	void compiler::ast_visitor::operator()(ast::expression const& x) const
 	{
 		boost::apply_visitor(*this, x.first);
-		BOOST_FOREACH(ast::operand const& oper, x.rest)
+		BOOST_FOREACH(ast::term const& oper, x.rest)
 		{
 			boost::apply_visitor(*this, oper);
 		}

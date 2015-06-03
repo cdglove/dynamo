@@ -55,6 +55,10 @@ namespace evalulater { namespace vm
 			case op_abs:
 				stack_ptr[-1] = std::abs(stack_ptr[-1]);
 				break;
+
+			case op_not:
+				stack_ptr[-1] = !stack_ptr[-1];
+				break;
 		
 			case op_pow:
 				--stack_ptr;

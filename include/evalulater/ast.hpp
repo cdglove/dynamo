@@ -30,29 +30,50 @@ namespace evalulater { namespace ast
 	//  The AST
 	///////////////////////////////////////////////////////////////////////////
 	struct nil {};
+	struct unary_op;
 	struct binary_op;
 	struct intrinsic_op;
 	struct expression;
 
-	struct identifier
+	struct identifier : std::string
 	{
 		identifier(std::string const& name = "") 
-			: name(name) 
+			: std::string(name) 
 		{}
-		
-		std::string name;
+
+		template<typename Iterator>
+		identifier(Iterator first, Iterator last) 
+			: std::string(first, last) 
+		{}
 	};
 
 	typedef boost::variant<
 		  nil
 		, float
 		, identifier
+		, boost::recursive_wrapper<unary_op>
 		, boost::recursive_wrapper<binary_op>
 		, boost::recursive_wrapper<intrinsic_op>
 		, boost::recursive_wrapper<expression>
 	>
-	operand;
+	term;
 
+	///////////////////////////////////////////////////////////////////////////
+	// Unary ops
+	///////////////////////////////////////////////////////////////////////////
+	enum uop_token
+	{
+		// cglover-todo: Need to express precedence somehow.
+		uop_positive,
+		uop_negative,
+		uop_not,		
+	};
+
+	struct unary_op
+	{
+		uop_token operator_;
+		term	  right;
+	};
 
 	///////////////////////////////////////////////////////////////////////////
 	// Binary ops
@@ -70,7 +91,7 @@ namespace evalulater { namespace ast
 	struct binary_op
 	{
 		bop_token operator_;
-		operand	  operand_;
+		term	  right;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -89,7 +110,7 @@ namespace evalulater { namespace ast
 	struct intrinsic_op
 	{
 		iop_token intrinsic;
-		std::vector<operand> args;
+		std::vector<expression> args;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -97,8 +118,8 @@ namespace evalulater { namespace ast
 	///////////////////////////////////////////////////////////////////////////
 	struct expression
 	{
-		operand first;
-		std::vector<operand> rest;
+		term first;
+		std::vector<term> rest;
 	};
 
 	// print functions for debugging
@@ -109,26 +130,32 @@ namespace evalulater { namespace ast
 
 	inline std::ostream& operator<<(std::ostream& out, identifier const& id)
 	{
-		out << id.name; return out;
+		out << id; return out;
 	}
 }}
 
 BOOST_FUSION_ADAPT_STRUCT(
+	evalulater::ast::unary_op,
+	(evalulater::ast::uop_token, operator_)
+	(evalulater::ast::term, right)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::binary_op,
 	(evalulater::ast::bop_token, operator_)
-	(evalulater::ast::operand, operand_)
+	(evalulater::ast::term, right)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::intrinsic_op,
 	(evalulater::ast::iop_token, intrinsic)
-	(std::vector<evalulater::ast::operand>, args)
+	(std::vector<evalulater::ast::expression>, args)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::expression,
-	(evalulater::ast::operand, first)
-	(std::vector<evalulater::ast::operand>, rest)
+	(evalulater::ast::term, first)
+	(std::vector<evalulater::ast::term>, rest)
 )
 
 #endif // _EVALULATER_AST_HPP_

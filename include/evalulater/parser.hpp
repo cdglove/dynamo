@@ -26,7 +26,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Define this to enable debugging
-#define BOOST_SPIRIT_QI_DEBUG
+//#define BOOST_SPIRIT_QI_DEBUG
 
 #if defined(_MSC_VER)
 # pragma warning(disable: 4345)
@@ -48,12 +48,19 @@ namespace evalulater
 	//  The evalulater grammar
 	///////////////////////////////////////////////////////////////////////////////
 	template <typename Iterator>
-	struct parser : qi::grammar<Iterator, ast::expression(), ascii::space_type>
+	class parser : public qi::grammar<Iterator, ast::expression(), ascii::space_type>
 	{
+	public:
+
 		parser(error_handler<Iterator>& error_handler_) 
-			: parser::base_type(expression)
+			: parser::base_type(expr)
 		{
 			qi::float_type float_;
+			qi::raw_type raw;
+	        qi::lexeme_type lexeme;
+	        qi::alpha_type alpha;
+	        qi::alnum_type alnum;
+
 			qi::_3_type _3;
 			qi::_4_type _4;
 
@@ -72,6 +79,12 @@ namespace evalulater
 				("/", ast::bop_divide)
 			;
 
+			unary_tok.add
+				("+", ast::uop_positive)
+				("-", ast::uop_negative)
+				("!", ast::uop_not)
+			;
+
 			intrinsic_tok.add
 				("abs",	ast::iop_abs)		
 				("pow",	ast::iop_pow)
@@ -82,48 +95,80 @@ namespace evalulater
 			;
 
 			///////////////////////////////////////////////////////////////////////
-			// Grammer
-			expression =
-                operand
-                >> *operand
-            ;
+			// Main expression grammar
+			expr =
+					unary_expr
+				>> *binary_op
+				;
 
-			operand = 
+			unary_expr =
+					primary_expr
+				|   unary_op
+				;
+
+			primary_expr =
 					float_
-				|	intrinsic_op
-				|   binary_op
-				|	'(' > expression > ')'
-			;
+				|   intrinsic_op
+				|   identifier
+				|   '(' > expr > ')'
+				;
+
+			unary_op =
+					unary_tok > unary_expr
+				;
 
 			binary_op = 
-				binary_tok > operand
-			;
+					binary_tok >> unary_expr
+				;
 
 			intrinsic_op =
-				intrinsic_tok >	'(' > *(operand % ',') > ')'
-			;
+					(intrinsic_tok >> '(')
+				>   argument_list
+				>   ')'
+				;
+
+			argument_list = -(expr % ',');
+
+			identifier =
+					!lexeme[intrinsic_tok >> !(alnum | '_')]
+				>>  raw[lexeme[(alpha | '_') >> *(alnum | '_')]]
+				;
 
 			// Debugging and error handling and reporting support.
 			BOOST_SPIRIT_DEBUG_NODES(
-				(expression)
-				(operand)
+				(expr)
+				(primary_expr)
+				(unary_expr)
+				(unary_op)
 				(binary_op)
 				(intrinsic_op)
+				(identifier)
 			);
 
-			// Error handling: on error in expression, call error_handler.
-			on_error<fail>(expression,
+			///////////////////////////////////////////////////////////////////////
+			// Error handling: on error in expr, call error_handler.
+			on_error<fail>(expr,
 				error_handler_function(error_handler_)(
                 "Error! Expecting ", _4, _3)
 			);
 		}
 
-		qi::rule<Iterator, ast::expression(), ascii::space_type> expression;
-		qi::rule<Iterator, ast::operand(), ascii::space_type> operand;
-		qi::rule<Iterator, ast::binary_op(), ascii::space_type> binary_op;
-		qi::rule<Iterator, ast::intrinsic_op(), ascii::space_type> intrinsic_op;
+	private:
 
+		typedef ascii::space_type skp;
+		
+		qi::rule<Iterator, ast::expression(), skp> expr;
+		qi::rule<Iterator, ast::term(), skp> primary_expr;
+		qi::rule<Iterator, ast::term(), skp> unary_expr;
+		qi::rule<Iterator, ast::unary_op(), skp> unary_op;
+		qi::rule<Iterator, ast::binary_op(), skp> binary_op;
+		qi::rule<Iterator, ast::intrinsic_op(), skp> intrinsic_op;
+		qi::rule<Iterator, ast::identifier(), skp> identifier;
+
+		qi::rule<Iterator, std::vector<ast::expression>(), skp> argument_list;
+		
 		qi::symbols<char, ast::bop_token> binary_tok;
+		qi::symbols<char, ast::uop_token> unary_tok;
 		qi::symbols<char, ast::iop_token> intrinsic_tok;
 	};
 }
