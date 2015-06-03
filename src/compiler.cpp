@@ -21,15 +21,15 @@
 
 namespace evalulater
 {
-	std::vector<vm::byte_code> compiler::compile(ast::expression const& x)
+	vm::byte_code compiler::compile(ast::expression const& x)
 	{
-		std::vector<vm::byte_code> code;
+		vm::byte_code code;
 		ast_visitor visitor(code, error_handler);
 		visitor(x);
 		return code;
 	}
 
-	void compiler::compile(ast::expression const& x, std::vector<vm::byte_code>& out_code)
+	void compiler::compile(ast::expression const& x, vm::byte_code& out_code)
 	{
 		ast_visitor visitor(out_code, error_handler);
 		visitor(x);
@@ -42,8 +42,8 @@ namespace evalulater
 
 	void compiler::ast_visitor::operator()(float f) const
 	{
-		code.push_back(vm::op_flt);
-		code.push_back(f);
+		code.push(vm::op_flt);
+		code.push(f);
 	}
 
 	void compiler::ast_visitor::operator()(ast::binary_op const& x) const
@@ -51,10 +51,10 @@ namespace evalulater
 		boost::apply_visitor(*this, x.right);
 		switch (x.operator_)
 		{
-		case ast::op_add:		code.push_back(vm::op_add); break; 
-		case ast::op_subtract:	code.push_back(vm::op_sub); break;	
-		case ast::op_multiply:	code.push_back(vm::op_mul); break;
-		case ast::op_divide:	code.push_back(vm::op_div); break;
+		case ast::op_add:		code.push(vm::op_add); break; 
+		case ast::op_subtract:	code.push(vm::op_sub); break;	
+		case ast::op_multiply:	code.push(vm::op_mul); break;
+		case ast::op_divide:	code.push(vm::op_div); break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -64,9 +64,9 @@ namespace evalulater
 		boost::apply_visitor(*this, x.right);
 		switch (x.operator_)
 		{
-		case ast::op_negative:	code.push_back(vm::op_neg); break; 
+		case ast::op_negative:	code.push(vm::op_neg); break; 
 		case ast::op_positive:								break;	
-		case ast::op_not:		code.push_back(vm::op_not); break;
+		case ast::op_not:		code.push(vm::op_not); break;
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -80,12 +80,12 @@ namespace evalulater
 		
 		switch (x.intrinsic)
 		{
-		case ast::op_add:		code.push_back(vm::op_add); break; 
-		case ast::op_subtract:  code.push_back(vm::op_sub); break;	
-		case ast::op_multiply:  code.push_back(vm::op_mul); break;
-		case ast::op_divide:    code.push_back(vm::op_div); break;
-		case ast::op_pow:		code.push_back(vm::op_pow); break; 
-		case ast::op_abs:		code.push_back(vm::op_abs); break; 
+		case ast::op_add:		code.push(vm::op_add); break; 
+		case ast::op_subtract:  code.push(vm::op_sub); break;	
+		case ast::op_multiply:  code.push(vm::op_mul); break;
+		case ast::op_divide:    code.push(vm::op_div); break;
+		case ast::op_pow:		code.push(vm::op_pow); break; 
+		case ast::op_abs:		code.push(vm::op_abs); break; 
 		default: BOOST_ASSERT(0); break;
 		}
 	}
@@ -99,6 +99,27 @@ namespace evalulater
 		}
 	}
 
+	void compiler::ast_visitor::operator()(ast::assignment const& x) const
+	{
+		(*this)(x.rhs);
+		int const* slot = code.find_extern(x.lhs.name);
+        if (!slot)
+        {
+            error_handler("Undeclared variable: " + x.lhs.name);
+            return;
+        }
+		code.push(slot);
+		code.push(op_store);
+	}
+
 	void compiler::ast_visitor::operator()(ast::identifier const& x) const
-	{}
+	{
+		int const* slot = code.find_extern(x.name);
+		if(sloat == NULL)
+		{
+			slot = code.add_extern(x.name);
+			code.push(slot);
+			code.push(op_load);
+		}
+	}
 }

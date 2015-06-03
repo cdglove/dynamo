@@ -96,14 +96,17 @@ namespace evalulater { namespace ast
 		std::vector<expression> args;
 	};
 
-	///////////////////////////////////////////////////////////////////////////
-	// Combination of ops
-	///////////////////////////////////////////////////////////////////////////
 	struct expression
 	{
 		operand first;
 		std::vector<binary_op> rest;
 	};
+
+	struct assignment
+    {
+        identifier lhs;
+        expression rhs;
+    };
 
 	// print functions for debugging
 	inline std::ostream& operator<<(std::ostream& out, nil)
@@ -138,7 +141,13 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
 	evalulater::ast::expression,
 	(evalulater::ast::operand, first)
-	(std::vector<evalulater::ast::operand>, rest)
+	(std::vector<evalulater::ast::binary_op>, rest)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	evalulater::ast::assignment,
+	(evalulater::ast::identifier, lhs)
+	(evalulater::ast::expression, rhs)
 )
 
 #endif // _EVALULATER_AST_HPP_

@@ -22,7 +22,6 @@
 #include "evalulater/byte_code.hpp"
 #include "evalulater/error_handler.hpp"
 #include <boost/function.hpp>
-#include <vector>
 
 namespace evalulater
 {
@@ -42,8 +41,8 @@ namespace evalulater
 			};
         }
 
-		std::vector<vm::byte_code> compile(ast::expression const& x);
-		void compile(ast::expression const& x, std::vector<vm::byte_code>& out_code);
+		vm::byte_code compile(ast::expression const& x);
+		void compile(ast::expression const& x, vm::byte_code& out_code);
 
 	private:
 
@@ -53,7 +52,7 @@ namespace evalulater
 
 		struct ast_visitor
 		{
-			ast_visitor(std::vector<vm::byte_code>& code, error_handler_type const& error_handler)
+			ast_visitor(vm::byte_code& code, error_handler_type const& error_handler)
 				: code(code)
 				, error_handler(error_handler)
 			{}
@@ -66,9 +65,10 @@ namespace evalulater
 			void operator()(ast::unary_op const& x) const;
 			void operator()(ast::intrinsic_op const& x) const;
 			void operator()(ast::expression const& x) const;
+			void operator()(ast::assignment const& x) const;
 			void operator()(ast::identifier const& x) const;
 
-			std::vector<vm::byte_code>& code;
+			vm::byte_code& code;
 			error_handler_type const& error_handler;
 		};
 

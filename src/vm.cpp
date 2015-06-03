@@ -17,12 +17,34 @@
 
 namespace evalulater { namespace vm
 {
-	void vmachine::execute(std::vector<byte_code> const& code)
+	state::state(byte_code const& code)
 	{
-		std::vector<byte_code>::const_iterator pc = code.begin();
+
+	}
+	
+	void state::store_extern(int idx, float data)
+	{
+		*externs[idx] = data;
+	}
+
+	float state::load_extern(int idx)
+	{
+		return *externs[idx];
+	}
+
+	void vmachine::execute(byte_code const& code)
+	{
+		state state;
+		execute(code, state);
+	}
+
+	void vmachine::execute(byte_code const& code, state& state)
+	{
+		std::vector<instruction>::const_iterator pc = code.get_code().begin();
+		std::vector<instruction>::const_iterator end = code.get_code().end();
 		stack_ptr = stack.begin();
 
-		while(pc != code.end())
+		while(pc != end)
 		{
 			op_code op = pc->op;
 			++pc;
@@ -69,6 +91,16 @@ namespace evalulater { namespace vm
 				*stack_ptr++ = pc->fltd;
 				++pc;
 				break;
+
+            case op_load:
+                *stack_ptr++ = state.load_extern(*pc++);
+                break;
+
+            case op_store:
+                --stack_ptr;
+                state.store_extern(*pc++, stack_ptr[0]);
+                break;
+
 			}
 		}
 	}

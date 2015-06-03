@@ -28,9 +28,26 @@
 namespace evalulater { namespace vm
 {
 	///////////////////////////////////////////////////////////////////////////
+	//  Virtual Machine State - Contains patch information for expression
+	///////////////////////////////////////////////////////////////////////////
+	class state
+	{
+	public:
+
+		state(byte_code const& code);
+
+		void store_extern(int idx, float data);
+		float load_extern(int idx);
+
+	private:
+
+		std::vector<float*> extern_variables;
+	};
+
+	///////////////////////////////////////////////////////////////////////////
 	//  The Virtual Machine - Executes the supplied byte code 
 	///////////////////////////////////////////////////////////////////////////
-    class vmachine
+    class machine
     {
     public:
 
@@ -40,7 +57,8 @@ namespace evalulater { namespace vm
         {}
 
         float top() const { return stack_ptr[-1]; };
-        void execute(std::vector<byte_code> const& code);
+        void execute(byte_code const& code, state& state);
+		void execute(byte_code const& code);
 
     private:
 
