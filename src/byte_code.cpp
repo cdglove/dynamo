@@ -11,7 +11,7 @@
 //
 // ****************************************************************************
 
-#include "evalulater/byte_code.hpp"
+#include "evalulater/vm/byte_code.hpp"
 #include <boost/assert.hpp>
 
 namespace evalulater { namespace vm
@@ -21,13 +21,13 @@ namespace evalulater { namespace vm
 		BOOST_ASSERT(find_extern(name) == NULL);
 		std::size_t n = extern_index_.size();
 		return &extern_index_.insert(
-			std::make_pair(std::move(name), static_cast<int>(n))
+			std::make_pair(name, static_cast<int>(n))
 			).first->second;
 	}
 
 	int const* byte_code::find_extern(std::string const& name) const
 	{
-		extern_index::const_iterator i = extern_index_.find(name);
+		variable_index::const_iterator i = extern_index_.find(name);
 		if (i == extern_index_.end())
 			return NULL;
 		return &i->second;	

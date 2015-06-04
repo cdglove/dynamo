@@ -19,7 +19,7 @@
 
 #include "evalulater/config.hpp"
 #include "evalulater/ast.hpp"
-#include "evalulater/byte_code.hpp"
+#include "evalulater/vm/byte_code.hpp"
 #include "evalulater/error_handler.hpp"
 #include <boost/function.hpp>
 
@@ -41,8 +41,8 @@ namespace evalulater
 			};
         }
 
-		vm::byte_code compile(ast::expression const& x);
-		void compile(ast::expression const& x, vm::byte_code& out_code);
+		vm::byte_code compile(ast::statement_list const& x);
+		void compile(ast::statement_list const& x, vm::byte_code& out_code);
 
 	private:
 
@@ -66,6 +66,7 @@ namespace evalulater
 			void operator()(ast::intrinsic_op const& x) const;
 			void operator()(ast::expression const& x) const;
 			void operator()(ast::assignment const& x) const;
+			void operator()(ast::statement const& x) const;
 			void operator()(ast::identifier const& x) const;
 
 			vm::byte_code& code;

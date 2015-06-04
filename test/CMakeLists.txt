@@ -9,17 +9,20 @@ find_package( Boost )
 # -----------------------------------------------------------------------------
 # Function to add an include test with all of the proper paths etc.
 #------------------------------------------------------------------------------
-function(add_include_test header_name)
-	add_executable(test.include.${header_name} include.cpp)
-	target_include_directories(test.include.${header_name} PUBLIC ${Evalulater_INCLUDE_DIRS})
-	add_test(test.include_${header_name} test.include.${header_name})
-	set_property(TARGET test.include.${header_name}  APPEND PROPERTY COMPILE_DEFINITIONS "HEADER=\"evalulater/${header_name}.hpp\"")
+function(add_include_test header_path header_name)
+	add_executable(test.include.${header_path}.${header_name} include.cpp)
+	target_include_directories(test.include.${header_path}.${header_name} PUBLIC ${Evalulater_INCLUDE_DIRS})
+	add_test(test.include.${header_path}.${header_name} test.include.${header_name})
+	set_property(TARGET test.include.${header_path}.${header_name}  APPEND PROPERTY COMPILE_DEFINITIONS "HEADER=\"evalulater/${header_path}/${header_name}.hpp\"")
 endfunction(add_include_test)
 
-add_include_test(vm)
-add_include_test(compiler)
-add_include_test(parser)
-add_include_test(ast)
+add_include_test("" compiler)
+add_include_test("" ast)
+add_include_test("" error_handler)
+add_include_test(vm machine)
+add_include_test(vm byte_code)
+add_include_test(parser expression)
+add_include_test(parser statement)
 
 # -----------------------------------------------------------------------------
 # Function to add a normal test with all of the proper includes, etc.

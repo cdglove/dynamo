@@ -108,6 +108,15 @@ namespace evalulater { namespace ast
         expression rhs;
     };
 
+	typedef boost::variant<
+		  nil
+		, assignment
+		, expression
+	>
+	statement;
+
+	typedef std::vector<statement> statement_list;
+
 	// print functions for debugging
 	inline std::ostream& operator<<(std::ostream& out, nil)
 	{ 

@@ -11,8 +11,8 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm.hpp"
-#include "evalulater/parser.hpp"
+#include "evalulater/vm/machine.hpp"
+#include "evalulater/parser/statement.hpp"
 #include "evalulater/compiler.hpp"
 
 #include <iostream>
@@ -29,6 +29,14 @@ int main()
 	std::cout << "Double line break executes the expressions\n\n";
 
 	typedef std::string::const_iterator iterator_type;
+
+	evalulater::vm::extern_index extern_state;
+	float t1 = 5.f;
+	float t2 = 11.f;
+	extern_state["t1"] = &t1;
+	extern_state["t2"] = &t2;
+
+	evalulater::vm::local_index local_state;
 	
     while(true)
 	{
@@ -43,7 +51,7 @@ int main()
 
 			if(line[0] == 'q' || line[0] == 'Q')
 				return 0;
-
+			
 			test_expr += line;
 		}
 
@@ -54,33 +62,27 @@ int main()
 			iterator_type
 		> error_handler(iter, end);						
 
-		evalulater::parser<								// Our grammar
+		evalulater::parser::statement<					// Our grammar
 			iterator_type
-		> exp(error_handler);
+		> stmt(error_handler);
 
-        std::vector<evalulater::ast::expression> ast;	// Our program (as AST)
+		evalulater::ast::statement_list ast;			// Our program (as AST)
 		evalulater::vm::machine machine;				// Our virtual machine
 		evalulater::compiler compiler(error_handler);	// Compiles the program
         boost::spirit::ascii::space_type space;
-        bool r = phrase_parse(iter, end, +exp, space, ast);
-
-		boost::unordered_map<std::string, float*> s;
-		float t1 = 5.f;
-		float t2 = 11.f;
-		s["t1"] = &t1;
-		s["t2"] = &t2;
+        bool r = phrase_parse(iter, end, +stmt, space, ast);
 
         if (r && iter == end)
         {
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
-			BOOST_FOREACH(evalulater::ast::expression& e, ast)
-			{
-				evalulater::vm::byte_code code(compiler.compile(e));
-				evalulater::vm::state state(code, s);
-				machine.execute(code, state);
-			}
-            std::cout << "\nResult: " << machine.top() << std::endl;
+			evalulater::vm::byte_code code(compiler.compile(ast));
+			boost::optional<evalulater::vm::executable> exe = 
+				evalulater::vm::link(code, extern_state, local_state)
+			;
+
+			machine.execute(*exe);
+			std::cout << "\nResult: " << machine.top() << std::endl;
             std::cout << "-------------------------\n";
         }
         else

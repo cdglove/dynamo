@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/byte_code.hpp
+// evalulater/vm/byte_code.hpp
 //
 // Defines the byte code produced by the compiler and consumed
 // by the vm.
@@ -13,8 +13,8 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_BYTECODE_HPP_
-#define _EVALULATER_BYTECODE_HPP_
+#ifndef _EVALULATER_VM_BYTECODE_HPP_
+#define _EVALULATER_VM_BYTECODE_HPP_
 #pragma once
 
 #include "evalulater/config.hpp"
@@ -80,15 +80,15 @@ namespace evalulater { namespace vm
 		int const* add_extern(std::string name);
 		int const* find_extern(std::string const& name) const;
 
-		std::vector<instruction> const& get_code() const;
-		boost::unordered_map<std::string, int> const& get_extern_index() const;
+		std::vector<instruction> const& get_instructions() const;
+		boost::unordered_map<std::string, int> const& get_variables() const;
 
 	private:
 
 		std::vector<instruction> code;
 
-		typedef boost::unordered_map<std::string, int> extern_index;
-		extern_index extern_index_;
+		typedef boost::unordered_map<std::string, int> variable_index;
+		variable_index extern_index_;
 	};
 
 	inline void byte_code::clear()
@@ -102,15 +102,15 @@ namespace evalulater { namespace vm
 	}
 
 	// Some reflection data
-	inline std::vector<instruction> const& byte_code::get_code() const
+	inline std::vector<instruction> const& byte_code::get_instructions() const
 	{
 		return code;
 	}
 
-	inline boost::unordered_map<std::string, int> const& byte_code::get_extern_index() const
+	inline boost::unordered_map<std::string, int> const& byte_code::get_variables() const
 	{
 		return extern_index_;
 	}
 }} // namespace evalulater { namespace vm
 
-#endif // _EVALULATER_BYTECODE_HPP_
+#endif // _EVALULATER_VM_BYTECODE_HPP_

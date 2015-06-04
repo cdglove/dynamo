@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/vm.hpp
+// evalulater/vm/machine.hpp
 //
 // Virtual machine for evalulater syntax.  Runs a series of op codes as 
 // produced from the compiler.
@@ -13,40 +13,17 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_VM_HPP_
-#define _EVALULATER_VM_HPP_
+#ifndef _EVALULATER_VM_MACHINE_HPP_
+#define _EVALULATER_VM_MACHINE_HPP_
 #pragma once
 
 #include "evalulater/config.hpp"
-#include "evalulater/byte_code.hpp"
+#include "evalulater/vm/executable.hpp"
 
-#include <boost/variant/recursive_variant.hpp>
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/foreach.hpp>
 #include <vector>
 
 namespace evalulater { namespace vm
 {
-	///////////////////////////////////////////////////////////////////////////
-	//  Virtual Machine State - Contains patch information for expression
-	///////////////////////////////////////////////////////////////////////////
-	typedef boost::unordered_map<std::string, float*> extern_index;
-	class state
-	{
-	public:
-
-		state(byte_code const& code);
-		state(byte_code const& code, extern_index const& externs_);
-
-		void  store_extern(int idx, float data);
-		float load_extern(int idx);
-
-	private:
-
-		std::vector<float*> extern_table;
-	};
-
 	///////////////////////////////////////////////////////////////////////////
 	//  The Virtual Machine - Executes the supplied byte code 
 	///////////////////////////////////////////////////////////////////////////
@@ -60,8 +37,7 @@ namespace evalulater { namespace vm
         {}
 
         float top() const { return stack_ptr[-1]; };
-        void execute(byte_code const& code, state& state);
-		void execute(byte_code const& code);
+        void execute(executable& ex);
 
     private:
 

@@ -13,54 +13,15 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm.hpp"
+#include "evalulater/vm/machine.hpp"
 
 namespace evalulater { namespace vm
 {
-	state::state(byte_code const& code)
-	{}
-
-	state::state(byte_code const& code, extern_index const& externs_)
+	void machine::execute(executable& ex)
 	{
-		typedef boost::unordered_map<std::string, int> code_externs_type;
-		code_externs_type const& code_externs = code.get_extern_index();
-		extern_table.resize(code_externs.size());
-		BOOST_FOREACH(code_externs_type::value_type const& ce, code_externs)
-		{
-			extern_index::const_iterator i = externs_.find(ce.first);
-			if(i == externs_.end())
-			{
-				// Emit linker error?
-				// Allocate one from a small local buffer
-			}
-			else
-			{
-				// Link the variable in.
-				extern_table[ce.second] = i->second;
-			}
-		}
-	}
-	
-	void state::store_extern(int idx, float data)
-	{
-		*extern_table[idx] = data;
-	}
-
-	float state::load_extern(int idx)
-	{
-		return *extern_table[idx];
-	}
-
-	void machine::execute(byte_code const& code)
-	{
-		state state(code);
-		execute(code, state);
-	}
-
-	void machine::execute(byte_code const& code, state& state)
-	{
-		std::vector<instruction>::const_iterator pc = code.get_code().begin();
-		std::vector<instruction>::const_iterator end = code.get_code().end();
+		std::vector<instruction> instructions = ex.get_code().get_instructions();
+		std::vector<instruction>::const_iterator pc = instructions.begin();
+		std::vector<instruction>::const_iterator end = instructions.end();
 		stack_ptr = stack.begin();
 
 		while(pc != end)
@@ -112,13 +73,13 @@ namespace evalulater { namespace vm
 				break;
 
             case op_load:
-                *stack_ptr++ = state.load_extern(pc->intd);
+                *stack_ptr++ = ex.load(pc->intd);
 				++pc;
                 break;
 
             case op_store:
                 --stack_ptr;
-                state.store_extern(pc->intd, stack_ptr[0]);
+                ex.store(pc->intd, stack_ptr[0]);
 				++pc;
                 break;
 			}

@@ -15,24 +15,30 @@
 
 #include "evalulater/compiler.hpp"
 #include "evalulater/ast.hpp"
-#include "evalulater/vm.hpp"
+#include "evalulater/vm/byte_code.hpp"
 
 #include <boost/foreach.hpp>
 
 namespace evalulater
 {
-	vm::byte_code compiler::compile(ast::expression const& x)
+	vm::byte_code compiler::compile(ast::statement_list const& x)
 	{
 		vm::byte_code code;
 		ast_visitor visitor(code, error_handler);
-		visitor(x);
+		BOOST_FOREACH(ast::statement const& s, x)
+		{
+			visitor(s);
+		}
 		return code;
 	}
 
-	void compiler::compile(ast::expression const& x, vm::byte_code& out_code)
+	void compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
 	{
 		ast_visitor visitor(out_code, error_handler);
-		visitor(x);
+		BOOST_FOREACH(ast::statement const& s, x)
+		{
+			visitor(s);
+		}
 	}
 
 	void compiler::ast_visitor::operator()(ast::nil) const
@@ -103,13 +109,18 @@ namespace evalulater
 	{
 		(*this)(x.rhs);
 		int const* slot = code.find_extern(x.lhs);
-        if (!slot)
-        {
-            error_handler(0, "Undeclared variable: " + x.lhs);
-            return;
-        }
+		if(slot == NULL)
+		{
+			slot = code.add_extern(x.lhs);
+		}
+
 		code.push(vm::op_store);
 		code.push(*slot);
+	}
+
+	void compiler::ast_visitor::operator()(ast::statement const& x) const
+	{
+		boost::apply_visitor(*this, x);
 	}
 
 	void compiler::ast_visitor::operator()(ast::identifier const& x) const
