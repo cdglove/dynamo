@@ -59,10 +59,16 @@ int main()
 		> exp(error_handler);
 
         std::vector<evalulater::ast::expression> ast;	// Our program (as AST)
-		evalulater::vm::vmachine machine;				// Our virtual machine
+		evalulater::vm::machine machine;				// Our virtual machine
 		evalulater::compiler compiler(error_handler);	// Compiles the program
         boost::spirit::ascii::space_type space;
         bool r = phrase_parse(iter, end, +exp, space, ast);
+
+		boost::unordered_map<std::string, float*> s;
+		float t1 = 5.f;
+		float t2 = 11.f;
+		s["t1"] = &t1;
+		s["t2"] = &t2;
 
         if (r && iter == end)
         {
@@ -70,7 +76,8 @@ int main()
             std::cout << "Parsing succeeded\n";
 			BOOST_FOREACH(evalulater::ast::expression& e, ast)
 			{
-				evalulater::vm::byte_code code = compiler.compile(e);
+				evalulater::vm::byte_code code(compiler.compile(e));
+				evalulater::vm::state state(code, s);
 				machine.execute(code, state);
 			}
             std::cout << "\nResult: " << machine.top() << std::endl;

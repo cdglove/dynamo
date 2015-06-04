@@ -18,13 +18,13 @@
 #pragma once
 
 #include "evalulater/config.hpp"
+#include <boost/unordered_map.hpp>
 #include <vector>
-#include <map>
 
 namespace evalulater { namespace vm
 {
 	///////////////////////////////////////////////////////////////////////////
-	//  Byte code definition
+	//  Byte code operations
 	///////////////////////////////////////////////////////////////////////////
 	enum op_code
 	{
@@ -41,8 +41,11 @@ namespace evalulater { namespace vm
         op_store,   //  store a named state variable
 	};
 
+	///////////////////////////////////////////////////////////////////////////
+	// Encoded instructions
 	// We can use a union for instructions instead of a variant
 	// because the type info is endoded into the op_codes.
+	///////////////////////////////////////////////////////////////////////////
 	union instruction
 	{
 		instruction(op_code v)
@@ -62,38 +65,52 @@ namespace evalulater { namespace vm
 		int			 intd;
 	};
 
+	///////////////////////////////////////////////////////////////////////////
+	// Byte code object
+	// Contains the compiled code plus reflected data and anything else we 
+	// need to know post compilation
+	///////////////////////////////////////////////////////////////////////////
 	class byte_code
 	{
 	public:
-
-		void push(instruction i) { code.push_back(i); }
-		int const* add_extern(std::string name)
-		{
-			BOOST_ASSERT(find_extern(name) == NULL);
-			std::size_t n = variables.size();
-			std::map<std::string, int>::iterator v = externs.insert(std::make_pair(name, n));
-			return &v->second;
-		}
 		
-		int const* find_extern(std::string const& name) const
-		{
-			std::map<std::string, int>::const_iterator i = externs.find(name);
-			if (i == externs.end())
-				return NULL;
-			return &i->second;	
-		}
+		void clear();
+		
+		void push(instruction i);
+		int const* add_extern(std::string name);
+		int const* find_extern(std::string const& name) const;
 
-		void clear() { code.clear(); externs.clear(); }
-
-		// Some reflection data
-		std::vector<instruction> const& get_code() const { return code; }
-		std::map<std::string, int> const& get_externs() const { return externs; }
+		std::vector<instruction> const& get_code() const;
+		boost::unordered_map<std::string, int> const& get_extern_index() const;
 
 	private:
 
 		std::vector<instruction> code;
-		std::map<std::string, int> externs;
+
+		typedef boost::unordered_map<std::string, int> extern_index;
+		extern_index extern_index_;
 	};
+
+	inline void byte_code::clear()
+	{ 
+		code.clear(); extern_index_.clear();
+	}
+
+	inline void byte_code::push(instruction i)
+	{ 
+		code.push_back(i); 
+	}
+
+	// Some reflection data
+	inline std::vector<instruction> const& byte_code::get_code() const
+	{
+		return code;
+	}
+
+	inline boost::unordered_map<std::string, int> const& byte_code::get_extern_index() const
+	{
+		return extern_index_;
+	}
 }} // namespace evalulater { namespace vm
 
 #endif // _EVALULATER_BYTECODE_HPP_

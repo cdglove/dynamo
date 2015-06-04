@@ -102,24 +102,24 @@ namespace evalulater
 	void compiler::ast_visitor::operator()(ast::assignment const& x) const
 	{
 		(*this)(x.rhs);
-		int const* slot = code.find_extern(x.lhs.name);
+		int const* slot = code.find_extern(x.lhs);
         if (!slot)
         {
-            error_handler("Undeclared variable: " + x.lhs.name);
+            error_handler(0, "Undeclared variable: " + x.lhs);
             return;
         }
-		code.push(slot);
-		code.push(op_store);
+		code.push(vm::op_store);
+		code.push(*slot);
 	}
 
 	void compiler::ast_visitor::operator()(ast::identifier const& x) const
 	{
-		int const* slot = code.find_extern(x.name);
-		if(sloat == NULL)
+		int const* slot = code.find_extern(x);
+		if(slot == NULL)
 		{
-			slot = code.add_extern(x.name);
-			code.push(slot);
-			code.push(op_load);
+			slot = code.add_extern(x);
 		}
+		code.push(vm::op_load);
+		code.push(*slot);
 	}
 }

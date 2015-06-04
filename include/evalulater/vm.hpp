@@ -22,6 +22,7 @@
 
 #include <boost/variant/recursive_variant.hpp>
 #include <boost/variant/apply_visitor.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
 #include <vector>
 
@@ -30,19 +31,20 @@ namespace evalulater { namespace vm
 	///////////////////////////////////////////////////////////////////////////
 	//  Virtual Machine State - Contains patch information for expression
 	///////////////////////////////////////////////////////////////////////////
+	typedef boost::unordered_map<std::string, float*> extern_index;
 	class state
 	{
 	public:
 
 		state(byte_code const& code);
-		state(byte_code const& code, std::map<std::string, float*> externs_);
+		state(byte_code const& code, extern_index const& externs_);
 
 		void  store_extern(int idx, float data);
 		float load_extern(int idx);
 
 	private:
 
-		std::vector<float*> externs;
+		std::vector<float*> extern_table;
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -52,7 +54,7 @@ namespace evalulater { namespace vm
     {
     public:
 
-        vmachine(unsigned stack_size = 4096)
+        machine(unsigned stack_size = 4096)
           : stack(stack_size)
           , stack_ptr(stack.begin())
         {}

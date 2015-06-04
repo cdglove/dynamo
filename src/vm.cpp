@@ -20,13 +20,14 @@ namespace evalulater { namespace vm
 	state::state(byte_code const& code)
 	{}
 
-	state::state(byte_code const& code, std::map<std::string, float*> const& externs_)
+	state::state(byte_code const& code, extern_index const& externs_)
 	{
-		std::map<std::string, int> const& code_externs = code.get_externs();
-		externs.resize(code_externs.size());
-		BOOST_FOREACH(std::map<std::string, int> ce, code_externs)
+		typedef boost::unordered_map<std::string, int> code_externs_type;
+		code_externs_type const& code_externs = code.get_extern_index();
+		extern_table.resize(code_externs.size());
+		BOOST_FOREACH(code_externs_type::value_type const& ce, code_externs)
 		{
-			std::map<std::string, float*>::const_iterator i = externs_.find(ce.first);
+			extern_index::const_iterator i = externs_.find(ce.first);
 			if(i == externs_.end())
 			{
 				// Emit linker error?
@@ -35,28 +36,28 @@ namespace evalulater { namespace vm
 			else
 			{
 				// Link the variable in.
-				externs[ce.second] = i->second;
+				extern_table[ce.second] = i->second;
 			}
 		}
 	}
 	
 	void state::store_extern(int idx, float data)
 	{
-		*externs[idx] = data;
+		*extern_table[idx] = data;
 	}
 
 	float state::load_extern(int idx)
 	{
-		return *externs[idx];
+		return *extern_table[idx];
 	}
 
-	void vmachine::execute(byte_code const& code)
+	void machine::execute(byte_code const& code)
 	{
-		state state;
+		state state(code);
 		execute(code, state);
 	}
 
-	void vmachine::execute(byte_code const& code, state& state)
+	void machine::execute(byte_code const& code, state& state)
 	{
 		std::vector<instruction>::const_iterator pc = code.get_code().begin();
 		std::vector<instruction>::const_iterator end = code.get_code().end();
@@ -111,14 +112,15 @@ namespace evalulater { namespace vm
 				break;
 
             case op_load:
-                *stack_ptr++ = state.load_extern(*pc++);
+                *stack_ptr++ = state.load_extern(pc->intd);
+				++pc;
                 break;
 
             case op_store:
                 --stack_ptr;
-                state.store_extern(*pc++, stack_ptr[0]);
+                state.store_extern(pc->intd, stack_ptr[0]);
+				++pc;
                 break;
-
 			}
 		}
 	}
