@@ -20,6 +20,20 @@
 #include <iostream>
 #include <string>
 
+struct load_float_ptr
+{
+	load_float_ptr(float const* f)
+		: data_(f)
+	{}
+
+	float operator()()
+	{
+		return *data_;
+	}
+
+	float const* data_;
+};
+
 // ----------------------------------------------------------------------------
 //
 int main()
@@ -35,8 +49,8 @@ int main()
 	evalulater::constant_index extern_state;
 	float t1 = 5.f;
 	float t2 = 11.f;
-	extern_state["t1"] = &t1;
-	extern_state["t2"] = &t2;
+	extern_state["t1"] = load_float_ptr(&t1);
+	extern_state["t2"] = load_float_ptr(&t2);
 
 	evalulater::variable_index local_state;
 	

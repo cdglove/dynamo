@@ -24,7 +24,7 @@ namespace evalulater { namespace vm
 
 	executable::executable(byte_code const& code, 
 						   std::vector<float*> variable_table_,
-						   std::vector<float const*> constant_table_)
+						   std::vector<fetch_constant_fun> constant_table_)
 		: code(code)
 	{
 		std::swap(variable_table_, variable_table);
@@ -43,7 +43,7 @@ namespace evalulater { namespace vm
 
 	float executable::loadc(int idx)
 	{
-		return *constant_table[idx];
+		return constant_table[idx]();
 	}
 
 	byte_code const& executable::get_code() const

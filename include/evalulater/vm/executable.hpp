@@ -20,6 +20,7 @@
 #include "evalulater/config.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/optional.hpp>
+#include <boost/function.hpp>
 #include <vector>
 
 namespace evalulater
@@ -30,6 +31,7 @@ namespace evalulater
 namespace evalulater { namespace vm
 {
 	class byte_code;
+	typedef boost::function<float()> fetch_constant_fun;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  Executable - Contains byte_code and variable lookup information
@@ -53,12 +55,12 @@ namespace evalulater { namespace vm
 
 		executable(byte_code const& code);
 		executable(byte_code const& code, 
-				   std::vector<float*>		 variable_table_, 
-				   std::vector<float const*> constant_table_);
+				   std::vector<float*>		       variable_table_, 
+				   std::vector<fetch_constant_fun> constant_table_);
 
 		byte_code const& code;
 		std::vector<float*> variable_table;
-		std::vector<float const*> constant_table;
+		std::vector<fetch_constant_fun> constant_table;
 	};
 }}
 

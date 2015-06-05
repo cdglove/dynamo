@@ -22,8 +22,13 @@
 
 namespace evalulater
 {
-	typedef boost::unordered_map<std::string, float*> constant_index;
-	typedef boost::unordered_map<std::string, float>  variable_index;
+	typedef boost::unordered_map<
+		std::string, vm::fetch_constant_fun
+	> constant_index;
+	
+	typedef boost::unordered_map<
+		std::string, float
+	> variable_index;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  The Linker
@@ -54,13 +59,13 @@ namespace evalulater
 	private:
 
 		bool link_constants(vm::byte_code const& code,
-							constant_index const& externs, 
+							constant_index const& constants, 
 							boost::optional<variable_index const&>,
-							std::vector<float const*>& constant_table);
+							std::vector<vm::fetch_constant_fun>& constant_table);
 
 		bool link_variables(vm::byte_code const& code,
 							boost::optional<constant_index const&> externs,
-							variable_index& locals, 
+							variable_index& variables, 
 							std::vector<float*>& variable_table);
 
 		typedef boost::function<
