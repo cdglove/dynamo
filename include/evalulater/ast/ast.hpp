@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/ast.hpp
+// evalulater/ast/ast.hpp
 //
 // Abstract syntax tree for evalulater syntax.  Based on Boost.Spirit calc6 
 // example.
@@ -13,13 +13,12 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_AST_HPP_
-#define _EVALULATER_AST_HPP_
+#ifndef _EVALULATER_AST_AST_HPP_
+#define _EVALULATER_AST_AST_HPP_
 #pragma once
 
 #include "evalulater/config.hpp"
 
-#include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 #include <iostream>
 #include <vector>
@@ -128,35 +127,5 @@ namespace evalulater { namespace ast
 		out << id; return out;
 	}
 }}
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::unary_op,
-	(evalulater::ast::op_token, operator_)
-	(evalulater::ast::operand, right)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::binary_op,
-	(evalulater::ast::op_token, operator_)
-	(evalulater::ast::operand, right)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::intrinsic_op,
-	(evalulater::ast::op_token, intrinsic)
-	(std::vector<evalulater::ast::expression>, args)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::expression,
-	(evalulater::ast::operand, first)
-	(std::vector<evalulater::ast::binary_op>, rest)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
-	evalulater::ast::assignment,
-	(evalulater::ast::identifier, lhs)
-	(evalulater::ast::expression, rhs)
-)
 
 #endif // _EVALULATER_AST_HPP_

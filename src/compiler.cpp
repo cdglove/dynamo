@@ -14,7 +14,7 @@
 // ****************************************************************************
 
 #include "evalulater/compiler.hpp"
-#include "evalulater/ast.hpp"
+#include "evalulater/ast/ast.hpp"
 #include "evalulater/vm/byte_code.hpp"
 
 #include <boost/foreach.hpp>

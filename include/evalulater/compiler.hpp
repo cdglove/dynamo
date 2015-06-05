@@ -18,7 +18,7 @@
 #pragma once
 
 #include "evalulater/config.hpp"
-#include "evalulater/ast.hpp"
+#include "evalulater/ast/ast.hpp"
 #include "evalulater/vm/byte_code.hpp"
 #include "evalulater/error_handler.hpp"
 #include <boost/function.hpp>

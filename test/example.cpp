@@ -13,7 +13,7 @@
 
 #include "evalulater/vm/machine.hpp"
 #include "evalulater/vm/byte_code.hpp"
-#include "evalulater/parser/statement.hpp"
+#include "evalulater/parser/parser.hpp"
 #include "evalulater/compiler.hpp"
 #include "evalulater/linker.hpp"
 
@@ -53,6 +53,7 @@ int main()
 	extern_state["t2"] = load_float_ptr(&t2);
 
 	evalulater::variable_index local_state;
+	evalulater::vm::machine machine;				// Our virtual machine -- reusable
 	
     while(true)
 	{
@@ -71,32 +72,27 @@ int main()
 			test_expr += line;
 		}
 
-		iterator_type iter = test_expr.begin();
-        iterator_type end = test_expr.end();
-
-        evalulater::error_handler<						// Our diagnostic printer
+		
+		evalulater::error_handler<						// Our diagnostic printer
 			iterator_type
-		> error_handler(iter, end);						
+		> error_handler(test_expr.begin(), test_expr.end());	
 
-		evalulater::parser::statement<					// Our grammar
-			iterator_type
-		> stmt(error_handler);
-
-		evalulater::ast::statement_list ast;			// Our program (as AST)
-		evalulater::vm::machine machine;				// Our virtual machine
+		evalulater::parser::parser parser;				// Builds the AST
 		evalulater::compiler compiler(error_handler);	// Compiles the program
 		evalulater::linker linker(error_handler);		// Links the program
-        boost::spirit::ascii::space_type space;
-        bool r = phrase_parse(iter, end, +stmt, space, ast);
-
-        if (r && iter == end)
+        
+		boost::optional<
+			evalulater::ast::statement_list
+		> ast = parser.parse(test_expr);
+		     
+        if(ast)
         {
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
 
 			boost::optional<
 				evalulater::vm::byte_code
-			> code = compiler.compile(ast);
+			> code = compiler.compile(*ast);
 
 			if(code)
 			{
@@ -127,7 +123,6 @@ int main()
         }
         else
         {
-            std::string rest(iter, end);
             std::cout << "\nParsing failed\n";
         }
 		

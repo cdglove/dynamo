@@ -33,7 +33,7 @@
 #endif
 
 #include "evalulater/config.hpp"
-#include "evalulater/ast.hpp"
+#include "evalulater/ast/fusion_ast.hpp"
 #include "evalulater/error_handler.hpp"
 
 #include <boost/spirit/include/qi.hpp>
