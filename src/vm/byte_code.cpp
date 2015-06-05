@@ -16,15 +16,15 @@
 
 namespace evalulater { namespace vm
 {
-	static int const* find_named_ref(variable_index const& idx, std::string const& name)
+	static int const* find_named_ref(data_index const& idx, std::string const& name)
 	{
-		variable_index::const_iterator i = idx.find(name);
+		data_index::const_iterator i = idx.find(name);
 		if (i == idx.end())
 			return NULL;
 		return &i->second;	
 	}
 
-	static int const* add_named_ref(variable_index& idx, std::string const& name)
+	static int const* add_named_ref(data_index& idx, std::string const& name)
 	{
 		BOOST_ASSERT(find_named_ref(idx, name) == NULL);
 		std::size_t n = idx.size();

@@ -58,12 +58,12 @@ namespace evalulater { namespace vm
 
 		executable(byte_code const& code);
 		executable(byte_code const& code, 
-				   std::vector<float*> variable_table_, 
-				   std::vector<float*> constant_table_);
+				   std::vector<float*>		 variable_table_, 
+				   std::vector<float const*> constant_table_);
 
 		byte_code const& code;
 		std::vector<float*> variable_table;
-		std::vector<float*> constant_table;
+		std::vector<float const*> constant_table;
 	};
 }}
 

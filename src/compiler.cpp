@@ -23,7 +23,7 @@ namespace evalulater
 {
 	vm::byte_code compiler::compile(ast::statement_list const& x)
 	{
-		vm::byte_code code;
+		vm::byte_code code("anonymous");
 		ast_visitor visitor(code, error_handler);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{

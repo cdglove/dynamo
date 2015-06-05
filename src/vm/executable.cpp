@@ -23,10 +23,13 @@ namespace evalulater { namespace vm
 		: code(code)
 	{}
 
-	executable::executable(byte_code const& code, std::vector<float*> variable_table_)
+	executable::executable(byte_code const& code, 
+						   std::vector<float*> variable_table_,
+						   std::vector<float const*> constant_table_)
 		: code(code)
 	{
 		std::swap(variable_table_, variable_table);
+		std::swap(constant_table_, constant_table);
 	}
 	
 	void executable::store(int idx, float data)
@@ -49,61 +52,65 @@ namespace evalulater { namespace vm
 		return code;
 	}
 
-	static bool link_variables(
-		byte_code const& code,
-		extern_index const* externs, 
-		local_index* locals,
-		std::vector<float*>& variable_table
-		)
+	static bool link_constants(byte_code const& code,
+							   extern_index const& externs, 
+							   std::vector<float const*>& constant_table)
 	{
-		typedef boost::unordered_map<std::string, int> code_variables_type;
-		code_variables_type const& code_variables = code.get_local_variables();
-		variable_table.resize(code_variables.size());
-		BOOST_FOREACH(code_variables_type::value_type const& ce, code_variables)
+		data_index const& slot_index = code.get_external_refs();
+		constant_table.resize(slot_index.size());
+		BOOST_FOREACH(data_index::value_type const& slot, slot_index)
 		{
 			// The compiler encodes the reference slot into the instruction stream
 			// so we just need to put a pointer into that slot.
-			int variable_slot = ce.second;
-			std::string const& variable_name = ce.first;
+			int data_slot = slot.second;
+			std::string const& data_name = slot.first;
 
-			if(externs)
+			extern_index::const_iterator ext = externs.find(data_name);
+			
+			// Issue linker error, unresolved external (could also use a default
+			// here by allocating from the local store).
+			if(ext == externs.end())
 			{
-				extern_index::const_iterator ext = externs->find(variable_name);
-				
-				// If we don't find a variable with this name, we assume it's a new one
-				// and use it instead.
-				if(ext != externs->end())
-				{
-					// Check that the variable does not exist also in locals.
-					local_index::iterator lcl = locals->find(variable_name);
-					if(lcl != locals->end())
-					{
-						std::stringstream diagnostic;
-						diagnostic << "Multiple defined symbol \""
-								   << variable_name
-								   << "\" found in both locals and externs."
-						;
+				std::stringstream diagnostic;
+				diagnostic << "Undefined external symbol \""
+							<< data_name
+							<< "\" referenced in "
+							<< code.name()
+				;
 
-						issue_diagnostic(diagnostic.str());
-						return false;
-					}
-					// Link the variable in.
-					variable_table[variable_slot] = ext->second;
-					continue;
-				}
+				issue_diagnostic(diagnostic.str());
+				return false;
 			}
-
-			if(locals)
+			else
 			{
-				local_index::iterator lcl = locals->find(variable_name);
-				if(lcl == locals->end())
-				{
-					lcl = locals->insert(std::make_pair(variable_name, 0.f)).first;
-				}
-				variable_table[variable_slot] = &lcl->second;	
+				constant_table[data_slot] = ext->second;	
 			}
 		}
 
+		return true;
+	}
+
+	static bool link_variables(byte_code const& code,
+							   local_index& locals, 
+							   std::vector<float*>& variable_table)
+	{
+		data_index const& slot_index = code.get_external_refs();
+		variable_table.resize(slot_index.size());
+		BOOST_FOREACH(data_index::value_type const& slot, slot_index)
+		{
+			// The compiler encodes the reference slot into the instruction stream
+			// so we just need to put a pointer into that slot.
+			int data_slot = slot.second;
+			std::string const& data_name = slot.first;
+
+			// We don't need to check if it's there or not
+			// just blindly insert which will do nothing if
+			// the variable exists.
+			local_index::iterator ext = locals.insert(std::make_pair(data_name, 0.f)).first;
+			variable_table[data_slot] = &ext->second;	
+		}
+
+		// Linking locals can never fail
 		return true;
 	}
 
@@ -115,9 +122,10 @@ namespace evalulater { namespace vm
 	boost::optional<executable> link(byte_code const& code, extern_index const& externs)
 	{
 		std::vector<float*> variable_table;
-		if(link_variables(code, &externs, NULL, variable_table))
+		std::vector<float const*> constant_table;
+		if(link_constants(code, externs, constant_table))
 		{
-			return executable(code, variable_table);
+			return executable(code, variable_table, constant_table);
 		}
 
 		return boost::optional<executable>();
@@ -126,9 +134,10 @@ namespace evalulater { namespace vm
 	boost::optional<executable> link(byte_code const& code, local_index& locals)
 	{
 		std::vector<float*> variable_table;
-		if(link_variables(code, NULL, &locals, variable_table))
+		std::vector<float const*> constant_table;
+		if(link_variables(code, locals, variable_table))
 		{
-			return executable(code, variable_table);
+			return executable(code, variable_table, constant_table);
 		}
 
 		return boost::optional<executable>();
@@ -137,11 +146,17 @@ namespace evalulater { namespace vm
 	boost::optional<executable> link(byte_code const& code, extern_index const& externs, local_index& locals)
 	{
 		std::vector<float*> variable_table;
-		if(link_variables(code, &externs, &locals, variable_table))
+		std::vector<float const*> constant_table;
+		
+		bool v_ok = link_variables(code, locals, variable_table);
+		bool c_ok = link_constants(code, externs, constant_table);
+		
+		if(v_ok && c_ok)
 		{
-			return executable(code, variable_table);
+			return executable(code, variable_table, constant_table);
 		}
 
 		return boost::optional<executable>();
+
 	}
 }}

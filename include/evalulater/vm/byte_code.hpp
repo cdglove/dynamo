@@ -19,6 +19,7 @@
 
 #include "evalulater/config.hpp"
 #include <boost/unordered_map.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <vector>
 
 namespace evalulater { namespace vm
@@ -67,7 +68,7 @@ namespace evalulater { namespace vm
 	};
 
 	///////////////////////////////////////////////////////////////////////////
-	typedef boost::unordered_map<std::string, int> variable_index;
+	typedef boost::unordered_map<std::string, int> data_index;
 
 	///////////////////////////////////////////////////////////////////////////
 	// Byte code object
@@ -77,8 +78,13 @@ namespace evalulater { namespace vm
 	class byte_code
 	{
 	public:
+
+		byte_code(std::string name)
+			: name_(name)
+		{}
 		
 		void clear();
+		boost::string_ref name() const;
 		
 		void push(instruction i);
 
@@ -88,15 +94,16 @@ namespace evalulater { namespace vm
 		int const* find_local_variable(std::string const& name) const;
 
 		std::vector<instruction> const& get_instructions() const;
-		variable_index const& get_external_refs() const;
-		variable_index const& get_local_variables() const;
+		data_index const& get_external_refs() const;
+		data_index const& get_local_variables() const;
 
 	private:
 
 		std::vector<instruction> code;
-
-		variable_index extern_index_;
-		variable_index local_index_;
+		
+		std::string name_;
+		data_index extern_index_;
+		data_index local_index_;
 	};
 
 	inline void byte_code::clear()
@@ -111,6 +118,11 @@ namespace evalulater { namespace vm
 
 	///////////////////////////////////////////////////////////////////////////
 	// Some Reflected information
+	inline boost::string_ref byte_code::name() const
+	{
+		return name_;
+	}
+
 	inline std::vector<instruction> const& byte_code::get_instructions() const
 	{
 		return code;
