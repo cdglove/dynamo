@@ -54,6 +54,7 @@ namespace evalulater { namespace vm
 
 	static bool link_constants(byte_code const& code,
 							   extern_index const& externs, 
+							   boost::optional<local_index const&>,
 							   std::vector<float const*>& constant_table)
 	{
 		data_index const& slot_index = code.get_external_refs();
@@ -73,9 +74,9 @@ namespace evalulater { namespace vm
 			{
 				std::stringstream diagnostic;
 				diagnostic << "Undefined external symbol \""
-							<< data_name
-							<< "\" referenced in "
-							<< code.name()
+						   << data_name
+						   << "\" referenced in "
+						   << code.name()
 				;
 
 				issue_diagnostic(diagnostic.str());
@@ -91,10 +92,11 @@ namespace evalulater { namespace vm
 	}
 
 	static bool link_variables(byte_code const& code,
+							   boost::optional<extern_index const&> externs,
 							   local_index& locals, 
 							   std::vector<float*>& variable_table)
 	{
-		data_index const& slot_index = code.get_external_refs();
+		data_index const& slot_index = code.get_local_variables();
 		variable_table.resize(slot_index.size());
 		BOOST_FOREACH(data_index::value_type const& slot, slot_index)
 		{
@@ -103,14 +105,33 @@ namespace evalulater { namespace vm
 			int data_slot = slot.second;
 			std::string const& data_name = slot.first;
 
+			// Ensure this local doesnt exist in the extern table
+			// Multiply defined symbol if it does.
+			if(externs)
+			{
+				extern_index::const_iterator ext = externs->find(data_name);
+				if(ext != externs->end())
+				{
+					std::stringstream diagnostic;
+					diagnostic << "Multiply defined symbol \""
+							   << data_name
+							   << "\" referenced in "
+							   << code.name()
+							   << ". Did you mean to create a new variable?"
+					;
+
+					issue_diagnostic(diagnostic.str());
+					return false;
+				}
+			}
+
 			// We don't need to check if it's there or not
 			// just blindly insert which will do nothing if
 			// the variable exists.
-			local_index::iterator ext = locals.insert(std::make_pair(data_name, 0.f)).first;
-			variable_table[data_slot] = &ext->second;	
+			local_index::iterator lcl = locals.insert(std::make_pair(data_name, 0.f)).first;
+			variable_table[data_slot] = &lcl->second;	
 		}
 
-		// Linking locals can never fail
 		return true;
 	}
 
@@ -123,24 +144,24 @@ namespace evalulater { namespace vm
 	{
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
-		if(link_constants(code, externs, constant_table))
+		if(link_constants(code, externs, boost::none, constant_table))
 		{
 			return executable(code, variable_table, constant_table);
 		}
 
-		return boost::optional<executable>();
+		return boost::none;
 	}
 
 	boost::optional<executable> link(byte_code const& code, local_index& locals)
 	{
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
-		if(link_variables(code, locals, variable_table))
+		if(link_variables(code, boost::none, locals, variable_table))
 		{
 			return executable(code, variable_table, constant_table);
 		}
 
-		return boost::optional<executable>();
+		return boost::none;
 	}
 
 	boost::optional<executable> link(byte_code const& code, extern_index const& externs, local_index& locals)
@@ -148,15 +169,14 @@ namespace evalulater { namespace vm
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
 		
-		bool v_ok = link_variables(code, locals, variable_table);
-		bool c_ok = link_constants(code, externs, constant_table);
+		bool v_ok = link_variables(code, externs, locals, variable_table);
+		bool c_ok = link_constants(code, externs, locals, constant_table);
 		
 		if(v_ok && c_ok)
 		{
 			return executable(code, variable_table, constant_table);
 		}
 
-		return boost::optional<executable>();
-
+		return boost::none;
 	}
 }}

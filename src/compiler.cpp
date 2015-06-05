@@ -21,67 +21,82 @@
 
 namespace evalulater
 {
-	vm::byte_code compiler::compile(ast::statement_list const& x)
+	boost::optional<vm::byte_code> compiler::compile(ast::statement_list const& x)
 	{
 		vm::byte_code code("anonymous");
 		ast_visitor visitor(code, error_handler);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
-			visitor(s);
+			if(!visitor(s))
+				return boost::none;
 		}
 		return code;
 	}
 
-	void compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
+	bool compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
 	{
 		ast_visitor visitor(out_code, error_handler);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
-			visitor(s);
+			if(!visitor(s))
+				return false;
 		}
+
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::nil) const
+	bool compiler::ast_visitor::operator()(ast::nil) const
 	{ 
 		BOOST_ASSERT(0);
+		return false;
 	}
 
-	void compiler::ast_visitor::operator()(float f) const
+	bool compiler::ast_visitor::operator()(float f) const
 	{
 		code.push(vm::op_flt);
 		code.push(f);
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::binary_op const& x) const
+	bool compiler::ast_visitor::operator()(ast::binary_op const& x) const
 	{
-		boost::apply_visitor(*this, x.right);
+		if(!boost::apply_visitor(*this, x.right))
+			return false;
+
 		switch (x.operator_)
 		{
 		case ast::op_add:		code.push(vm::op_add); break; 
 		case ast::op_subtract:	code.push(vm::op_sub); break;	
 		case ast::op_multiply:	code.push(vm::op_mul); break;
 		case ast::op_divide:	code.push(vm::op_div); break;
-		default: BOOST_ASSERT(0); break;
+		default: BOOST_ASSERT(0); return false;
 		}
+
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::unary_op const& x) const
+	bool compiler::ast_visitor::operator()(ast::unary_op const& x) const
 	{
-		boost::apply_visitor(*this, x.right);
+		if(!boost::apply_visitor(*this, x.right))
+			return false;
+
 		switch (x.operator_)
 		{
 		case ast::op_negative:	code.push(vm::op_neg); break; 
-		case ast::op_positive:								break;	
+		case ast::op_positive:				     	   break;	
 		case ast::op_not:		code.push(vm::op_not); break;
-		default: BOOST_ASSERT(0); break;
+		default: BOOST_ASSERT(0); return false;
 		}
+
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
+	bool compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
 	{
 		BOOST_FOREACH(ast::operand const& arg, x.args)
 		{
-			boost::apply_visitor(*this, arg);
+			if(!boost::apply_visitor(*this, arg))
+				return false;
 		}
 		
 		switch (x.intrinsic)
@@ -92,20 +107,24 @@ namespace evalulater
 		case ast::op_divide:    code.push(vm::op_div); break;
 		case ast::op_pow:		code.push(vm::op_pow); break; 
 		case ast::op_abs:		code.push(vm::op_abs); break; 
-		default: BOOST_ASSERT(0); break;
+		default: BOOST_ASSERT(0); return false;
 		}
+
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::expression const& x) const
+	bool compiler::ast_visitor::operator()(ast::expression const& x) const
 	{
-		boost::apply_visitor(*this, x.first);
+		if(!boost::apply_visitor(*this, x.first))
+			return false;
 		BOOST_FOREACH(ast::operand const& oper, x.rest)
 		{
-			boost::apply_visitor(*this, oper);
+			if(!boost::apply_visitor(*this, oper))
+				return false;
 		}
 	}
 
-	void compiler::ast_visitor::operator()(ast::assignment const& x) const
+	bool compiler::ast_visitor::operator()(ast::assignment const& x) const
 	{
 		(*this)(x.rhs);
 		int const* slot = code.find_local_variable(x.lhs);
@@ -116,21 +135,22 @@ namespace evalulater
 
 		code.push(vm::op_store);
 		code.push(*slot);
+		return true;
 	}
 
-	void compiler::ast_visitor::operator()(ast::statement const& x) const
+	bool compiler::ast_visitor::operator()(ast::statement const& x) const
 	{
-		boost::apply_visitor(*this, x);
+		return boost::apply_visitor(*this, x);
 	}
 
-	void compiler::ast_visitor::operator()(ast::identifier const& x) const
+	bool compiler::ast_visitor::operator()(ast::identifier const& x) const
 	{
 		int const* lcl_slot = code.find_local_variable(x);
 		if(lcl_slot)
 		{
 			code.push(vm::op_load);
 			code.push(*lcl_slot);
-			return;
+			return true;
 		}
 
 		int const* ext_slot = code.find_external_ref(x);
@@ -143,7 +163,6 @@ namespace evalulater
 
 		code.push(vm::op_loadc);
 		code.push(*ext_slot);
-		return;
-
+		return true;
 	}
 }

@@ -76,14 +76,32 @@ int main()
         {
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
-			evalulater::vm::byte_code code(compiler.compile(ast));
-			boost::optional<evalulater::vm::executable> exe = 
-				evalulater::vm::link(code, extern_state, local_state)
-			;
-
-			machine.execute(*exe);
-			std::cout << "\nResult: " << machine.top() << std::endl;
-            std::cout << "-------------------------\n";
+			boost::optional<evalulater::vm::byte_code> code = compiler.compile(ast);
+			if(code)
+			{
+				boost::optional<evalulater::vm::executable> exe = 
+					evalulater::vm::link(*code, extern_state, local_state)
+				;	
+				
+				if(exe)
+				{
+					machine.execute(*exe);
+					std::cout << "\nResult: " << machine.top() << std::endl;
+					std::cout << "-------------------------\n";
+				}
+				else
+				{
+					std::cout << "-------------------------\n";
+					std::cout << "Linking failed\n";
+					std::cout << "-------------------------\n";
+				}
+			}
+			else
+			{
+				std::cout << "-------------------------\n";
+				std::cout << "Compilation failed\n";
+				std::cout << "-------------------------\n";
+			}
         }
         else
         {

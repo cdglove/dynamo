@@ -46,7 +46,7 @@ namespace evalulater { namespace vm
 	///////////////////////////////////////////////////////////////////////////
 	// Encoded instructions
 	// We can use a union for instructions instead of a variant
-	// because the type info is endoded into the op_codes.
+	// because the type info is encoded into the op_codes.
 	///////////////////////////////////////////////////////////////////////////
 	union instruction
 	{

@@ -22,6 +22,7 @@
 #include "evalulater/vm/byte_code.hpp"
 #include "evalulater/error_handler.hpp"
 #include <boost/function.hpp>
+#include <boost/optional.hpp>
 
 namespace evalulater
 {
@@ -41,8 +42,8 @@ namespace evalulater
 			};
         }
 
-		vm::byte_code compile(ast::statement_list const& x);
-		void compile(ast::statement_list const& x, vm::byte_code& out_code);
+		boost::optional<vm::byte_code> compile(ast::statement_list const& x);
+		bool compile(ast::statement_list const& x, vm::byte_code& out_code);
 
 	private:
 
@@ -57,17 +58,17 @@ namespace evalulater
 				, error_handler(error_handler)
 			{}
 
-			typedef void result_type;
+			typedef bool result_type;
 
-			void operator()(ast::nil) const;
-			void operator()(float f) const;
-			void operator()(ast::binary_op const& x) const;
-			void operator()(ast::unary_op const& x) const;
-			void operator()(ast::intrinsic_op const& x) const;
-			void operator()(ast::expression const& x) const;
-			void operator()(ast::assignment const& x) const;
-			void operator()(ast::statement const& x) const;
-			void operator()(ast::identifier const& x) const;
+			bool operator()(ast::nil) const;
+			bool operator()(float f) const;
+			bool operator()(ast::binary_op const& x) const;
+			bool operator()(ast::unary_op const& x) const;
+			bool operator()(ast::intrinsic_op const& x) const;
+			bool operator()(ast::expression const& x) const;
+			bool operator()(ast::assignment const& x) const;
+			bool operator()(ast::statement const& x) const;
+			bool operator()(ast::identifier const& x) const;
 
 			vm::byte_code& code;
 			error_handler_type const& error_handler;
