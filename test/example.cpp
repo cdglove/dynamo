@@ -32,13 +32,13 @@ int main()
 
 	typedef std::string::const_iterator iterator_type;
 
-	evalulater::extern_index extern_state;
+	evalulater::constant_index extern_state;
 	float t1 = 5.f;
 	float t2 = 11.f;
 	extern_state["t1"] = &t1;
 	extern_state["t2"] = &t2;
 
-	evalulater::local_index local_state;
+	evalulater::variable_index local_state;
 	
     while(true)
 	{

@@ -22,8 +22,8 @@
 
 namespace evalulater
 {
-	typedef boost::unordered_map<std::string, float*> extern_index;
-	typedef boost::unordered_map<std::string, float>  local_index;
+	typedef boost::unordered_map<std::string, float*> constant_index;
+	typedef boost::unordered_map<std::string, float>  variable_index;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  The Linker
@@ -44,23 +44,23 @@ namespace evalulater
 
 		boost::optional<vm::executable> link(vm::byte_code const& code);
 		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 extern_index const& externs);
+											 constant_index const& externs);
 		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 local_index& locals);
+											 variable_index& locals);
 		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 extern_index const& externs, 
-											 local_index& locals);
+											 constant_index const& externs, 
+											 variable_index& locals);
 
 	private:
 
 		bool link_constants(vm::byte_code const& code,
-							extern_index const& externs, 
-							boost::optional<local_index const&>,
+							constant_index const& externs, 
+							boost::optional<variable_index const&>,
 							std::vector<float const*>& constant_table);
 
 		bool link_variables(vm::byte_code const& code,
-							boost::optional<extern_index const&> externs,
-							local_index& locals, 
+							boost::optional<constant_index const&> externs,
+							variable_index& locals, 
 							std::vector<float*>& variable_table);
 
 		typedef boost::function<

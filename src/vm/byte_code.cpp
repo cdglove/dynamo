@@ -35,21 +35,21 @@ namespace evalulater { namespace vm
 
 	int const* byte_code::add_external_ref(std::string name)
 	{
-		return add_named_ref(extern_index_, name);
+		return add_named_ref(constant_index_, name);
 	}	
 	
 	int const* byte_code::find_external_ref(std::string const& name) const
 	{
-		return find_named_ref(extern_index_, name);
+		return find_named_ref(constant_index_, name);
 	}
 
 	int const* byte_code::add_local_variable(std::string name)
 	{
-		return add_named_ref(local_index_, name);
+		return add_named_ref(variable_index_, name);
 	}
 
 	int const* byte_code::find_local_variable(std::string const& name) const
 	{
-		return find_named_ref(local_index_, name);
+		return find_named_ref(variable_index_, name);
 	}
 }}

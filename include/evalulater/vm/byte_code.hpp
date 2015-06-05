@@ -83,7 +83,6 @@ namespace evalulater { namespace vm
 			: name_(name)
 		{}
 		
-		void clear();
 		boost::string_ref name() const;
 		
 		void push(instruction i);
@@ -94,22 +93,17 @@ namespace evalulater { namespace vm
 		int const* find_local_variable(std::string const& name) const;
 
 		std::vector<instruction> const& get_instructions() const;
-		data_index const& get_external_refs() const;
-		data_index const& get_local_variables() const;
+		data_index const& get_constants() const;
+		data_index const& get_variables() const;
 
 	private:
 
 		std::vector<instruction> code;
 		
 		std::string name_;
-		data_index extern_index_;
-		data_index local_index_;
+		data_index constant_index_;
+		data_index variable_index_;
 	};
-
-	inline void byte_code::clear()
-	{ 
-		code.clear(); extern_index_.clear();
-	}
 
 	inline void byte_code::push(instruction i)
 	{ 
@@ -128,14 +122,14 @@ namespace evalulater { namespace vm
 		return code;
 	}
 
-	inline boost::unordered_map<std::string, int> const& byte_code::get_external_refs() const
+	inline boost::unordered_map<std::string, int> const& byte_code::get_constants() const
 	{
-		return extern_index_;
+		return constant_index_;
 	}
 
-	inline boost::unordered_map<std::string, int> const& byte_code::get_local_variables() const
+	inline boost::unordered_map<std::string, int> const& byte_code::get_variables() const
 	{
-		return local_index_;
+		return variable_index_;
 	}
 }} // namespace evalulater { namespace vm
 

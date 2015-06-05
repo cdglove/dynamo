@@ -23,7 +23,7 @@ namespace evalulater
 		return vm::executable(code);
 	}
 
-	boost::optional<vm::executable> linker::link(vm::byte_code const& code, extern_index const& externs)
+	boost::optional<vm::executable> linker::link(vm::byte_code const& code, constant_index const& externs)
 	{
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
@@ -35,7 +35,7 @@ namespace evalulater
 		return boost::none;
 	}
 
-	boost::optional<vm::executable> linker::link(vm::byte_code const& code, local_index& locals)
+	boost::optional<vm::executable> linker::link(vm::byte_code const& code, variable_index& locals)
 	{
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
@@ -47,7 +47,7 @@ namespace evalulater
 		return boost::none;
 	}
 
-	boost::optional<vm::executable> linker::link(vm::byte_code const& code, extern_index const& externs, local_index& locals)
+	boost::optional<vm::executable> linker::link(vm::byte_code const& code, constant_index const& externs, variable_index& locals)
 	{
 		std::vector<float*> variable_table;
 		std::vector<float const*> constant_table;
@@ -64,11 +64,11 @@ namespace evalulater
 	}
 
 	bool linker::link_constants(vm::byte_code const& code,
-							    extern_index const& externs, 
-							    boost::optional<local_index const&>,
+							    constant_index const& externs, 
+							    boost::optional<variable_index const&> locals,
 							    std::vector<float const*>& constant_table)
 	{
-		vm::data_index const& slot_index = code.get_external_refs();
+		vm::data_index const& slot_index = code.get_constants();
 		constant_table.resize(slot_index.size());
 		BOOST_FOREACH(vm::data_index::value_type const& slot, slot_index)
 		{
@@ -77,12 +77,24 @@ namespace evalulater
 			int data_slot = slot.second;
 			std::string const& data_name = slot.first;
 
-			extern_index::const_iterator ext = externs.find(data_name);
+			constant_index::const_iterator ext = externs.find(data_name);
 			
 			// Issue linker error, unresolved external (could also use a default
 			// here by allocating from the local store).
 			if(ext == externs.end())
 			{
+				// If we have locals see if it's in the local table which it
+				// might be if it's not extern.
+				if(locals)
+				{
+					variable_index::const_iterator lcl = locals->find(data_name);
+					if(lcl != locals->end())
+					{
+						constant_table[data_slot] = &lcl->second;
+						continue; 
+					}
+				}
+
 				std::stringstream diagnostic;
 				diagnostic << "Undefined external symbol \""
 						   << data_name
@@ -103,11 +115,11 @@ namespace evalulater
 	}
 
 	bool linker::link_variables(vm::byte_code const& code,
-							    boost::optional<extern_index const&> externs,
-							    local_index& locals, 
+							    boost::optional<constant_index const&> externs,
+							    variable_index& locals, 
 							    std::vector<float*>& variable_table)
 	{
-		vm::data_index const& slot_index = code.get_local_variables();
+		vm::data_index const& slot_index = code.get_variables();
 		variable_table.resize(slot_index.size());
 		BOOST_FOREACH(vm::data_index::value_type const& slot, slot_index)
 		{
@@ -120,7 +132,7 @@ namespace evalulater
 			// Multiply defined symbol if it does.
 			if(externs)
 			{
-				extern_index::const_iterator ext = externs->find(data_name);
+				constant_index::const_iterator ext = externs->find(data_name);
 				if(ext != externs->end())
 				{
 					std::stringstream diagnostic;
@@ -139,7 +151,7 @@ namespace evalulater
 			// We don't need to check if it's there or not
 			// just blindly insert which will do nothing if
 			// the variable exists.
-			local_index::iterator lcl = locals.insert(std::make_pair(data_name, 0.f)).first;
+			variable_index::iterator lcl = locals.insert(std::make_pair(data_name, 0.f)).first;
 			variable_table[data_slot] = &lcl->second;	
 		}
 
