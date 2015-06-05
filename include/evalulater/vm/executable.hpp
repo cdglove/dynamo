@@ -26,7 +26,7 @@
 namespace evalulater { namespace vm
 {
 	typedef boost::unordered_map<std::string, float*> extern_index;
-	typedef boost::unordered_map<std::string, float> local_index;
+	typedef boost::unordered_map<std::string, float>  local_index;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  Executable - Contains byte_code and variable lookup information
@@ -37,6 +37,7 @@ namespace evalulater { namespace vm
 
 		void  store(int idx, float data);
 		float load(int idx);
+		float loadc(int idx);
 
 		byte_code const& get_code() const;
 
@@ -56,10 +57,13 @@ namespace evalulater { namespace vm
 												local_index& locals);
 
 		executable(byte_code const& code);
-		executable(byte_code const& code, std::vector<float*> variable_table_);
+		executable(byte_code const& code, 
+				   std::vector<float*> variable_table_, 
+				   std::vector<float*> constant_table_);
 
 		byte_code const& code;
 		std::vector<float*> variable_table;
+		std::vector<float*> constant_table;
 	};
 }}
 

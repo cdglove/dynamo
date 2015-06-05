@@ -39,6 +39,11 @@ namespace evalulater { namespace vm
 		return *variable_table[idx];
 	}
 
+	float executable::loadc(int idx)
+	{
+		return *constant_table[idx];
+	}
+
 	byte_code const& executable::get_code() const
 	{
 		return code;
@@ -52,7 +57,7 @@ namespace evalulater { namespace vm
 		)
 	{
 		typedef boost::unordered_map<std::string, int> code_variables_type;
-		code_variables_type const& code_variables = code.get_variables();
+		code_variables_type const& code_variables = code.get_local_variables();
 		variable_table.resize(code_variables.size());
 		BOOST_FOREACH(code_variables_type::value_type const& ce, code_variables)
 		{

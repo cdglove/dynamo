@@ -82,6 +82,11 @@ namespace evalulater { namespace vm
                 ex.store(pc->intd, stack_ptr[0]);
 				++pc;
                 break;
+
+			case op_loadc:
+				*stack_ptr++ = ex.loadc(pc->intd);
+				++pc;
+				break;
 			}
 		}
 	}
