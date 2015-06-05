@@ -122,6 +122,8 @@ namespace evalulater
 			if(!boost::apply_visitor(*this, oper))
 				return false;
 		}
+
+		return true;
 	}
 
 	bool compiler::ast_visitor::operator()(ast::assignment const& x) const
