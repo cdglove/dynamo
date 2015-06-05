@@ -51,7 +51,7 @@ namespace evalulater { namespace vm
 		///////////////////////////////////////////////////////////////////////
 		// Executables can only be created by the linker.
 		///////////////////////////////////////////////////////////////////////
-		friend class linker;
+		friend class evalulater::linker;
 
 		executable(byte_code const& code);
 		executable(byte_code const& code, 

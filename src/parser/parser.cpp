@@ -12,7 +12,7 @@
 // ****************************************************************************
 
 #if defined(_MSC_VER)
-# pragma warning(disable: 4244)
+# pragma warning(disable: 4244) // wchar to char
 #endif
 
 #include "evalulater/parser/parser.hpp"
