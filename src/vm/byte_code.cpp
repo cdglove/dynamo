@@ -16,20 +16,40 @@
 
 namespace evalulater { namespace vm
 {
-	int const* byte_code::add_extern(std::string name)
+	static int const* find_named_ref(variable_index const& idx, std::string const& name)
 	{
-		BOOST_ASSERT(find_extern(name) == NULL);
-		std::size_t n = extern_index_.size();
-		return &extern_index_.insert(
+		variable_index::const_iterator i = idx.find(name);
+		if (i == idx.end())
+			return NULL;
+		return &i->second;	
+	}
+
+	static int const* add_named_ref(variable_index& idx, std::string const& name)
+	{
+		BOOST_ASSERT(find_named_ref(idx, name) == NULL);
+		std::size_t n = idx.size();
+		return &idx.insert(
 			std::make_pair(name, static_cast<int>(n))
 			).first->second;
 	}
 
-	int const* byte_code::find_extern(std::string const& name) const
+	int const* byte_code::add_external_ref(std::string name)
 	{
-		variable_index::const_iterator i = extern_index_.find(name);
-		if (i == extern_index_.end())
-			return NULL;
-		return &i->second;	
+		return add_named_ref(extern_index_, name);
+	}	
+	
+	int const* byte_code::find_external_ref(std::string const& name) const
+	{
+		return find_named_ref(extern_index_, name);
+	}
+
+	int const* byte_code::add_local_variable(std::string name)
+	{
+		return add_named_ref(local_index_, name);
+	}
+
+	int const* byte_code::find_local_variable(std::string const& name) const
+	{
+		return find_named_ref(local_index_, name);
 	}
 }}

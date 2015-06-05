@@ -37,8 +37,9 @@ namespace evalulater { namespace vm
 		op_pow,		//  raise stack[-2] to power of the top 
 		op_not,		//  logically not the top of the stack 
 		op_flt,		//  push constant float onto the stack
-		op_load,    //  load a named state variable
-        op_store,   //  store a named state variable
+		op_load,    //  load a named local variable
+        op_store,   //  store a named local variable
+		op_loadc,   //  load a named extern constant
 	};
 
 	///////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,9 @@ namespace evalulater { namespace vm
 	};
 
 	///////////////////////////////////////////////////////////////////////////
+	typedef boost::unordered_map<std::string, int> variable_index;
+
+	///////////////////////////////////////////////////////////////////////////
 	// Byte code object
 	// Contains the compiled code plus reflected data and anything else we 
 	// need to know post compilation
@@ -77,18 +81,22 @@ namespace evalulater { namespace vm
 		void clear();
 		
 		void push(instruction i);
-		int const* add_extern(std::string name);
-		int const* find_extern(std::string const& name) const;
+
+		int const* add_external_ref(std::string name);
+		int const* find_external_ref(std::string const& name) const;
+		int const* add_local_variable(std::string name);
+		int const* find_local_variable(std::string const& name) const;
 
 		std::vector<instruction> const& get_instructions() const;
-		boost::unordered_map<std::string, int> const& get_variables() const;
+		variable_index const& get_external_refs() const;
+		variable_index const& get_local_variables() const;
 
 	private:
 
 		std::vector<instruction> code;
 
-		typedef boost::unordered_map<std::string, int> variable_index;
 		variable_index extern_index_;
+		variable_index local_index_;
 	};
 
 	inline void byte_code::clear()
@@ -101,15 +109,21 @@ namespace evalulater { namespace vm
 		code.push_back(i); 
 	}
 
-	// Some reflection data
+	///////////////////////////////////////////////////////////////////////////
+	// Some Reflected information
 	inline std::vector<instruction> const& byte_code::get_instructions() const
 	{
 		return code;
 	}
 
-	inline boost::unordered_map<std::string, int> const& byte_code::get_variables() const
+	inline boost::unordered_map<std::string, int> const& byte_code::get_external_refs() const
 	{
 		return extern_index_;
+	}
+
+	inline boost::unordered_map<std::string, int> const& byte_code::get_local_variables() const
+	{
+		return local_index_;
 	}
 }} // namespace evalulater { namespace vm
 

@@ -108,10 +108,10 @@ namespace evalulater
 	void compiler::ast_visitor::operator()(ast::assignment const& x) const
 	{
 		(*this)(x.rhs);
-		int const* slot = code.find_extern(x.lhs);
+		int const* slot = code.find_local_variable(x.lhs);
 		if(slot == NULL)
 		{
-			slot = code.add_extern(x.lhs);
+			slot = code.add_local_variable(x.lhs);
 		}
 
 		code.push(vm::op_store);
@@ -125,12 +125,25 @@ namespace evalulater
 
 	void compiler::ast_visitor::operator()(ast::identifier const& x) const
 	{
-		int const* slot = code.find_extern(x);
-		if(slot == NULL)
+		int const* lcl_slot = code.find_local_variable(x);
+		if(lcl_slot)
 		{
-			slot = code.add_extern(x);
+			code.push(vm::op_load);
+			code.push(*lcl_slot);
+			return;
 		}
-		code.push(vm::op_load);
-		code.push(*slot);
+
+		int const* ext_slot = code.find_external_ref(x);
+		if(ext_slot == NULL)
+		{
+			// Check if we have a local of this variable.  If so
+			// use that.  If not, assume its an extern.
+			ext_slot = code.add_external_ref(x);
+		}
+
+		code.push(vm::op_loadc);
+		code.push(*ext_slot);
+		return;
+
 	}
 }
