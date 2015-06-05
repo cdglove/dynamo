@@ -57,6 +57,14 @@ namespace evalulater
             }
         }
 
+		template <typename Message, typename What>
+        void operator()(
+            Message const& message,
+            What const& what) const
+        {
+            std::cout << message << what << std::endl;
+        }
+
         Iterator get_pos(Iterator err_pos, int& line) const
         {
             line = 1;

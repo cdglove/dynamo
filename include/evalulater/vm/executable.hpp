@@ -18,15 +18,18 @@
 #pragma once
 
 #include "evalulater/config.hpp"
-#include "evalulater/vm/byte_code.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/optional.hpp>
 #include <vector>
 
+namespace evalulater
+{
+	class linker;
+}
+
 namespace evalulater { namespace vm
 {
-	typedef boost::unordered_map<std::string, float*> extern_index;
-	typedef boost::unordered_map<std::string, float>  local_index;
+	class byte_code;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  Executable - Contains byte_code and variable lookup information
@@ -44,17 +47,9 @@ namespace evalulater { namespace vm
 	private:
 
 		///////////////////////////////////////////////////////////////////////
-		// Factory functions to create an executable.  Returns an empty
-		// optional if linking fails.
+		// Executables can only be created by the linker.
 		///////////////////////////////////////////////////////////////////////
-		friend boost::optional<executable> link(byte_code const& code);
-		friend boost::optional<executable> link(byte_code const& code, 
-												extern_index const& externs);
-		friend boost::optional<executable> link(byte_code const& code, 
-												local_index& locals);
-		friend boost::optional<executable> link(byte_code const& code, 
-												extern_index const& externs, 
-												local_index& locals);
+		friend class linker;
 
 		executable(byte_code const& code);
 		executable(byte_code const& code, 

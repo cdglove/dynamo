@@ -12,8 +12,10 @@
 // ****************************************************************************
 
 #include "evalulater/vm/machine.hpp"
+#include "evalulater/vm/byte_code.hpp"
 #include "evalulater/parser/statement.hpp"
 #include "evalulater/compiler.hpp"
+#include "evalulater/linker.hpp"
 
 #include <iostream>
 #include <string>
@@ -30,13 +32,13 @@ int main()
 
 	typedef std::string::const_iterator iterator_type;
 
-	evalulater::vm::extern_index extern_state;
+	evalulater::extern_index extern_state;
 	float t1 = 5.f;
 	float t2 = 11.f;
 	extern_state["t1"] = &t1;
 	extern_state["t2"] = &t2;
 
-	evalulater::vm::local_index local_state;
+	evalulater::local_index local_state;
 	
     while(true)
 	{
@@ -69,6 +71,7 @@ int main()
 		evalulater::ast::statement_list ast;			// Our program (as AST)
 		evalulater::vm::machine machine;				// Our virtual machine
 		evalulater::compiler compiler(error_handler);	// Compiles the program
+		evalulater::linker linker(error_handler);		// Links the program
         boost::spirit::ascii::space_type space;
         bool r = phrase_parse(iter, end, +stmt, space, ast);
 
@@ -76,40 +79,45 @@ int main()
         {
             std::cout << "-------------------------\n";
             std::cout << "Parsing succeeded\n";
-			boost::optional<evalulater::vm::byte_code> code = compiler.compile(ast);
+
+			boost::optional<
+				evalulater::vm::byte_code
+			> code = compiler.compile(ast);
+
 			if(code)
 			{
-				boost::optional<evalulater::vm::executable> exe = 
-					evalulater::vm::link(*code, extern_state, local_state)
-				;	
+				std::cout << "\nCompiling succeeded\n";
+				
+				boost::optional<
+					evalulater::vm::executable
+				> exe = linker.link(*code, extern_state, local_state);	
 				
 				if(exe)
 				{
+					std::cout << "\nLinking succeeded\n";
+
 					machine.execute(*exe);
-					std::cout << "\nResult: " << machine.top() << std::endl;
-					std::cout << "-------------------------\n";
+
+					std::cout << "\nExecution succeeded\n";
+					std::cout << "\nResult: " << machine.top() << "\n";
 				}
 				else
 				{
-					std::cout << "-------------------------\n";
-					std::cout << "Linking failed\n";
-					std::cout << "-------------------------\n";
+					std::cout << "\nLinking failed\n";
 				}
 			}
 			else
 			{
-				std::cout << "-------------------------\n";
-				std::cout << "Compilation failed\n";
-				std::cout << "-------------------------\n";
+				std::cout << "\nCompilation failed\n";
 			}
         }
         else
         {
             std::string rest(iter, end);
-            std::cout << "-------------------------\n";
-            std::cout << "Parsing failed\n";
-            std::cout << "-------------------------\n";
+            std::cout << "\nParsing failed\n";
         }
+		
+		std::cout << "-------------------------" << std::endl;
     }
 
     std::cout << "Bye... :-) \n\n";

@@ -14,11 +14,4 @@ char const* const EvalulaterVersionString = "@EVALULATER_VERSION_STRING@";
 # pragma warning(disable: 4345)
 #endif
 
-#if defined(EVALULATER_USER_DIAGNOSTIC)
-  namespace evalulater { extern void issue_diagnostic(std::string const& msg); } }
-#else
-# include <iostream>
-  namespace evalulater { inline void issue_diagnostic(std::string const& msg) { std::cout << msg << std::endl; } }
-#endif
-
 #endif

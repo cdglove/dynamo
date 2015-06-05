@@ -14,6 +14,7 @@
 // ****************************************************************************
 
 #include "evalulater/vm/machine.hpp"
+#include "evalulater/vm/byte_code.hpp"
 
 namespace evalulater { namespace vm
 {
