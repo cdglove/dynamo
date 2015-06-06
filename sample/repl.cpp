@@ -73,13 +73,13 @@ int main()
 		}
 
 		
-		evalulater::error_handler<						// Our diagnostic printer
+		evalulater::error_handler<						    // Our diagnostic printer
 			iterator_type
-		> error_handler(test_expr.begin(), test_expr.end());	
+		> error_handler(std::cout, test_expr.begin(), test_expr.end());	
 
-		evalulater::parser::parser parser;				// Builds the AST
-		evalulater::compiler compiler(error_handler);	// Compiles the program
-		evalulater::linker linker(error_handler);		// Links the program
+		evalulater::parser::parser parser(error_handler);   // Builds the AST
+		evalulater::compiler compiler(error_handler);		// Compiles the program
+		evalulater::linker linker(error_handler);		    // Links the program
         
 		boost::optional<
 			evalulater::ast::statement_list

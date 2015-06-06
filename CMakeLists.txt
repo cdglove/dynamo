@@ -18,6 +18,7 @@ message("Evalulater Version: ${EVALULATER_VERSION_STRING}")
 #
 ###############################################################################
 option( EVALULATER_BUILD_TESTS "Build the evalulater project tests." ON)
+option( EVALULATER_BUILD_SAMPLES "Build the evalulater project samples." ON)
 
 ###############################################################################
 #
@@ -26,10 +27,7 @@ option( EVALULATER_BUILD_TESTS "Build the evalulater project tests." ON)
 ###############################################################################
 set(Boost_USE_MULTI_THREADED ON)
 set(Boost_USE_STATIC_LIBS ON)
-find_package( Boost
-  REQUIRED
-    system
-)
+find_package( Boost )
 
 ###############################################################################
 #
@@ -82,6 +80,10 @@ enable_testing()
 add_subdirectory(src)
 if(EVALULATER_BUILD_TESTS)
 	add_subdirectory(test)
+endif()
+
+if(EVALULATER_BUILD_SAMPLES)
+  add_subdirectory(sample)
 endif()
 
 ###############################################################################

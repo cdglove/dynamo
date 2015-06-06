@@ -20,16 +20,29 @@
 #include <boost/optional.hpp>
 #include "evalulater/ast/ast.hpp"
 
+namespace evalulater
+{
+	class diagnostic_sink;
+}
+
 namespace evalulater { namespace parser
 {
 	class parser
 	{
 	public:
 
+		parser(diagnostic_sink& sink)
+			: diagnostic(sink)
+		{}
+
 		boost::optional<ast::statement_list> parse(std::string const& text);
 		boost::optional<ast::statement_list> parse(std::wstring const& text);
 		boost::optional<ast::statement_list> parse(char const* first, char const* last);
 		boost::optional<ast::statement_list> parse(wchar_t const* first, wchar_t const* last);
+
+	private:
+
+		diagnostic_sink& diagnostic;
 	};
 }}
 

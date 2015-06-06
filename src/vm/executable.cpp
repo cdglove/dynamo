@@ -19,13 +19,13 @@
 namespace evalulater { namespace vm
 {
 	executable::executable(byte_code const& code)
-		: code(code)
+		: code(&code)
 	{}
 
 	executable::executable(byte_code const& code, 
 						   std::vector<float*> variable_table_,
 						   std::vector<fetch_constant_fun> constant_table_)
-		: code(code)
+		: code(&code)
 	{
 		std::swap(variable_table_, variable_table);
 		std::swap(constant_table_, constant_table);
@@ -48,6 +48,6 @@ namespace evalulater { namespace vm
 
 	byte_code const& executable::get_code() const
 	{
-		return code;
+		return *code;
 	}
 }}

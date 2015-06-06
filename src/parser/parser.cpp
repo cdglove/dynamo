@@ -21,13 +21,17 @@
 namespace evalulater { namespace parser
 {
 	template<typename Iterator>
-	static boost::optional<ast::statement_list> parse_impl(Iterator first, Iterator last)
+	static boost::optional<ast::statement_list> 
+	parse_impl(
+		diagnostic_sink& diagnostic,
+		Iterator first,
+		Iterator last)
 	{
-        evalulater::error_handler<						// Our diagnostic printer
+        evalulater::error_handler<						
 			Iterator
-		> error_handler(first, last);						
+		> error_handler(diagnostic(), first, last);						
 
-		evalulater::parser::statement<					// Our grammar
+		evalulater::parser::statement<	
 			Iterator
 		> stmt(error_handler);
 
@@ -44,21 +48,21 @@ namespace evalulater { namespace parser
 
 	boost::optional<ast::statement_list> parser::parse(std::string const& text)
 	{
-		return parse_impl(text.begin(), text.end());
+		return parse_impl(diagnostic, text.begin(), text.end());
 	}
 
 	boost::optional<ast::statement_list> parser::parse(std::wstring const& text)
 	{
-		return parse_impl(text.begin(), text.end());
+		return parse_impl(diagnostic, text.begin(), text.end());
 	}
 
 	boost::optional<ast::statement_list> parser::parse(char const* first, char const* last)
 	{
-		return parse_impl(first, last);
+		return parse_impl(diagnostic, first, last);
 	}
 
 	boost::optional<ast::statement_list> parser::parse(wchar_t const* first, wchar_t const* last)
 	{
-		return parse_impl(first, last);
+		return parse_impl(diagnostic, first, last);
 	}
 }}

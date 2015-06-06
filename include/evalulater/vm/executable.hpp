@@ -58,7 +58,7 @@ namespace evalulater { namespace vm
 				   std::vector<float*>		       variable_table_, 
 				   std::vector<fetch_constant_fun> constant_table_);
 
-		byte_code const& code;
+		byte_code const* code;
 		std::vector<float*> variable_table;
 		std::vector<fetch_constant_fun> constant_table;
 	};

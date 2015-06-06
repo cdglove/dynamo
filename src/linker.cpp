@@ -13,6 +13,7 @@
 
 #include "evalulater/linker.hpp"
 #include "evalulater/vm/byte_code.hpp"
+#include "evalulater/error_handler.hpp"
 #include <boost/foreach.hpp>
 #include <sstream>
 
@@ -113,14 +114,12 @@ namespace evalulater
 					}
 				}
 
-				std::stringstream diagnostic;
-				diagnostic << "Undefined external symbol \""
-						   << data_name
-						   << "\" referenced in "
-						   << code.name()
-				;
+				diagnostic() << "Error! Undefined external symbol \""
+							 << data_name
+							 << "\" referenced in "
+							 << code.name()
+							 ;
 
-				error_handler(diagnostic.str());
 				return false;
 			}
 			else
@@ -153,15 +152,13 @@ namespace evalulater
 				constant_index::const_iterator con = constants->find(data_name);
 				if(con != constants->end())
 				{
-					std::stringstream diagnostic;
-					diagnostic << "Multiply defined symbol \""
-							   << data_name
-							   << "\" referenced in "
-							   << code.name()
-							   << ". Did you mean to create a new variable?"
-					;
+					diagnostic() << "Multiply defined symbol \""
+							     << data_name
+							     << "\" referenced in "
+							     << code.name()
+							     << ". Did you mean to create a new variable?"
+								 ;
 
-					error_handler(diagnostic.str());
 					return false;
 				}
 			}

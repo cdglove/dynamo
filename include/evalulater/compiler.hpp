@@ -26,6 +26,8 @@
 
 namespace evalulater
 {
+	class diagnostic_sink;
+
 	///////////////////////////////////////////////////////////////////////////
 	//  The Compiler
 	///////////////////////////////////////////////////////////////////////////
@@ -35,6 +37,7 @@ namespace evalulater
 
 		template <typename ErrorHandler>
         compiler(ErrorHandler& error_handler_)
+			: diagnostic(error_handler_)
         {
             error_handler = [error_handler_](int tag, std::string const& what)
 			{
@@ -53,8 +56,12 @@ namespace evalulater
 
 		struct ast_visitor
 		{
-			ast_visitor(vm::byte_code& code, error_handler_type const& error_handler)
+			ast_visitor(
+				vm::byte_code& code, 
+				diagnostic_sink& diagnostic,
+				error_handler_type const& error_handler)
 				: code(code)
+				, diagnostic(diagnostic)
 				, error_handler(error_handler)
 			{}
 
@@ -79,9 +86,11 @@ namespace evalulater
 				ast::op_token token) const;
 
 			vm::byte_code& code;
+			diagnostic_sink& diagnostic;
 			error_handler_type const& error_handler;
 		};
 
+		diagnostic_sink& diagnostic;
 		error_handler_type error_handler;
 	};
 }

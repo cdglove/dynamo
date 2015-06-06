@@ -76,6 +76,7 @@ namespace evalulater { namespace parser
 				("sub",	ast::op_subtract)
 				("mul",	ast::op_multiply)
 				("div",	ast::op_divide)
+				("not",	ast::op_not)
 			;
 
 			///////////////////////////////////////////////////////////////////////

@@ -18,13 +18,15 @@
 #include "evalulater/vm/byte_code.hpp"
 
 #include <boost/foreach.hpp>
+#include <boost/type_traits/extent.hpp> 
+#include <sstream>
 
 namespace evalulater
 {
 	boost::optional<vm::byte_code> compiler::compile(ast::statement_list const& x)
 	{
 		vm::byte_code code("anonymous");
-		ast_visitor visitor(code, error_handler);
+		ast_visitor visitor(code, diagnostic, error_handler);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))
@@ -35,7 +37,7 @@ namespace evalulater
 
 	bool compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
 	{
-		ast_visitor visitor(out_code, error_handler);
+		ast_visitor visitor(out_code, diagnostic, error_handler);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))
@@ -74,8 +76,38 @@ namespace evalulater
 		return compile_op_token(x.operator_);
 	}
 
+	static int intrinsic_paramcount[] =
+	{
+	   -1, //op_assign,
+		2, //op_add,
+		2, //op_subtract,
+		2, //op_multiply,
+		2, //op_divide,
+	   -1, //op_positive,
+	   -1, //op_negative,
+		1, //op_not,	
+		2, //op_pow,
+		1, //op_abs,
+	};
+
+	BOOST_STATIC_ASSERT(
+		sizeof(intrinsic_paramcount) / 
+		sizeof(intrinsic_paramcount[0]) == 
+		ast::num_op_tokens
+	);
+
 	bool compiler::ast_visitor::operator()(ast::intrinsic_op const& x) const
 	{
+		if(x.args.size() != intrinsic_paramcount[x.intrinsic])
+		{
+			error_handler(0, "Parameter count mismatch.");
+
+			diagnostic() << "Expected "
+						 << intrinsic_paramcount[x.intrinsic]
+						 << " got " << x.args.size();
+			return false;
+		}
+
 		BOOST_FOREACH(ast::operand const& arg, x.args)
 		{
 			if(!boost::apply_visitor(*this, arg))
@@ -157,7 +189,11 @@ namespace evalulater
 		0, //op_abs,
 	};
 
-	BOOST_STATIC_ASSERT(sizeof(precedence)/sizeof(precedence[0]) == ast::num_op_tokens);
+	BOOST_STATIC_ASSERT(
+		sizeof(precedence) /
+		sizeof(precedence[0]) == 
+		ast::num_op_tokens
+	);
 
 	// The Shunting-yard algorithm -- thanks dykstra
 	bool compiler::ast_visitor::compile_expression(

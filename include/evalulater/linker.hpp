@@ -22,6 +22,8 @@
 
 namespace evalulater
 {
+	class diagnostic_sink;
+
 	typedef boost::unordered_map<
 		std::string, vm::fetch_constant_fun
 	> constant_index;
@@ -37,42 +39,42 @@ namespace evalulater
 	{
 	public:
 
-		template <typename ErrorHandler>
-        linker(ErrorHandler& error_handler_)
-        {
-            error_handler = [error_handler_](std::string const& what)
-			{
-				error_handler_("Error! ", what);
-			};
-        }
+	    linker(diagnostic_sink& sink)
+			: diagnostic(sink)
+		{}
 
-
-		boost::optional<vm::executable> link(vm::byte_code const& code);
-		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 constant_index const& externs);
-		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 variable_index& locals);
-		boost::optional<vm::executable> link(vm::byte_code const& code, 
-											 constant_index const& externs, 
-											 variable_index& locals);
+		boost::optional<vm::executable> link(
+			vm::byte_code const& code);
+		boost::optional<vm::executable> link(
+			vm::byte_code const& code, 			
+			constant_index const& externs);
+		boost::optional<vm::executable> link(
+			vm::byte_code const& code, 
+			variable_index& locals);
+		boost::optional<vm::executable> link(
+			vm::byte_code const& code, 
+			constant_index const& externs, 
+			variable_index& locals);
 
 	private:
 
-		bool link_constants(vm::byte_code const& code,
-							constant_index const& constants, 
-							boost::optional<variable_index const&>,
-							std::vector<vm::fetch_constant_fun>& constant_table);
+		bool link_constants(
+			vm::byte_code const& code,
+			constant_index const& constants, 
+			boost::optional<variable_index const&>,
+			std::vector<vm::fetch_constant_fun>& constant_table);
 
-		bool link_variables(vm::byte_code const& code,
-							boost::optional<constant_index const&> externs,
-							variable_index& variables, 
-							std::vector<float*>& variable_table);
+		bool link_variables(
+			vm::byte_code const& code,
+			boost::optional<constant_index const&> externs,
+			variable_index& variables, 
+			std::vector<float*>& variable_table);
 
 		typedef boost::function<
             void(std::string const& what)
 		> error_handler_type;
 
-		error_handler_type error_handler;
+		diagnostic_sink& diagnostic;
 	};
 }
 

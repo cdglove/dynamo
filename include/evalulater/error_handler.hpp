@@ -17,7 +17,6 @@
 
 #include "evalulater/config.hpp"
 #include <iostream>
-#include <string>
 #include <vector>
 
 namespace evalulater
@@ -25,14 +24,34 @@ namespace evalulater
 	///////////////////////////////////////////////////////////////////////////////
 	//  The error handler - pretty prints a helpful error when parsing fails
 	///////////////////////////////////////////////////////////////////////////////
+	class diagnostic_sink
+	{
+	public:
+		diagnostic_sink(std::ostream& sink)
+			: outs(sink)
+		{}
+
+		std::ostream& operator()() const 
+		{
+			return outs;
+		}
+
+	protected:
+		
+		std::ostream& outs;
+	};
+
 	template <typename Iterator>
-    struct error_handler
+    struct error_handler : diagnostic_sink
     {
         template <typename T0 = void, typename T1 = void, typename T2 = void>
         struct result { typedef void type; };
 
-        error_handler(Iterator first, Iterator last)
-          : first(first), last(last) {}
+        error_handler(std::ostream& sink, Iterator first, Iterator last)
+          : first(first)
+		  , last(last)
+		  , diagnostic_sink(sink)
+		{}
 
         template <typename Message, typename What>
         void operator()(
@@ -44,25 +63,17 @@ namespace evalulater
             Iterator line_start = get_pos(err_pos, line);
             if (err_pos != last)
             {
-                std::cout << message << what << " line " << line << ':' << std::endl;
-                std::cout << get_line(line_start) << std::endl;
+                outs << message << what << " line " << line << ':' << std::endl;
+                outs << get_line(line_start) << std::endl;
                 for (; line_start != err_pos; ++line_start)
-                    std::cout << ' ';
-                std::cout << '^' << std::endl;
+                    outs << ' ';
+                outs << '^' << std::endl;
             }
             else
             {
-                std::cout << "Unexpected end of file. ";
-                std::cout << message << what << " line " << line << std::endl;
+                outs << "Unexpected end of file. ";
+                outs << message << what << " line " << line << std::endl;
             }
-        }
-
-		template <typename Message, typename What>
-        void operator()(
-            Message const& message,
-            What const& what) const
-        {
-            std::cout << message << what << std::endl;
         }
 
         Iterator get_pos(Iterator err_pos, int& line) const
