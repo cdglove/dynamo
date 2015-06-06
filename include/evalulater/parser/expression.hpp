@@ -15,23 +15,6 @@
 #define _EVALULATER_PARSER_EXPRESSION_HPP_
 #pragma once
 
-///////////////////////////////////////////////////////////////////////////////
-// Spirit v2.5 allows you to suppress automatic generation
-// of predefined terminals to speed up compilation. With
-// BOOST_SPIRIT_NO_PREDEFINED_TERMINALS defined, you are
-// responsible in creating instances of the terminals that
-// you need (e.g. see qi::uint_type uint_ below).
-#define BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-// Define this to enable debugging
-//#define BOOST_SPIRIT_QI_DEBUG
-
-#if defined(_MSC_VER)
-# pragma warning(disable: 4345)
-#endif
-
 #include "evalulater/config.hpp"
 #include "evalulater/ast/fusion_ast.hpp"
 #include "evalulater/error_handler.hpp"

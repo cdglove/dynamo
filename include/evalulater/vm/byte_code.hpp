@@ -87,10 +87,10 @@ namespace evalulater { namespace vm
 		
 		void push(instruction i);
 
-		int const* add_external_ref(std::string name);
-		int const* find_external_ref(std::string const& name) const;
-		int const* add_local_variable(std::string name);
-		int const* find_local_variable(std::string const& name) const;
+		int const* add_constant(std::string name);
+		int const* find_constant(std::string const& name) const;
+		int const* add_variable(std::string name);
+		int const* find_variable(std::string const& name) const;
 
 		std::vector<instruction> const& get_instructions() const;
 		data_index const& get_constants() const;

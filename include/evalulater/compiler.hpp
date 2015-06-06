@@ -70,6 +70,14 @@ namespace evalulater
 			bool operator()(ast::statement const& x) const;
 			bool operator()(ast::identifier const& x) const;
 
+			bool compile_expression(
+				int min_precedence,
+				std::vector<ast::binary_op>::const_iterator& begin,
+				std::vector<ast::binary_op>::const_iterator end) const;
+
+			bool compile_op_token(
+				ast::op_token token) const;
+
 			vm::byte_code& code;
 			error_handler_type const& error_handler;
 		};

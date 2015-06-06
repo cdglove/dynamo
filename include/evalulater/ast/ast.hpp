@@ -62,19 +62,27 @@ namespace evalulater { namespace ast
 	///////////////////////////////////////////////////////////////////////////
 	enum op_token
 	{
-		// cglover-todo: Need to express precedence somehow.
+		// precedence 1
+		op_assign,
+		
+		// precedence 2
+		op_add,
+		op_subtract,
+		
+		// precedence 3
+		op_multiply,
+		op_divide,
+		
+		// precedence 4
 		op_positive,
 		op_negative,
 		op_not,	
 
-		op_assign,
-		op_add,
-		op_subtract,
-		op_multiply,
-		op_divide,
-
+		// no precedence 
 		op_pow,
 		op_abs,
+		
+		num_op_tokens
 	};
 
 	struct unary_op
