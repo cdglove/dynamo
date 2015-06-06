@@ -16,10 +16,14 @@
 #define BOOST_TEST_MODULE Parser
 #include <boost/test/unit_test.hpp>
 
+typedef std::string::const_iterator iterator_type;
+typedef evalulater::error_handler<iterator_type> error_handler_type;
+typedef evalulater::parse::parser<iterator_type> parser_type;
+
 BOOST_AUTO_TEST_CASE( unary_parse )
 {
-	evalulater::diagnostic_sink diagnostic(std::cout);
-	evalulater::parser::parser parser(diagnostic);
+	error_handler_type diagnostic(std::cout);
+	parser_type parser(diagnostic);
 	BOOST_CHECK(parser.parse("1;"));
 	BOOST_CHECK(parser.parse("-1;"));
 	BOOST_CHECK(parser.parse("+1;"));
@@ -30,8 +34,8 @@ BOOST_AUTO_TEST_CASE( unary_parse )
 
 BOOST_AUTO_TEST_CASE( binary_parse )
 {
-	evalulater::diagnostic_sink diagnostic(std::cout);
-	evalulater::parser::parser parser(diagnostic);
+	error_handler_type diagnostic(std::cout);
+	parser_type parser(diagnostic);
 	BOOST_CHECK(parser.parse("1 + 1;"));
 	BOOST_CHECK(parser.parse("1-1;"));
 	BOOST_CHECK(parser.parse("1 * 1;"));
@@ -46,13 +50,28 @@ BOOST_AUTO_TEST_CASE( binary_parse )
 	BOOST_CHECK(parser.parse("foo = boo;"));
 }
 
+BOOST_AUTO_TEST_CASE( intrinsic_parse )
+{
+	error_handler_type diagnostic(std::cout);
+	parser_type parser(diagnostic);
+	BOOST_CHECK(parser.parse("abs(1);"));
+	BOOST_CHECK(parser.parse("pow(1,2);"));
+	BOOST_CHECK(parser.parse("add(1,2);"));
+	BOOST_CHECK(parser.parse("sub(1,2);"));
+	BOOST_CHECK(parser.parse("mul(1,2);"));
+	BOOST_CHECK(parser.parse("div(1,2);"));
+	BOOST_CHECK(parser.parse("not(0);"));
+	BOOST_CHECK(parser.parse("div(mul(2,2),not(0));"));
+}
+
 BOOST_AUTO_TEST_CASE( failed_parse )
 {
-	evalulater::diagnostic_sink diagnostic(std::cout);
-	evalulater::parser::parser parser(diagnostic);
+	error_handler_type diagnostic(std::cout);
+	parser_type parser(diagnostic);
 	BOOST_CHECK(!parser.parse("1 + 1"));
 	BOOST_CHECK(!parser.parse("1 1;"));
 	BOOST_CHECK(!parser.parse("1 */ 1;"));
 	BOOST_CHECK(!parser.parse("(1/1(;"));
 	BOOST_CHECK(!parser.parse("1foo = 2boo;"));
+	BOOST_CHECK(!parser.parse("mul(0,0,0);"));
 }

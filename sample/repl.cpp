@@ -53,7 +53,11 @@ int main()
 	extern_state["t2"] = load_float_ptr(&t2);
 
 	evalulater::variable_index local_state;
-	evalulater::vm::machine machine;				// Our virtual machine -- reusable
+	evalulater::vm::machine machine;				    // Our virtual machine -- reusable
+
+	evalulater::error_handler<						    // Our diagnostic printer -- reusable
+		iterator_type
+	> error_handler(std::cout);	
 	
     while(true)
 	{
@@ -72,12 +76,10 @@ int main()
 			test_expr += line;
 		}
 
-		
-		evalulater::error_handler<						    // Our diagnostic printer
+		evalulater::parse::parser<
 			iterator_type
-		> error_handler(std::cout, test_expr.begin(), test_expr.end());	
-
-		evalulater::parser::parser parser(error_handler);   // Builds the AST
+		> parser(error_handler);							// Builds the AST
+		
 		evalulater::compiler compiler(error_handler);		// Compiles the program
 		evalulater::linker linker(error_handler);		    // Links the program
         

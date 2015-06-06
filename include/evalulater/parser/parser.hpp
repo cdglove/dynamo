@@ -1,9 +1,7 @@
 // ****************************************************************************
 // evalulater/parser/parser.hpp
 //
-// Firewall object to shield code from dragging in boost.spirit
-// Implements the parsing interface for common types, but of course users
-// can bypass this object and call phrase_pase directly.
+// Parser object for evalulater syntax.
 // 
 // Copyright Chris Glover 2015
 //
@@ -19,30 +17,52 @@
 #include <string>
 #include <boost/optional.hpp>
 #include "evalulater/ast/ast.hpp"
+#include "evalulater/parser/statement.hpp"
 
-namespace evalulater
+namespace evalulater { namespace parse
 {
-	class diagnostic_sink;
-}
-
-namespace evalulater { namespace parser
-{
+	///////////////////////////////////////////////////////////////////////////
+	// The Parser
+	// Consumes a sequence of characters and returns an ast on success
+	// or boost::none on failure.
+	///////////////////////////////////////////////////////////////////////////
+	template<typename Iterator>
 	class parser
 	{
 	public:
 
-		parser(diagnostic_sink& sink)
-			: diagnostic(sink)
+		parser(error_handler<Iterator>& error_handler_)
+			: error_handler_(error_handler_)
 		{}
+		
+		// cglover-todo:  This function needs to go.
+		boost::optional<ast::statement_list> parse(std::string const& c)
+		{
+			return parse(std::begin(c), std::end(c));
+		}
 
-		boost::optional<ast::statement_list> parse(std::string const& text);
-		boost::optional<ast::statement_list> parse(std::wstring const& text);
-		boost::optional<ast::statement_list> parse(char const* first, char const* last);
-		boost::optional<ast::statement_list> parse(wchar_t const* first, wchar_t const* last);
+		boost::optional<ast::statement_list> parse(Iterator first, Iterator last) const
+		{
+			error_handler_.on_parse_begin(first, last);
+
+			evalulater::parse::statement<	
+				Iterator
+			> stmt(error_handler_);
+
+			boost::spirit::ascii::space_type space;
+			evalulater::ast::statement_list ast;
+			bool r = phrase_parse(first, last, +stmt, space, ast);
+			if(r && first == last)
+			{
+				return ast;
+			}
+
+			return boost::none;
+		}
 
 	private:
 
-		diagnostic_sink& diagnostic;
+		error_handler<Iterator>& error_handler_;
 	};
 }}
 

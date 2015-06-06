@@ -3,7 +3,7 @@
 //
 // Implementation of vm for evalulater syntax.  
 //
-// Originally based on Boost.Spirit calc6 example
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //

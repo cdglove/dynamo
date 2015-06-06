@@ -3,7 +3,7 @@
 //
 // Implementation of Compiler for evalulater syntax.  
 //
-// Originally based on Boost.Spirit calc6 example
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //
@@ -100,11 +100,15 @@ namespace evalulater
 	{
 		if(x.args.size() != intrinsic_paramcount[x.intrinsic])
 		{
-			error_handler(0, "Parameter count mismatch.");
+			error_handler(x.id, "Parameter count mismatch.");
 
 			diagnostic() << "Expected "
 						 << intrinsic_paramcount[x.intrinsic]
-						 << " got " << x.args.size();
+						 << " parameters but was supplied with " 
+						 << x.args.size() 
+						 << "."
+						 << std::endl;
+
 			return false;
 		}
 

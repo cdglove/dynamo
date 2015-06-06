@@ -4,8 +4,6 @@
 // Executable format for evalulater syntax.  Contains linked
 // byte code and variable tables.
 //
-// Originally based on Boost.Spirit calc6 example
-//
 // Copyright Chris Glover 2015
 //
 // Distributed under the Boost Software License, Version 1.0.

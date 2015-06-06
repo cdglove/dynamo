@@ -2,7 +2,8 @@
 // evalulater/error_handler.hpp
 //
 // Parsing error handler for evalulater syntax.
-// Based on Boost.Spirit calc6 example
+//
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //
@@ -47,11 +48,17 @@ namespace evalulater
         template <typename T0 = void, typename T1 = void, typename T2 = void>
         struct result { typedef void type; };
 
-        error_handler(std::ostream& sink, Iterator first, Iterator last)
+        error_handler(std::ostream& sink)
           : first(first)
 		  , last(last)
 		  , diagnostic_sink(sink)
 		{}
+
+		void on_parse_begin(Iterator first_, Iterator last_)
+		{
+			first = first_;
+			last = last_;
+		}
 
         template <typename Message, typename What>
         void operator()(

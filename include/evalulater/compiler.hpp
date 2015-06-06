@@ -4,7 +4,7 @@
 // Compiler for evalulater syntax
 // Converts the ast into a series of opcodes to be consumed by the vm.
 // 
-// Originally based on Boost.Spirit calc6 example
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 // 
 // Copyright Chris Glover 2015
 //
@@ -39,7 +39,7 @@ namespace evalulater
         compiler(ErrorHandler& error_handler_)
 			: diagnostic(error_handler_)
         {
-            error_handler = [error_handler_](int tag, std::string const& what)
+            error_handler = [&error_handler_](int tag, std::string const& what)
 			{
 				error_handler_("Error! ", what, error_handler_.iters[tag]);
 			};

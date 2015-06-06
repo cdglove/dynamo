@@ -22,10 +22,13 @@
 static void test_expression(std::string expression, float expected_result)
 {
 	evalulater::error_handler<						 
-		std::string::iterator
-	> error_handler(std::cout, expression.begin(), expression.end());	
+		std::string::const_iterator
+	> error_handler(std::cout);	
 
-	evalulater::parser::parser parser(error_handler);
+	evalulater::parse::parser<
+		std::string::const_iterator
+	> parser(error_handler);
+
 	boost::optional<evalulater::ast::statement_list> ast;
 	evalulater::compiler compiler(error_handler);
 	boost::optional<evalulater::vm::byte_code> code;
@@ -72,7 +75,6 @@ BOOST_AUTO_TEST_CASE( binary_operators )
 
 BOOST_AUTO_TEST_CASE( intrinsics )
 {
-	test_expression("mul(1,1);", 1);
 	test_expression("mul(2,2);", 4);
 	test_expression("div(4,2);", 2);
 	test_expression("add(1,1);", 2);
@@ -81,4 +83,5 @@ BOOST_AUTO_TEST_CASE( intrinsics )
 	test_expression("abs(-19);", 19);
 	test_expression("not(19);",  0);
 	test_expression("not(0);",   1);
+	test_expression("div(mul(1,1),2);", 1);
 }

@@ -1,8 +1,10 @@
 // ****************************************************************************
 // evalulater/parser/statement.hpp
 //
-// Parser for evalulater syntax.  Based on Boost.Spirit calc6 example
+// Statement parser for evalulater syntax. 
 // Parses a string into a series of op_codes to be evaluated by the vm.
+//
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //
@@ -35,12 +37,13 @@
 #include "evalulater/config.hpp"
 #include "evalulater/ast/fusion_ast.hpp"
 #include "evalulater/error_handler.hpp"
+#include "evalulater/annotation.hpp"
 #include "evalulater/parser/expression.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 
-namespace evalulater { namespace parser
+namespace evalulater { namespace parse
 {
 	namespace qi = boost::spirit::qi;
 	namespace ascii = boost::spirit::ascii;
@@ -54,23 +57,27 @@ namespace evalulater { namespace parser
 	public:
 
 		statement(error_handler<Iterator>& error_handler_) 
-			: statement::base_type(statement_)
+			: statement::base_type(primary_statement)
 			, expr(error_handler_)
 		{
 			// define terminals because of BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
 			//qi::eol_type eol;
+			qi::_1_type _1;
 			qi::_3_type _3;
 			qi::_4_type _4;
+			qi::_val_type _val;
 
 			namespace phx = boost::phoenix;
 			typedef phx::function<error_handler<Iterator>> error_handler_function;
+			typedef phx::function<annotation<Iterator>> annotation_function;
 
 			using qi::on_error;
+			using qi::on_success;
 			using qi::fail;
 
 			///////////////////////////////////////////////////////////////////////
 			// Main statement grammar
-			statement_ =
+			primary_statement =
 				(	assignment
 				|	expr
 				)
@@ -85,21 +92,24 @@ namespace evalulater { namespace parser
 
 			// Debugging and error handling and reporting support.
 			BOOST_SPIRIT_DEBUG_NODES(
-				(statement_)
+				(primary_statement)
 				(assignment)
 			);
 
 			///////////////////////////////////////////////////////////////////////
 			// Error handling: on error in expr, call error_handler.
-			on_error<fail>(statement_,
+			on_error<fail>(primary_statement,
 				error_handler_function(error_handler_)(
                 "Error! Expecting ", _4, _3)
 			);
+
+			on_success(assignment,
+				annotation_function(error_handler_.iters)(_val, _1));
 		}
 
 		typedef ascii::space_type skp;
 		
-		qi::rule<Iterator, ast::statement(), skp> statement_;
+		qi::rule<Iterator, ast::statement(), skp> primary_statement;
 		qi::rule<Iterator, ast::assignment(), skp> assignment;
 		expression<Iterator> expr;
 	};

@@ -4,7 +4,7 @@
 // Defines the byte code produced by the compiler and consumed
 // by the vm.
 // 
-// Originally based on Boost.Spirit calc6 example
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //

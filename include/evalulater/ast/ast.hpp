@@ -1,10 +1,10 @@
 // ****************************************************************************
 // evalulater/ast/ast.hpp
 //
-// Abstract syntax tree for evalulater syntax.  Based on Boost.Spirit calc6 
-// example.
-// 
+// Abstract syntax tree for evalulater syntax.  
 // Defines expressions and the data asociated with them.
+//
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //
@@ -44,6 +44,8 @@ namespace evalulater { namespace ast
 		identifier(Iterator first, Iterator last) 
 			: std::string(first, last) 
 		{}
+
+		int id;
 	};
 
 	typedef boost::variant<
@@ -99,6 +101,7 @@ namespace evalulater { namespace ast
 
 	struct intrinsic_op
 	{
+		int id;
 		op_token intrinsic;
 		std::vector<expression> args;
 	};

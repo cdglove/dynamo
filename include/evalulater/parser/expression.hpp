@@ -1,8 +1,10 @@
 // ****************************************************************************
 // evalulater/parser/expression.hpp
 //
-// Parser for evalulater syntax.  Based on Boost.Spirit calc6 example
+// Parser for evalulater syntax. 
 // Parses a string into a series of op_codes to be evaluated by the vm.
+//
+// Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
 // Copyright Chris Glover 2015
 //
@@ -22,7 +24,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 
-namespace evalulater { namespace parser
+namespace evalulater { namespace parse
 {
 	namespace qi = boost::spirit::qi;
 	namespace ascii = boost::spirit::ascii;
@@ -45,13 +47,17 @@ namespace evalulater { namespace parser
 	        qi::alpha_type alpha;
 	        qi::alnum_type alnum;
 
+			qi::_3_type _1;
 			qi::_3_type _3;
 			qi::_4_type _4;
+			qi::_val_type _val;
 
 			namespace phx = boost::phoenix;
 			typedef phx::function<error_handler<Iterator>> error_handler_function;
+			typedef phx::function<annotation<Iterator>> annotation_function;
 
 			using qi::on_error;
+			using qi::on_success;
 			using qi::fail;
 
 			///////////////////////////////////////////////////////////////////////
@@ -135,6 +141,10 @@ namespace evalulater { namespace parser
 			on_error<fail>(expr,
 				error_handler_function(error_handler_)(
                 "Error! Expecting ", _4, _3)
+			);
+
+			on_success(intrinsic_op,
+				annotation_function(error_handler_.iters)(_val, _1)
 			);
 		}
 
