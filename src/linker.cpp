@@ -35,7 +35,20 @@ namespace evalulater
 
 	boost::optional<vm::executable> linker::link(vm::byte_code const& code)
 	{
-		return vm::executable(code);
+		std::vector<float*> variable_table;
+		std::vector<vm::fetch_constant_fun> constant_table;
+
+		// Link variables must come before constants because we might
+		// create variables that are later read as constants.
+		bool v_ok = link_variables(code, NULL, NULL, variable_table);
+		bool c_ok = link_constants(code, NULL, NULL, constant_table);
+
+		if(v_ok && c_ok)
+		{
+			return vm::executable(code, variable_table, constant_table);
+		}
+
+		return boost::none;
 	}
 
 	boost::optional<vm::executable> linker::link(vm::byte_code const& code, 
@@ -43,7 +56,13 @@ namespace evalulater
 	{
 		std::vector<float*> variable_table;
 		std::vector<vm::fetch_constant_fun> constant_table;
-		if(link_constants(code, constants, boost::none, constant_table))
+
+		// Link variables must come before constants because we might
+		// create variables that are later read as constants.
+		bool v_ok = link_variables(code, &constants, NULL, variable_table);
+		bool c_ok = link_constants(code, &constants, NULL, constant_table);
+
+		if(v_ok && c_ok)
 		{
 			return vm::executable(code, variable_table, constant_table);
 		}
@@ -56,7 +75,13 @@ namespace evalulater
 	{
 		std::vector<float*> variable_table;
 		std::vector<vm::fetch_constant_fun> constant_table;
-		if(link_variables(code, boost::none, variables, variable_table))
+		
+		// Link variables must come before constants because we might
+		// create variables that are later read as constants.
+		bool v_ok = link_variables(code, NULL, &variables, variable_table);
+		bool c_ok = link_constants(code, NULL, &variables, constant_table);
+
+		if(v_ok && c_ok)
 		{
 			return vm::executable(code, variable_table, constant_table);
 		}
@@ -71,8 +96,10 @@ namespace evalulater
 		std::vector<float*> variable_table;
 		std::vector<vm::fetch_constant_fun> constant_table;
 		
-		bool v_ok = link_variables(code, constants, variables, variable_table);
-		bool c_ok = link_constants(code, constants, variables, constant_table);
+		// Link variables must come before constants because we might
+		// create variables that are later read as constants.
+		bool v_ok = link_variables(code, &constants, &variables, variable_table);
+		bool c_ok = link_constants(code, &constants, &variables, constant_table);
 		
 		if(v_ok && c_ok)
 		{
@@ -82,10 +109,11 @@ namespace evalulater
 		return boost::none;
 	}
 
-	bool linker::link_constants(vm::byte_code const& code,
-							    constant_index const& constants, 
-							    boost::optional<variable_index const&> variables,
-							    std::vector<vm::fetch_constant_fun>& constant_table)
+	bool linker::link_constants(
+		vm::byte_code const& code,
+		constant_index const* constants, 
+		variable_index const* variables,
+		std::vector<vm::fetch_constant_fun>& constant_table)
 	{
 		vm::data_index const& slot_index = code.get_constants();
 		constant_table.resize(slot_index.size());
@@ -96,11 +124,16 @@ namespace evalulater
 			int data_slot = slot.second;
 			std::string const& data_name = slot.first;
 
-			constant_index::const_iterator con = constants.find(data_name);
+			constant_index::const_iterator con;
+			
+			if(constants)
+			{
+				con = constants->find(data_name);
+			}
 			
 			// Issue linker error, unresolved external (could also use a default
 			// here by allocating from the local store).
-			if(con == constants.end())
+			if(!constants || con == constants->end())
 			{
 				// If we have locals see if it's in the variable table which it
 				// might be if it's not a constant.
@@ -118,6 +151,7 @@ namespace evalulater
 							 << data_name
 							 << "\" referenced in "
 							 << code.name()
+							 << std::endl
 							 ;
 
 				return false;
@@ -131,10 +165,11 @@ namespace evalulater
 		return true;
 	}
 
-	bool linker::link_variables(vm::byte_code const& code,
-							    boost::optional<constant_index const&> constants,
-							    variable_index& variables, 
-							    std::vector<float*>& variable_table)
+	bool linker::link_variables(
+		vm::byte_code const& code,
+		constant_index const* constants, 
+		variable_index* variables,
+		std::vector<float*>& variable_table)
 	{
 		vm::data_index const& slot_index = code.get_variables();
 		variable_table.resize(slot_index.size());
@@ -145,7 +180,7 @@ namespace evalulater
 			int data_slot = slot.second;
 			std::string const& data_name = slot.first;
 
-			// Ensure this local doesnt exist in the extern table
+			// Ensure this local doesnt exist in the constant table
 			// Multiply defined symbol if it does.
 			if(constants)
 			{
@@ -157,17 +192,32 @@ namespace evalulater
 							     << "\" referenced in "
 							     << code.name()
 							     << ". Did you mean to create a new variable?"
+								 << std::endl
 								 ;
 
 					return false;
 				}
 			}
 
-			// We don't need to check if it's there or not
-			// just blindly insert which will do nothing if
-			// the variable exists.
-			variable_index::iterator var = variables.insert(std::make_pair(data_name, 0.f)).first;
-			variable_table[data_slot] = &var->second;	
+			if(variables)
+			{
+				// We don't need to check if it's there or not
+				// just blindly insert which will do nothing if
+				// the variable exists.
+				variable_index::iterator var = variables->insert(std::make_pair(data_name, 0.f)).first;
+				variable_table[data_slot] = &var->second;	
+			}
+			else
+			{
+				diagnostic() << "Error! Undefined external symbol \""
+							 << data_name
+							 << "\" referenced in "
+							 << code.name()
+							 << std::endl
+							 ;
+
+				return false;
+			}
 		}
 
 		return true;

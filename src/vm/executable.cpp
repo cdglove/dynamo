@@ -18,10 +18,6 @@
 
 namespace evalulater { namespace vm
 {
-	executable::executable(byte_code const& code)
-		: code(&code)
-	{}
-
 	executable::executable(byte_code const& code, 
 						   std::vector<float*> variable_table_,
 						   std::vector<fetch_constant_fun> constant_table_)

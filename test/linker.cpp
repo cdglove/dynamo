@@ -36,7 +36,8 @@ struct load_float_ptr
 static void test_expression(
 	std::string expression, 
 	float expected_result,
-	evalulater::constant_index const& external)
+	evalulater::constant_index const& external,
+	evalulater::variable_index& local)
 {
 	evalulater::error_handler<						 
 		std::string::const_iterator
@@ -58,7 +59,7 @@ static void test_expression(
 		BOOST_CHECK(code);
 		if(code)
 		{
-			exe = linker.link(*code, external);
+			exe = linker.link(*code, external, local);
 			BOOST_CHECK(exe);
 			if(exe)
 			{
@@ -69,8 +70,7 @@ static void test_expression(
 	}
 }
 
-
-BOOST_AUTO_TEST_CASE( external_data )
+BOOST_AUTO_TEST_CASE( state_data )
 {
 	evalulater::constant_index extern_state;
 	float t1 = 2.f;
@@ -78,7 +78,46 @@ BOOST_AUTO_TEST_CASE( external_data )
 	extern_state["t1"] = load_float_ptr(&t1);
 	extern_state["t2"] = load_float_ptr(&t2);
 
-	test_expression("t1 * t2;", 20.f, extern_state);
-	test_expression("t3 = t1 * t2;t3;", 20.f, extern_state);
-	test_expression("t3 = t1 * t2;t3*t2;", 200.f, extern_state);
+	evalulater::variable_index local_state;
+
+	test_expression("t1 * t2;", 20.f, extern_state, local_state);
+	test_expression("t3 = t1 * t2;t3;", 20.f, extern_state, local_state);
+	test_expression("t3 = t1 * t2;t3*t2;", 200.f, extern_state, local_state);
+	test_expression("t3 = t3 * t2;t3;", 200.f, extern_state, local_state);
+}
+
+static void test_fail_linkage(std::string expression)
+{
+	evalulater::error_handler<						 
+		std::string::const_iterator
+	> error_handler(std::cout);	
+
+	evalulater::parse::parser parser(error_handler);
+	boost::optional<evalulater::ast::statement_list> ast;
+	evalulater::compiler compiler(error_handler);
+	boost::optional<evalulater::vm::byte_code> code;
+	evalulater::linker linker(error_handler);
+	boost::optional<evalulater::vm::executable> exe;
+	evalulater::vm::machine vm;
+
+	ast = parser.parse(expression);
+	BOOST_CHECK(ast);
+	if(ast)
+	{
+		code = compiler.compile(*ast);
+		BOOST_CHECK(code);
+		if(code)
+		{
+			exe = linker.link(*code);
+			BOOST_CHECK(!exe);
+		}
+	}
+}
+
+BOOST_AUTO_TEST_CASE( failed_link )
+{
+	test_fail_linkage("t1 * t2;");
+	test_fail_linkage("t3 = t1 * t2;t3;");
+	test_fail_linkage("t3 = t1 * t2;t3*t2;");
+	test_fail_linkage("t3 = t3 * t2;t3;");
 }

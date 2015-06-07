@@ -107,7 +107,8 @@ namespace evalulater
 						 << " parameters but was supplied with " 
 						 << x.args.size() 
 						 << "."
-						 << std::endl;
+						 << std::endl
+						 ;
 
 			return false;
 		}
@@ -133,7 +134,7 @@ namespace evalulater
 	bool compiler::ast_visitor::operator()(ast::assignment const& x) const
 	{
 		(*this)(x.rhs);
-		int const* slot = code.find_constant(x.lhs);
+		int const* slot = code.find_variable(x.lhs);
 		if(slot == NULL)
 		{
 			slot = code.add_variable(x.lhs);

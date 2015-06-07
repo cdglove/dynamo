@@ -60,14 +60,14 @@ namespace evalulater
 
 		bool link_constants(
 			vm::byte_code const& code,
-			constant_index const& constants, 
-			boost::optional<variable_index const&>,
+			constant_index const* constants, 
+			variable_index const* variables,
 			std::vector<vm::fetch_constant_fun>& constant_table);
 
 		bool link_variables(
 			vm::byte_code const& code,
-			boost::optional<constant_index const&> externs,
-			variable_index& variables, 
+			constant_index const* constants, 
+			variable_index* variables,
 			std::vector<float*>& variable_table);
 
 		typedef boost::function<

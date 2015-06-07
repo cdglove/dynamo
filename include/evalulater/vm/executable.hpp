@@ -51,10 +51,10 @@ namespace evalulater { namespace vm
 		///////////////////////////////////////////////////////////////////////
 		friend class evalulater::linker;
 
-		executable(byte_code const& code);
-		executable(byte_code const& code, 
-				   std::vector<float*>		       variable_table_, 
-				   std::vector<fetch_constant_fun> constant_table_);
+		executable(
+			byte_code const& code, 
+			std::vector<float*>		       variable_table_, 
+			std::vector<fetch_constant_fun> constant_table_);
 
 		byte_code const* code;
 		std::vector<float*> variable_table;
