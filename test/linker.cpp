@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/test/operators.cpp
+// evalulater/test/linker.cpp
 //
-// Test operator functionality
+// Test linker functionality
 // 
 // Copyright Chris Glover 2015
 //
@@ -16,10 +16,27 @@
 #include "evalulater/compiler.hpp"
 #include "evalulater/linker.hpp"
 
-#define BOOST_TEST_MODULE Operators
+#define BOOST_TEST_MODULE Compiler
 #include <boost/test/unit_test.hpp>
 
-static void test_expression(std::string expression, float expected_result)
+struct load_float_ptr
+{
+	load_float_ptr(float const* f)
+		: data_(f)
+	{}
+
+	float operator()()
+	{
+		return *data_;
+	}
+
+	float const* data_;
+};
+
+static void test_expression(
+	std::string expression, 
+	float expected_result,
+	evalulater::constant_index const& external)
 {
 	evalulater::error_handler<						 
 		std::string::const_iterator
@@ -41,7 +58,7 @@ static void test_expression(std::string expression, float expected_result)
 		BOOST_CHECK(code);
 		if(code)
 		{
-			exe = linker.link(*code);
+			exe = linker.link(*code, external);
 			BOOST_CHECK(exe);
 			if(exe)
 			{
@@ -52,33 +69,16 @@ static void test_expression(std::string expression, float expected_result)
 	}
 }
 
-BOOST_AUTO_TEST_CASE( unary_operators )
-{
-	test_expression("1;", 1);
-	test_expression("-1;", -1);
-	test_expression("!1;", 0);
-	test_expression("!0;", 1);
-	test_expression("-(1);", -1);
-}
 
-BOOST_AUTO_TEST_CASE( binary_operators )
+BOOST_AUTO_TEST_CASE( external_data )
 {
-	test_expression("1*1;", 1);
-	test_expression("2*2;", 4);
-	test_expression("4/2;", 2);
-	test_expression("1+1;", 2);
-	test_expression("4-2;", 2);
-}
+	evalulater::constant_index extern_state;
+	float t1 = 2.f;
+	float t2 = 10.f;
+	extern_state["t1"] = load_float_ptr(&t1);
+	extern_state["t2"] = load_float_ptr(&t2);
 
-BOOST_AUTO_TEST_CASE( intrinsics )
-{
-	test_expression("mul(2,2);", 4);
-	test_expression("div(4,2);", 2);
-	test_expression("add(1,1);", 2);
-	test_expression("sub(4,2);", 2);
-	test_expression("pow(4,2);", 16);
-	test_expression("abs(-19);", 19);
-	test_expression("not(19);",  0);
-	test_expression("not(0);",   1);
-	test_expression("div(mul(1,1),2);", 0.5f);
+	test_expression("t1 * t2;", 20.f, extern_state);
+	test_expression("t3 = t1 * t2;t3;", 20.f, extern_state);
+	test_expression("t3 = t1 * t2;t3*t2;", 200.f, extern_state);
 }

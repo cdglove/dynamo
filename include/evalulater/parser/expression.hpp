@@ -20,6 +20,7 @@
 #include "evalulater/config.hpp"
 #include "evalulater/ast/fusion_ast.hpp"
 #include "evalulater/error_handler.hpp"
+#include "evalulater/annotation.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>

@@ -51,4 +51,6 @@ function(create_and_add_test test_name test_source)
 endfunction(create_and_add_test)
 
 create_and_add_test(parser parser.cpp)
+create_and_add_test(compiler compiler.cpp)
+create_and_add_test(linker linker.cpp)
 create_and_add_test(operators operators.cpp)

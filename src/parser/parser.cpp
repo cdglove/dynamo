@@ -13,5 +13,13 @@
 
 #include "evalulater/parser/parser.hpp"
 
-// Inclue at least one instantiation of the parser in the lib.
-template class evalulater::parse::parser<std::string::const_iterator>;
+namespace evalulater { namespace parse
+{
+	// Include at least one instantiation of the parser in the lib.
+	boost::optional<
+		ast::statement_list
+	> parser::parse(std::string const& s) const
+	{
+		return parse(s.begin(), s.end());
+	}
+}}

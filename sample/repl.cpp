@@ -76,10 +76,7 @@ int main()
 			test_expr += line;
 		}
 
-		evalulater::parse::parser<
-			iterator_type
-		> parser(error_handler);							// Builds the AST
-		
+		evalulater::parse::parser parser(error_handler);	// Builds the AST
 		evalulater::compiler compiler(error_handler);		// Compiles the program
 		evalulater::linker linker(error_handler);		    // Links the program
         

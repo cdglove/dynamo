@@ -16,6 +16,7 @@
 
 #include <string>
 #include <boost/optional.hpp>
+#include <boost/any.hpp>
 #include "evalulater/ast/ast.hpp"
 #include "evalulater/parser/statement.hpp"
 
@@ -26,22 +27,33 @@ namespace evalulater { namespace parse
 	// Consumes a sequence of characters and returns an ast on success
 	// or boost::none on failure.
 	///////////////////////////////////////////////////////////////////////////
-	template<typename Iterator>
 	class parser
 	{
 	public:
 
+		template<typename Iterator>
 		parser(error_handler<Iterator>& error_handler_)
-			: error_handler_(error_handler_)
+			: error_handler_(&error_handler_)
 		{}
-		
-		// cglover-todo:  This function needs to go.
-		boost::optional<ast::statement_list> parse(std::string const& c)
-		{
-			return parse(std::begin(c), std::end(c));
-		}
 
-		boost::optional<ast::statement_list> parse(Iterator first, Iterator last) const
+		boost::optional<ast::statement_list> parse(std::string const& s) const;
+
+		template<typename Iterator>
+		boost::optional<ast::statement_list> parse(
+			Iterator first, 
+			Iterator last) const
+		{
+			error_handler<Iterator>& err_handler = *boost::any_cast<
+				error_handler<Iterator>*
+			>(error_handler_);
+			return parse(err_handler, first, last);
+		}
+		
+		template<typename Iterator>
+		static boost::optional<ast::statement_list> parse(
+			error_handler<Iterator>& error_handler_,
+			Iterator first, 
+			Iterator last)
 		{
 			error_handler_.on_parse_begin(first, last);
 
@@ -62,7 +74,8 @@ namespace evalulater { namespace parse
 
 	private:
 
-		error_handler<Iterator>& error_handler_;
+		boost::any error_handler_;
+
 	};
 }}
 

@@ -18,12 +18,11 @@
 
 typedef std::string::const_iterator iterator_type;
 typedef evalulater::error_handler<iterator_type> error_handler_type;
-typedef evalulater::parse::parser<iterator_type> parser_type;
 
 BOOST_AUTO_TEST_CASE( unary_parse )
 {
 	error_handler_type diagnostic(std::cout);
-	parser_type parser(diagnostic);
+	evalulater::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("1;"));
 	BOOST_CHECK(parser.parse("-1;"));
 	BOOST_CHECK(parser.parse("+1;"));
@@ -35,7 +34,7 @@ BOOST_AUTO_TEST_CASE( unary_parse )
 BOOST_AUTO_TEST_CASE( binary_parse )
 {
 	error_handler_type diagnostic(std::cout);
-	parser_type parser(diagnostic);
+	evalulater::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("1 + 1;"));
 	BOOST_CHECK(parser.parse("1-1;"));
 	BOOST_CHECK(parser.parse("1 * 1;"));
@@ -53,7 +52,7 @@ BOOST_AUTO_TEST_CASE( binary_parse )
 BOOST_AUTO_TEST_CASE( intrinsic_parse )
 {
 	error_handler_type diagnostic(std::cout);
-	parser_type parser(diagnostic);
+	evalulater::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("abs(1);"));
 	BOOST_CHECK(parser.parse("pow(1,2);"));
 	BOOST_CHECK(parser.parse("add(1,2);"));
@@ -67,11 +66,10 @@ BOOST_AUTO_TEST_CASE( intrinsic_parse )
 BOOST_AUTO_TEST_CASE( failed_parse )
 {
 	error_handler_type diagnostic(std::cout);
-	parser_type parser(diagnostic);
+	evalulater::parse::parser parser(diagnostic);
 	BOOST_CHECK(!parser.parse("1 + 1"));
 	BOOST_CHECK(!parser.parse("1 1;"));
 	BOOST_CHECK(!parser.parse("1 */ 1;"));
 	BOOST_CHECK(!parser.parse("(1/1(;"));
 	BOOST_CHECK(!parser.parse("1foo = 2boo;"));
-	BOOST_CHECK(!parser.parse("mul(0,0,0);"));
 }
