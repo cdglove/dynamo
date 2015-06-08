@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/vm.cpp
+// evalulater/vm/executable.cpp
 //
 // Implementation of vm for evalulater syntax.  
 //
