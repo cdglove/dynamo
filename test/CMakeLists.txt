@@ -36,9 +36,9 @@ add_include_test(ast fusion_ast)
 add_include_test(vm machine)
 add_include_test(vm byte_code)
 add_include_test(vm executable)
-add_include_test(parser parser)
-add_include_test(parser expression)
-add_include_test(parser statement)
+add_include_test(parse parser)
+add_include_test(parse expression)
+add_include_test(parse statement)
 
 # -----------------------------------------------------------------------------
 # Function to add a normal test with all of the proper includes, etc.

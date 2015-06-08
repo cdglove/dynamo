@@ -13,7 +13,7 @@
 
 #include "dynamo/vm/machine.hpp"
 #include "dynamo/vm/byte_code.hpp"
-#include "dynamo/parser/parser.hpp"
+#include "dynamo/parse/parser.hpp"
 #include "dynamo/compiler.hpp"
 #include "dynamo/linker.hpp"
 

@@ -11,7 +11,7 @@
 //
 // ****************************************************************************
 #include "dynamo/vm/byte_code.hpp"
-#include "dynamo/parser/parser.hpp"
+#include "dynamo/parse/parser.hpp"
 #include "dynamo/compiler.hpp"
 
 #define BOOST_TEST_MODULE Compiler

@@ -1,5 +1,5 @@
 // ****************************************************************************
-// dynamo/parser/expression.hpp
+// dynamo/parse/expression.hpp
 //
 // Parser for dynamo syntax. 
 // Parses a string into a series of op_codes to be evaluated by the vm.

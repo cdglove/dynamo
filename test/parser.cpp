@@ -10,7 +10,7 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#include "dynamo/parser/parser.hpp"
+#include "dynamo/parse/parser.hpp"
 #include "dynamo/error_handler.hpp"
 
 #define BOOST_TEST_MODULE Parser

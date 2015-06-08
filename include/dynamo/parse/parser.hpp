@@ -18,7 +18,7 @@
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include "dynamo/ast/ast.hpp"
-#include "dynamo/parser/statement.hpp"
+#include "dynamo/parse/statement.hpp"
 
 namespace dynamo { namespace parse
 {

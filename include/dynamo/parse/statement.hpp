@@ -1,5 +1,5 @@
 // ****************************************************************************
-// dynamo/parser/statement.hpp
+// dynamo/parse/statement.hpp
 //
 // Statement parser for dynamo syntax. 
 // Parses a string into a series of op_codes to be evaluated by the vm.
@@ -38,7 +38,7 @@
 #include "dynamo/ast/fusion_ast.hpp"
 #include "dynamo/error_handler.hpp"
 #include "dynamo/annotation.hpp"
-#include "dynamo/parser/expression.hpp"
+#include "dynamo/parse/expression.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>

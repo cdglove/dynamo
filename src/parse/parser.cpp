@@ -1,5 +1,5 @@
 // ****************************************************************************
-// dynamo/parser/parser.cpp
+// dynamo/parse/parser.cpp
 //
 // Implementation of parser firewall object.
 // 
@@ -11,7 +11,7 @@
 //
 // ****************************************************************************
 
-#include "dynamo/parser/parser.hpp"
+#include "dynamo/parse/parser.hpp"
 
 namespace dynamo { namespace parse
 {
