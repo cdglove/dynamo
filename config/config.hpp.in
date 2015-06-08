@@ -1,10 +1,10 @@
-#ifndef EVALULATER_CONFIG_H
-#define EVALULATER_CONFIG_H
+#ifndef DYNAMO_CONFIG_H
+#define DYNAMO_CONFIG_H
 
-const int EvalulaterVersionMajor = @EVALULATER_VERSION_MAJOR@;
-const int EvalulaterVersionMinor = @EVALULATER_VERSION_MINOR@;
-const int EvalulaterVersionPatch = @EVALULATER_VERSION_PATCH@;
-char const* const EvalulaterVersionString = "@EVALULATER_VERSION_STRING@";
+const int DynamoVersionMajor = @DYNAMO_VERSION_MAJOR@;
+const int DynamoVersionMinor = @DYNAMO_VERSION_MINOR@;
+const int DynamoVersionPatch = @DYNAMO_VERSION_PATCH@;
+char const* const DynamoVersionString = "@DYNAMO_VERSION_STRING@";
 
 
 ///////////////////////////////////////////////////////////////////////////////

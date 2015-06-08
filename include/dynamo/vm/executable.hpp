@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/vm/executable.hpp
+// dynamo/vm/executable.hpp
 //
-// Executable format for evalulater syntax.  Contains linked
+// Executable format for dynamo syntax.  Contains linked
 // byte code and variable tables.
 //
 // Copyright Chris Glover 2015
@@ -11,22 +11,22 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_VM_EXECUTABLE_HPP_
-#define _EVALULATER_VM_EXECUTABLE_HPP_
+#ifndef _DYNAMO_VM_EXECUTABLE_HPP_
+#define _DYNAMO_VM_EXECUTABLE_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
+#include "dynamo/config.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/optional.hpp>
 #include <boost/function.hpp>
 #include <vector>
 
-namespace evalulater
+namespace dynamo
 {
 	class linker;
 }
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	class byte_code;
 	typedef boost::function<float()> fetch_constant_fun;
@@ -49,7 +49,7 @@ namespace evalulater { namespace vm
 		///////////////////////////////////////////////////////////////////////
 		// Executables can only be created by the linker.
 		///////////////////////////////////////////////////////////////////////
-		friend class evalulater::linker;
+		friend class dynamo::linker;
 
 		executable(
 			byte_code const& code, 
@@ -62,4 +62,4 @@ namespace evalulater { namespace vm
 	};
 }}
 
-#endif //_EVALULATER_VM_EXECUTABLE_HPP_
+#endif //_DYNAMO_VM_EXECUTABLE_HPP_

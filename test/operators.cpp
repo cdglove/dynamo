@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/test/operators.cpp
+// dynamo/test/operators.cpp
 //
 // Test operator functionality
 // 
@@ -10,28 +10,28 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#include "evalulater/vm/machine.hpp"
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/parser/parser.hpp"
-#include "evalulater/compiler.hpp"
-#include "evalulater/linker.hpp"
+#include "dynamo/vm/machine.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/parser/parser.hpp"
+#include "dynamo/compiler.hpp"
+#include "dynamo/linker.hpp"
 
 #define BOOST_TEST_MODULE Operators
 #include <boost/test/unit_test.hpp>
 
 static void test_expression(std::string expression, float expected_result)
 {
-	evalulater::error_handler<						 
+	dynamo::error_handler<						 
 		std::string::const_iterator
 	> error_handler(std::cout);	
 
-	evalulater::parse::parser parser(error_handler);
-	boost::optional<evalulater::ast::statement_list> ast;
-	evalulater::compiler compiler(error_handler);
-	boost::optional<evalulater::vm::byte_code> code;
-	evalulater::linker linker(error_handler);
-	boost::optional<evalulater::vm::executable> exe;
-	evalulater::vm::machine vm;
+	dynamo::parse::parser parser(error_handler);
+	boost::optional<dynamo::ast::statement_list> ast;
+	dynamo::compiler compiler(error_handler);
+	boost::optional<dynamo::vm::byte_code> code;
+	dynamo::linker linker(error_handler);
+	boost::optional<dynamo::vm::executable> exe;
+	dynamo::vm::machine vm;
 
 	ast = parser.parse(expression);
 	BOOST_CHECK(ast);

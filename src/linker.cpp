@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/linker.cpp
+// dynamo/linker.cpp
 //
-// Implementation of Linker for evalulater syntax.  
+// Implementation of Linker for dynamo syntax.  
 //
 // Copyright Chris Glover 2015
 //
@@ -11,13 +11,13 @@
 //
 // ****************************************************************************
 
-#include "evalulater/linker.hpp"
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/error_handler.hpp"
+#include "dynamo/linker.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/error_handler.hpp"
 #include <boost/foreach.hpp>
 #include <sstream>
 
-namespace evalulater
+namespace dynamo
 {
 	struct load_float_ptr
 	{

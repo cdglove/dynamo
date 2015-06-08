@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/parser/parser.hpp
+// dynamo/parser/parser.hpp
 //
-// Parser object for evalulater syntax.
+// Parser object for dynamo syntax.
 // 
 // Copyright Chris Glover 2015
 //
@@ -10,17 +10,17 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_PARSER_PARSER_HPP_
-#define _EVALULATER_PARSER_PARSER_HPP_
+#ifndef _DYNAMO_PARSER_PARSER_HPP_
+#define _DYNAMO_PARSER_PARSER_HPP_
 #pragma once
 
 #include <string>
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
-#include "evalulater/ast/ast.hpp"
-#include "evalulater/parser/statement.hpp"
+#include "dynamo/ast/ast.hpp"
+#include "dynamo/parser/statement.hpp"
 
-namespace evalulater { namespace parse
+namespace dynamo { namespace parse
 {
 	///////////////////////////////////////////////////////////////////////////
 	// The Parser
@@ -57,12 +57,12 @@ namespace evalulater { namespace parse
 		{
 			error_handler_.on_parse_begin(first, last);
 
-			evalulater::parse::statement<	
+			dynamo::parse::statement<	
 				Iterator
 			> stmt(error_handler_);
 
 			boost::spirit::ascii::space_type space;
-			evalulater::ast::statement_list ast;
+			dynamo::ast::statement_list ast;
 			bool r = phrase_parse(first, last, +stmt, space, ast);
 			if(r && first == last)
 			{
@@ -79,4 +79,4 @@ namespace evalulater { namespace parse
 	};
 }}
 
-#endif // _EVALULATER_PARSER_PARSER_HPP_
+#endif // _DYNAMO_PARSER_PARSER_HPP_

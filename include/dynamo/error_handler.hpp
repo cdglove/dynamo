@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/error_handler.hpp
+// dynamo/error_handler.hpp
 //
-// Parsing error handler for evalulater syntax.
+// Parsing error handler for dynamo syntax.
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
@@ -12,15 +12,15 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_ERRORHANDLER_HPP_
-#define _EVALULATER_ERRORHANDLER_HPP_
+#ifndef _DYNAMO_ERRORHANDLER_HPP_
+#define _DYNAMO_ERRORHANDLER_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
+#include "dynamo/config.hpp"
 #include <iostream>
 #include <vector>
 
-namespace evalulater
+namespace dynamo
 {
 	///////////////////////////////////////////////////////////////////////////////
 	//  The error handler - pretty prints a helpful error when parsing fails
@@ -124,4 +124,4 @@ namespace evalulater
     };
 }
 
-#endif //_EVALULATER_ERRORHANDLER_HPP_
+#endif //_DYNAMO_ERRORHANDLER_HPP_

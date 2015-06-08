@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/compiler.cpp
+// dynamo/compiler.cpp
 //
-// Implementation of Compiler for evalulater syntax.  
+// Implementation of Compiler for dynamo syntax.  
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
@@ -13,15 +13,15 @@
 //
 // ****************************************************************************
 
-#include "evalulater/compiler.hpp"
-#include "evalulater/ast/ast.hpp"
-#include "evalulater/vm/byte_code.hpp"
+#include "dynamo/compiler.hpp"
+#include "dynamo/ast/ast.hpp"
+#include "dynamo/vm/byte_code.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/type_traits/extent.hpp> 
 #include <sstream>
 
-namespace evalulater
+namespace dynamo
 {
 	boost::optional<vm::byte_code> compiler::compile(ast::statement_list const& x)
 	{

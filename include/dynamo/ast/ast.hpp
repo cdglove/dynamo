@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/ast/ast.hpp
+// dynamo/ast/ast.hpp
 //
-// Abstract syntax tree for evalulater syntax.  
+// Abstract syntax tree for dynamo syntax.  
 // Defines expressions and the data asociated with them.
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
@@ -13,17 +13,17 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_AST_AST_HPP_
-#define _EVALULATER_AST_AST_HPP_
+#ifndef _DYNAMO_AST_AST_HPP_
+#define _DYNAMO_AST_AST_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
+#include "dynamo/config.hpp"
 
 #include <boost/variant/recursive_variant.hpp>
 #include <iostream>
 #include <vector>
 
-namespace evalulater { namespace ast
+namespace dynamo { namespace ast
 {
 	///////////////////////////////////////////////////////////////////////////
 	//  The AST
@@ -139,4 +139,4 @@ namespace evalulater { namespace ast
 	}
 }}
 
-#endif // _EVALULATER_AST_HPP_
+#endif // _DYNAMO_AST_HPP_

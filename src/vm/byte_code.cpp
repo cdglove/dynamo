@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/byte_code.cpp
+// dynamo/byte_code.cpp
 //
 // Byte code result at the end of compilation.
 //
@@ -11,10 +11,10 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm/byte_code.hpp"
+#include "dynamo/vm/byte_code.hpp"
 #include <boost/assert.hpp>
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	static int const* find_named_ref(data_index const& idx, std::string const& name)
 	{

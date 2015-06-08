@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/compiler.hpp
+// dynamo/compiler.hpp
 //
-// Compiler for evalulater syntax
+// Compiler for dynamo syntax
 // Converts the ast into a series of opcodes to be consumed by the vm.
 // 
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
@@ -13,18 +13,18 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_COMPILER_HPP_
-#define _EVALULATER_COMPILER_HPP_
+#ifndef _DYNAMO_COMPILER_HPP_
+#define _DYNAMO_COMPILER_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
-#include "evalulater/ast/ast.hpp"
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/error_handler.hpp"
+#include "dynamo/config.hpp"
+#include "dynamo/ast/ast.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/error_handler.hpp"
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 
-namespace evalulater
+namespace dynamo
 {
 	class diagnostic_sink;
 
@@ -95,4 +95,4 @@ namespace evalulater
 	};
 }
 
-#endif //_EVALULATER_COMPILER_HPP_
+#endif //_DYNAMO_COMPILER_HPP_

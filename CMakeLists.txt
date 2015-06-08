@@ -1,24 +1,24 @@
 cmake_minimum_required(VERSION 2.8)
-project(evalulater)
+project(dynamo)
 
 ###############################################################################
 #
 # Versioning
 #
 ###############################################################################
-set(EVALULATER_VERSION_MAJOR 1)
-set(EVALULATER_VERSION_MINOR 0)
-set(EVALULATER_VERSION_PATCH 0)
-set(EVALULATER_VERSION_STRING ${EVALULATER_VERSION_MAJOR}.${EVALULATER_VERSION_MINOR}.${EVALULATER_VERSION_PATCH})
-message("Evalulater Version: ${EVALULATER_VERSION_STRING}")
+set(DYNAMO_VERSION_MAJOR 1)
+set(DYNAMO_VERSION_MINOR 0)
+set(DYNAMO_VERSION_PATCH 0)
+set(DYNAMO_VERSION_STRING ${DYNAMO_VERSION_MAJOR}.${DYNAMO_VERSION_MINOR}.${DYNAMO_VERSION_PATCH})
+message("Dynamo Version: ${DYNAMO_VERSION_STRING}")
  
 ###############################################################################
 #
 # Options
 #
 ###############################################################################
-option( EVALULATER_BUILD_TESTS "Build the evalulater project tests." ON)
-option( EVALULATER_BUILD_SAMPLES "Build the evalulater project samples." ON)
+option( DYNAMO_BUILD_TESTS "Build the dynamo project tests." ON)
+option( DYNAMO_BUILD_SAMPLES "Build the dynamo project samples." ON)
 
 ###############################################################################
 #
@@ -38,7 +38,7 @@ include(GNUInstallDirs)
 if(WIN32 AND NOT CYGWIN)
 	set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
-	set(DEF_INSTALL_CMAKE_DIR lib/cmake/evalulater)
+	set(DEF_INSTALL_CMAKE_DIR lib/cmake/dynamo)
 endif()
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
@@ -54,16 +54,16 @@ endif()
 ###############################################################################
 configure_file(
   "${PROJECT_SOURCE_DIR}/config/config.hpp.in"
-  "${PROJECT_BINARY_DIR}/evalulater/config.hpp" )
+  "${PROJECT_BINARY_DIR}/dynamo/config.hpp" )
  
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(Evalulater_INCLUDE_DIRS 
+set(Dynamo_INCLUDE_DIRS 
   ${PROJECT_SOURCE_DIR}/include
    ${PROJECT_BINARY_DIR}
    ${Boost_INCLUDE_DIR}
 )
 
-set(Evalulater_LIBRARIES evalulater)
+set(Dynamo_LIBRARIES dynamo)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   include(CheckCXXCompilerFlag)
@@ -78,11 +78,11 @@ endif()
 enable_testing()
 
 add_subdirectory(src)
-if(EVALULATER_BUILD_TESTS)
+if(DYNAMO_BUILD_TESTS)
 	add_subdirectory(test)
 endif()
 
-if(EVALULATER_BUILD_SAMPLES)
+if(DYNAMO_BUILD_SAMPLES)
   add_subdirectory(sample)
 endif()
 
@@ -96,28 +96,28 @@ endif()
 ###############################################################################
 
 # Add all targets to the build-tree export set
-export(TARGETS evalulater
-	FILE "${PROJECT_BINARY_DIR}/evalulaterTargets.cmake")
+export(TARGETS dynamo
+	FILE "${PROJECT_BINARY_DIR}/dynamoTargets.cmake")
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE evalulater)
-# Create the evalulaterConfig.cmake and evalulaterConfigVersion files
+export(PACKAGE dynamo)
+# Create the dynamoConfig.cmake and dynamoConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 # ... for the build tree
-configure_file(evalulaterConfig.cmake.in
-	"${PROJECT_BINARY_DIR}/evalulaterConfig.cmake" @ONLY)
+configure_file(dynamoConfig.cmake.in
+	"${PROJECT_BINARY_DIR}/dynamoConfig.cmake" @ONLY)
 # ... for the install tree
-configure_file(evalulaterConfig.cmake.in
-	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/evalulaterConfig.cmake" @ONLY)
+configure_file(dynamoConfig.cmake.in
+	"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/dynamoConfig.cmake" @ONLY)
 # ... for both
-configure_file(evalulaterConfigVersion.cmake.in
-    "${PROJECT_BINARY_DIR}/evalulaterConfigVersion.cmake" @ONLY)
-# Install the evalulaterConfig.cmake
+configure_file(dynamoConfigVersion.cmake.in
+    "${PROJECT_BINARY_DIR}/dynamoConfigVersion.cmake" @ONLY)
+# Install the dynamoConfig.cmake
 install(FILES
-    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/evalulaterConfig.cmake"
+    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/dynamoConfig.cmake"
     DESTINATION "${INSTALL_CMAKE_DIR}"
     COMPONENT dev)
 # Install the export set for use with the install-tree
-# install(EXPORT evalulaterTargets
+# install(EXPORT dynamoTargets
 #     DESTINATION "${INSTALL_CMAKE_DIR}"
 #     COMPONENT dev)

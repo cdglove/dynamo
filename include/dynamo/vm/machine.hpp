@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/vm/machine.hpp
+// dynamo/vm/machine.hpp
 //
-// Virtual machine for evalulater syntax.  Runs a series of op codes as 
+// Virtual machine for dynamo syntax.  Runs a series of op codes as 
 // produced from the compiler.
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
@@ -13,16 +13,16 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_VM_MACHINE_HPP_
-#define _EVALULATER_VM_MACHINE_HPP_
+#ifndef _DYNAMO_VM_MACHINE_HPP_
+#define _DYNAMO_VM_MACHINE_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
-#include "evalulater/vm/executable.hpp"
+#include "dynamo/config.hpp"
+#include "dynamo/vm/executable.hpp"
 
 #include <vector>
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	///////////////////////////////////////////////////////////////////////////
 	//  The Virtual Machine - Executes the supplied byte code 
@@ -46,4 +46,4 @@ namespace evalulater { namespace vm
     };
 }}
 
-#endif //_EVALULATER_VM_HPP_
+#endif //_DYNAMO_VM_HPP_

@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/vm/byte_code.hpp
+// dynamo/vm/byte_code.hpp
 //
 // Defines the byte code produced by the compiler and consumed
 // by the vm.
@@ -13,16 +13,16 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_VM_BYTECODE_HPP_
-#define _EVALULATER_VM_BYTECODE_HPP_
+#ifndef _DYNAMO_VM_BYTECODE_HPP_
+#define _DYNAMO_VM_BYTECODE_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
+#include "dynamo/config.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <vector>
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	///////////////////////////////////////////////////////////////////////////
 	//  Byte code operations
@@ -131,6 +131,6 @@ namespace evalulater { namespace vm
 	{
 		return variable_index_;
 	}
-}} // namespace evalulater { namespace vm
+}} // namespace dynamo { namespace vm
 
-#endif // _EVALULATER_VM_BYTECODE_HPP_
+#endif // _DYNAMO_VM_BYTECODE_HPP_

@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/linker.hpp
+// dynamo/linker.hpp
 //
-// Linker for evalulater syntax
+// Linker for dynamo syntax
 // links byte_code and data into an executable.
 // 
 // Copyright Chris Glover 2015
@@ -11,16 +11,16 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_LINKER_HPP_
-#define _EVALULATER_LINKER_HPP_
+#ifndef _DYNAMO_LINKER_HPP_
+#define _DYNAMO_LINKER_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
-#include "evalulater/vm/executable.hpp"
+#include "dynamo/config.hpp"
+#include "dynamo/vm/executable.hpp"
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 
-namespace evalulater
+namespace dynamo
 {
 	class diagnostic_sink;
 
@@ -78,4 +78,4 @@ namespace evalulater
 	};
 }
 
-#endif //_EVALULATER_COMPILER_HPP_
+#endif //_DYNAMO_COMPILER_HPP_

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project (evalulater_test)
+project (dynamo_test)
  
 set (PROJECT_INCLUDE_DIR "../")
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -11,8 +11,8 @@ find_package( Boost )
 #------------------------------------------------------------------------------
 function(create_and_add_sample sample_name sample_source)
 	add_executable(sample.${sample_name} ${sample_source})
-	target_link_libraries(sample.${sample_name} ${Evalulater_LIBRARIES})
-	target_include_directories(sample.${sample_name} PUBLIC ${Boost_INCLUDE_DIR} ${Evalulater_INCLUDE_DIRS})
+	target_link_libraries(sample.${sample_name} ${Dynamo_LIBRARIES})
+	target_include_directories(sample.${sample_name} PUBLIC ${Boost_INCLUDE_DIR} ${Dynamo_INCLUDE_DIRS})
 endfunction(create_and_add_sample)
 
 create_and_add_sample(repl repl.cpp)
