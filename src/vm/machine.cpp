@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/vm.cpp
+// dynamo/vm.cpp
 //
-// Implementation of vm for evalulater syntax.  
+// Implementation of vm for dynamo syntax.  
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
@@ -13,10 +13,10 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm/machine.hpp"
-#include "evalulater/vm/byte_code.hpp"
+#include "dynamo/vm/machine.hpp"
+#include "dynamo/vm/byte_code.hpp"
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	void machine::execute(executable& ex)
 	{

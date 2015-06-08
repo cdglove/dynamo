@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/vm.cpp
+// dynamo/vm/executable.cpp
 //
-// Implementation of vm for evalulater syntax.  
+// Implementation of vm for dynamo syntax.  
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
 //
@@ -13,10 +13,10 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm/machine.hpp"
+#include "dynamo/vm/machine.hpp"
 #include <boost/foreach.hpp>
 
-namespace evalulater { namespace vm
+namespace dynamo { namespace vm
 {
 	executable::executable(byte_code const& code, 
 						   std::vector<float*> variable_table_,

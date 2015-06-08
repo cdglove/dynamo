@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/test/linker.cpp
+// dynamo/test/linker.cpp
 //
 // Test linker functionality
 // 
@@ -10,11 +10,11 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#include "evalulater/vm/machine.hpp"
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/parser/parser.hpp"
-#include "evalulater/compiler.hpp"
-#include "evalulater/linker.hpp"
+#include "dynamo/vm/machine.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/parse/parser.hpp"
+#include "dynamo/compiler.hpp"
+#include "dynamo/linker.hpp"
 
 #define BOOST_TEST_MODULE Compiler
 #include <boost/test/unit_test.hpp>
@@ -36,20 +36,20 @@ struct load_float_ptr
 static void test_expression(
 	std::string expression, 
 	float expected_result,
-	evalulater::constant_index const& external,
-	evalulater::variable_index& local)
+	dynamo::constant_index const& external,
+	dynamo::variable_index& local)
 {
-	evalulater::error_handler<						 
+	dynamo::error_handler<						 
 		std::string::const_iterator
 	> error_handler(std::cout);	
 
-	evalulater::parse::parser parser(error_handler);
-	boost::optional<evalulater::ast::statement_list> ast;
-	evalulater::compiler compiler(error_handler);
-	boost::optional<evalulater::vm::byte_code> code;
-	evalulater::linker linker(error_handler);
-	boost::optional<evalulater::vm::executable> exe;
-	evalulater::vm::machine vm;
+	dynamo::parse::parser parser(error_handler);
+	boost::optional<dynamo::ast::statement_list> ast;
+	dynamo::compiler compiler(error_handler);
+	boost::optional<dynamo::vm::byte_code> code;
+	dynamo::linker linker(error_handler);
+	boost::optional<dynamo::vm::executable> exe;
+	dynamo::vm::machine vm;
 
 	ast = parser.parse(expression);
 	BOOST_CHECK(ast);
@@ -72,13 +72,13 @@ static void test_expression(
 
 BOOST_AUTO_TEST_CASE( state_data )
 {
-	evalulater::constant_index extern_state;
+	dynamo::constant_index extern_state;
 	float t1 = 2.f;
 	float t2 = 10.f;
 	extern_state["t1"] = load_float_ptr(&t1);
 	extern_state["t2"] = load_float_ptr(&t2);
 
-	evalulater::variable_index local_state;
+	dynamo::variable_index local_state;
 
 	test_expression("t1 * t2;", 20.f, extern_state, local_state);
 	test_expression("t3 = t1 * t2;t3;", 20.f, extern_state, local_state);
@@ -88,17 +88,17 @@ BOOST_AUTO_TEST_CASE( state_data )
 
 static void test_fail_linkage(std::string expression)
 {
-	evalulater::error_handler<						 
+	dynamo::error_handler<						 
 		std::string::const_iterator
 	> error_handler(std::cout);	
 
-	evalulater::parse::parser parser(error_handler);
-	boost::optional<evalulater::ast::statement_list> ast;
-	evalulater::compiler compiler(error_handler);
-	boost::optional<evalulater::vm::byte_code> code;
-	evalulater::linker linker(error_handler);
-	boost::optional<evalulater::vm::executable> exe;
-	evalulater::vm::machine vm;
+	dynamo::parse::parser parser(error_handler);
+	boost::optional<dynamo::ast::statement_list> ast;
+	dynamo::compiler compiler(error_handler);
+	boost::optional<dynamo::vm::byte_code> code;
+	dynamo::linker linker(error_handler);
+	boost::optional<dynamo::vm::executable> exe;
+	dynamo::vm::machine vm;
 
 	ast = parser.parse(expression);
 	BOOST_CHECK(ast);

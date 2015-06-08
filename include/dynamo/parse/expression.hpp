@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/parser/expression.hpp
+// dynamo/parse/expression.hpp
 //
-// Parser for evalulater syntax. 
+// Parser for dynamo syntax. 
 // Parses a string into a series of op_codes to be evaluated by the vm.
 //
 // Based on Boost.Spirit samples Copyright (c) 2001-2011 Joel de Guzman
@@ -13,25 +13,25 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_PARSER_EXPRESSION_HPP_
-#define _EVALULATER_PARSER_EXPRESSION_HPP_
+#ifndef _DYNAMO_PARSER_EXPRESSION_HPP_
+#define _DYNAMO_PARSER_EXPRESSION_HPP_
 #pragma once
 
-#include "evalulater/config.hpp"
-#include "evalulater/ast/fusion_ast.hpp"
-#include "evalulater/error_handler.hpp"
-#include "evalulater/annotation.hpp"
+#include "dynamo/config.hpp"
+#include "dynamo/ast/fusion_ast.hpp"
+#include "dynamo/error_handler.hpp"
+#include "dynamo/annotation.hpp"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 
-namespace evalulater { namespace parse
+namespace dynamo { namespace parse
 {
 	namespace qi = boost::spirit::qi;
 	namespace ascii = boost::spirit::ascii;
 
 	///////////////////////////////////////////////////////////////////////////////
-	//  The evalulater grammar
+	//  The dynamo grammar
 	///////////////////////////////////////////////////////////////////////////////
 	template <typename Iterator>
 	class expression : public qi::grammar<Iterator, ast::expression(), ascii::space_type>
@@ -167,4 +167,4 @@ namespace evalulater { namespace parse
 	};
 }}
 
-#endif // _EVALULATER_PARSER_EXPRESSION_HPP_
+#endif // _DYNAMO_PARSER_EXPRESSION_HPP_

@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/test/compiler.cpp
+// dynamo/test/compiler.cpp
 //
 // Test compiler functionality
 // 
@@ -10,23 +10,23 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/parser/parser.hpp"
-#include "evalulater/compiler.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/parse/parser.hpp"
+#include "dynamo/compiler.hpp"
 
 #define BOOST_TEST_MODULE Compiler
 #include <boost/test/unit_test.hpp>
 
 static void test_expression(std::string expression, bool expect_should_compile)
 {
-	evalulater::error_handler<						 
+	dynamo::error_handler<						 
 		std::string::const_iterator
 	> error_handler(std::cout);	
 
-	evalulater::parse::parser parser(error_handler);
-	boost::optional<evalulater::ast::statement_list> ast;
-	evalulater::compiler compiler(error_handler);
-	boost::optional<evalulater::vm::byte_code> code;
+	dynamo::parse::parser parser(error_handler);
+	boost::optional<dynamo::ast::statement_list> ast;
+	dynamo::compiler compiler(error_handler);
+	boost::optional<dynamo::vm::byte_code> code;
 	ast = parser.parse(expression);
 	BOOST_CHECK(ast);
 	if(ast)

@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/parser/parser.cpp
+// dynamo/parse/parser.cpp
 //
 // Implementation of parser firewall object.
 // 
@@ -11,9 +11,9 @@
 //
 // ****************************************************************************
 
-#include "evalulater/parser/parser.hpp"
+#include "dynamo/parse/parser.hpp"
 
-namespace evalulater { namespace parse
+namespace dynamo { namespace parse
 {
 	// Include at least one instantiation of the parser in the lib.
 	boost::optional<

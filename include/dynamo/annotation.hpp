@@ -1,5 +1,5 @@
 // ****************************************************************************
-// evalulater/parser/annotation.hpp
+// dynamo/parse/annotation.hpp
 //
 // Annotation handler for parsing and compiling 
 //
@@ -12,18 +12,18 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _EVALULATER_ANNOTATION_HPP_
-#define _EVALULATER_ANNOTATION_HPP_
+#ifndef _DYNAMO_ANNOTATION_HPP_
+#define _DYNAMO_ANNOTATION_HPP_
 #pragma once
 
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/bool.hpp>
-#include "evalulater/ast/ast.hpp"
+#include "dynamo/ast/ast.hpp"
 
 #include <boost/variant/apply_visitor.hpp>
 #include <vector>
 
-namespace evalulater
+namespace dynamo
 {
     ///////////////////////////////////////////////////////////////////////////////
     //  The annotation handler links the AST to a vector of iterator positions
@@ -98,5 +98,5 @@ namespace evalulater
     };
 }
 
-#endif // _EVALULATER_ANNOTATION_HPP_
+#endif // _DYNAMO_ANNOTATION_HPP_
 

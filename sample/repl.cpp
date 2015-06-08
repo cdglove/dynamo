@@ -1,7 +1,7 @@
 // ****************************************************************************
-// evalulater/test/example.cpp
+// dynamo/test/example.cpp
 //
-// Sample program for evalulater expression eveluator.
+// Sample program for dynamo expression eveluator.
 //
 // Copyright Chris Glover 2015
 //
@@ -11,11 +11,11 @@
 //
 // ****************************************************************************
 
-#include "evalulater/vm/machine.hpp"
-#include "evalulater/vm/byte_code.hpp"
-#include "evalulater/parser/parser.hpp"
-#include "evalulater/compiler.hpp"
-#include "evalulater/linker.hpp"
+#include "dynamo/vm/machine.hpp"
+#include "dynamo/vm/byte_code.hpp"
+#include "dynamo/parse/parser.hpp"
+#include "dynamo/compiler.hpp"
+#include "dynamo/linker.hpp"
 
 #include <iostream>
 #include <string>
@@ -46,16 +46,16 @@ int main()
 
 	typedef std::string::const_iterator iterator_type;
 
-	evalulater::constant_index extern_state;
+	dynamo::constant_index extern_state;
 	float t1 = 5.f;
 	float t2 = 11.f;
 	extern_state["t1"] = load_float_ptr(&t1);
 	extern_state["t2"] = load_float_ptr(&t2);
 
-	evalulater::variable_index local_state;
-	evalulater::vm::machine machine;				    // Our virtual machine -- reusable
+	dynamo::variable_index local_state;
+	dynamo::vm::machine machine;				    // Our virtual machine -- reusable
 
-	evalulater::error_handler<						    // Our diagnostic printer -- reusable
+	dynamo::error_handler<						    // Our diagnostic printer -- reusable
 		iterator_type
 	> error_handler(std::cout);	
 	
@@ -76,12 +76,12 @@ int main()
 			test_expr += line;
 		}
 
-		evalulater::parse::parser parser(error_handler);	// Builds the AST
-		evalulater::compiler compiler(error_handler);		// Compiles the program
-		evalulater::linker linker(error_handler);		    // Links the program
+		dynamo::parse::parser parser(error_handler);	// Builds the AST
+		dynamo::compiler compiler(error_handler);		// Compiles the program
+		dynamo::linker linker(error_handler);		    // Links the program
         
 		boost::optional<
-			evalulater::ast::statement_list
+			dynamo::ast::statement_list
 		> ast = parser.parse(test_expr);
 		     
         if(ast)
@@ -90,7 +90,7 @@ int main()
             std::cout << "Parsing succeeded\n";
 
 			boost::optional<
-				evalulater::vm::byte_code
+				dynamo::vm::byte_code
 			> code = compiler.compile(*ast);
 
 			if(code)
@@ -98,7 +98,7 @@ int main()
 				std::cout << "\nCompiling succeeded\n";
 				
 				boost::optional<
-					evalulater::vm::executable
+					dynamo::vm::executable
 				> exe = linker.link(*code, extern_state, local_state);	
 				
 				if(exe)
