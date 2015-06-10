@@ -95,6 +95,10 @@ namespace dynamo
             iters.push_back(pos);
             ast.id = static_cast<int>(id);
         }
+
+	private:
+
+		annotation operator =(annotation);
     };
 }
 

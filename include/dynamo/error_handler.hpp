@@ -40,6 +40,10 @@ namespace dynamo
 	protected:
 		
 		std::ostream& outs;
+
+	private:
+
+		diagnostic_sink operator=(diagnostic_sink);
 	};
 
 	template <typename Iterator>
