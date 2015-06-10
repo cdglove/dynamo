@@ -39,8 +39,8 @@ namespace dynamo { namespace vm
 	public:
 
 		void  store(int idx, float data);
-		float load(int idx);
-		float loadc(int idx);
+		float load(int idx) const;
+		float loadc(int idx) const;
 
 		byte_code const& get_code() const;
 
@@ -53,7 +53,7 @@ namespace dynamo { namespace vm
 
 		executable(
 			byte_code const& code, 
-			std::vector<float*>		       variable_table_, 
+			std::vector<float*> variable_table_, 
 			std::vector<fetch_constant_fun> constant_table_);
 
 		byte_code const* code;

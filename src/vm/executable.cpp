@@ -32,12 +32,12 @@ namespace dynamo { namespace vm
 		*variable_table[idx] = data;
 	}
 
-	float executable::load(int idx)
+	float executable::load(int idx) const
 	{
 		return *variable_table[idx];
 	}
 
-	float executable::loadc(int idx)
+	float executable::loadc(int idx) const
 	{
 		return constant_table[idx]();
 	}

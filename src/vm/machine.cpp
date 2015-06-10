@@ -20,7 +20,7 @@ namespace dynamo { namespace vm
 {
 	void machine::execute(executable& ex)
 	{
-		std::vector<instruction> instructions = ex.get_code().get_instructions();
+		std::vector<instruction> const& instructions = ex.get_code().get_instructions();
 		std::vector<instruction>::const_iterator pc = instructions.begin();
 		std::vector<instruction>::const_iterator end = instructions.end();
 		stack_ptr = stack.begin();
