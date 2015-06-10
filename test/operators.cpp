@@ -81,4 +81,6 @@ BOOST_AUTO_TEST_CASE( intrinsics )
 	test_expression("not(19);",  0);
 	test_expression("not(0);",   1);
 	test_expression("div(mul(1,1),2);", 0.5f);
+	test_expression("add(1,1) * add(1,1);", 4);
+	test_expression("add(1,1) * mul(2,2);", 8);
 }
