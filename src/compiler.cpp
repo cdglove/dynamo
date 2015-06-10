@@ -76,15 +76,15 @@ namespace dynamo
 		return compile_op_token(x.operator_);
 	}
 
-	static int intrinsic_paramcount[] =
+	static std::size_t const intrinsic_paramcount[] =
 	{
-	   -1, //op_assign,
+	    0, //op_assign,
 		2, //op_add,
 		2, //op_subtract,
 		2, //op_multiply,
 		2, //op_divide,
-	   -1, //op_positive,
-	   -1, //op_negative,
+	    0, //op_positive,
+	    0, //op_negative,
 		1, //op_not,	
 		2, //op_pow,
 		1, //op_abs,
@@ -171,7 +171,7 @@ namespace dynamo
 		return true;
 	}
 
-	static int precedence[] =
+	static int const precedence[] =
 	{
 		// precedence 1
 		1, //op_assign,

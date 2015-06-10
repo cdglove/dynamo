@@ -21,8 +21,8 @@
 #include "dynamo/ast/fusion_ast.hpp"
 #include "dynamo/error_handler.hpp"
 #include "dynamo/annotation.hpp"
+#include "dynamo/parse/qi.hpp"
 
-#include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 
 namespace dynamo { namespace parse

@@ -17,6 +17,7 @@
 #pragma once
 
 #include "dynamo/config.hpp"
+#include "dynamo/nonassignable.hpp"
 #include <iostream>
 #include <vector>
 
@@ -25,11 +26,11 @@ namespace dynamo
 	///////////////////////////////////////////////////////////////////////////////
 	//  The error handler - pretty prints a helpful error when parsing fails
 	///////////////////////////////////////////////////////////////////////////////
-	class diagnostic_sink
+	class diagnostic_sink : nonassignable
 	{
 	public:
-		diagnostic_sink(std::ostream& sink)
-			: outs(sink)
+		diagnostic_sink(std::ostream& sink_)
+			: outs(sink_)
 		{}
 
 		std::ostream& operator()() const 
@@ -40,10 +41,6 @@ namespace dynamo
 	protected:
 		
 		std::ostream& outs;
-
-	private:
-
-		diagnostic_sink operator=(diagnostic_sink);
 	};
 
 	template <typename Iterator>
@@ -52,10 +49,8 @@ namespace dynamo
         template <typename T0 = void, typename T1 = void, typename T2 = void>
         struct result { typedef void type; };
 
-        error_handler(std::ostream& sink)
-          : first(first)
-		  , last(last)
-		  , diagnostic_sink(sink)
+        error_handler(std::ostream& sink_)
+		  : diagnostic_sink(sink_)
 		{}
 
 		void on_parse_begin(Iterator first_, Iterator last_)
@@ -70,7 +65,7 @@ namespace dynamo
             What const& what,
             Iterator err_pos) const
         {
-            int line;
+            int line = 0;
             Iterator line_start = get_pos(err_pos, line);
             if (err_pos != last)
             {

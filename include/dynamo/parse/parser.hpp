@@ -1,5 +1,5 @@
 // ****************************************************************************
-// dynamo/parser/parser.hpp
+// dynamo/parse/parser.hpp
 //
 // Parser object for dynamo syntax.
 // 
@@ -10,15 +10,16 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 // ****************************************************************************
-#ifndef _DYNAMO_PARSER_PARSER_HPP_
-#define _DYNAMO_PARSER_PARSER_HPP_
+#ifndef _DYNAMO_PARSE_PARSER_HPP_
+#define _DYNAMO_PARSE_PARSER_HPP_
 #pragma once
+
+#include "dynamo/config.hpp"
+#include "dynamo/ast/ast.hpp"
+#include "dynamo/parse/statement.hpp"
 
 #include <string>
 #include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include "dynamo/ast/ast.hpp"
-#include "dynamo/parse/statement.hpp"
 
 namespace dynamo { namespace parse
 {
@@ -33,7 +34,7 @@ namespace dynamo { namespace parse
 
 		template<typename Iterator>
 		parser(error_handler<Iterator>& error_handler_)
-			: error_handler_(&error_handler_)
+			: error_handler_(error_handler_)
 		{}
 
 		boost::optional<ast::statement_list> parse(std::string const& s) const;
@@ -43,23 +44,26 @@ namespace dynamo { namespace parse
 			Iterator first, 
 			Iterator last) const
 		{
-			error_handler<Iterator>& err_handler = *boost::any_cast<
-				error_handler<Iterator>*
-			>(error_handler_);
+			// cglover-todo: make this cast go away.
+			error_handler<Iterator>& err_handler = 
+				static_cast<
+					error_handler<Iterator>&
+				>(error_handler_);
+
 			return parse(err_handler, first, last);
 		}
 		
 		template<typename Iterator>
 		static boost::optional<ast::statement_list> parse(
-			error_handler<Iterator>& error_handler_,
+			error_handler<Iterator>& err_handler,
 			Iterator first, 
 			Iterator last)
 		{
-			error_handler_.on_parse_begin(first, last);
+			err_handler.on_parse_begin(first, last);
 
 			dynamo::parse::statement<	
 				Iterator
-			> stmt(error_handler_);
+			> stmt(err_handler);
 
 			boost::spirit::ascii::space_type space;
 			dynamo::ast::statement_list ast;
@@ -74,9 +78,8 @@ namespace dynamo { namespace parse
 
 	private:
 
-		boost::any error_handler_;
-
+		diagnostic_sink& error_handler_;
 	};
 }}
 
-#endif // _DYNAMO_PARSER_PARSER_HPP_
+#endif // _DYNAMO_PARSE_PARSER_HPP_

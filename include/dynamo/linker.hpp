@@ -17,6 +17,7 @@
 
 #include "dynamo/config.hpp"
 #include "dynamo/vm/executable.hpp"
+#include "dynamo/nonassignable.hpp"
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 
@@ -35,7 +36,7 @@ namespace dynamo
 	///////////////////////////////////////////////////////////////////////////
 	//  The Linker
 	///////////////////////////////////////////////////////////////////////////
-	class linker
+	class linker : nonassignable
 	{
 	public:
 

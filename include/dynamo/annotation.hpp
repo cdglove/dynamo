@@ -16,10 +16,11 @@
 #define _DYNAMO_ANNOTATION_HPP_
 #pragma once
 
+#include "dynamo/ast/ast.hpp"
+#include "dynamo/nonassignable.hpp"
+
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/bool.hpp>
-#include "dynamo/ast/ast.hpp"
-
 #include <boost/variant/apply_visitor.hpp>
 #include <vector>
 
@@ -31,15 +32,15 @@ namespace dynamo
     //  program is being compiled.
     ///////////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
-    struct annotation
+    struct annotation : nonassignable
     {
         template <typename T0 = void, typename T1 = void>
         struct result { typedef void type; };
 
         std::vector<Iterator>& iters;
 
-        annotation(std::vector<Iterator>& iters)
-          : iters(iters)
+        annotation(std::vector<Iterator>& iters_)
+          : iters(iters_)
 		{}
 
         struct set_id
@@ -47,8 +48,8 @@ namespace dynamo
             typedef void result_type;
 
             int id;
-            set_id(int id)
-				: id(id)
+            set_id(int id_)
+				: id(id_)
 			{}
 
             void operator()(ast::intrinsic_op& x) const
@@ -62,7 +63,7 @@ namespace dynamo
             }
 
             template <typename T>
-            void operator()(T& x) const
+            void operator()(T&) const
             {
                 // no-op
             }
@@ -95,10 +96,6 @@ namespace dynamo
             iters.push_back(pos);
             ast.id = static_cast<int>(id);
         }
-
-	private:
-
-		annotation operator =(annotation);
     };
 }
 

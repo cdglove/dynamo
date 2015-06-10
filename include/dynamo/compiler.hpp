@@ -21,6 +21,7 @@
 #include "dynamo/ast/ast.hpp"
 #include "dynamo/vm/byte_code.hpp"
 #include "dynamo/error_handler.hpp"
+#include "dynamo/nonassignable.hpp"
 #include <boost/function.hpp>
 #include <boost/optional.hpp>
 
@@ -31,7 +32,7 @@ namespace dynamo
 	///////////////////////////////////////////////////////////////////////////
 	//  The Compiler
 	///////////////////////////////////////////////////////////////////////////
-	class compiler
+	class compiler : nonassignable
 	{
 	public:
 
@@ -54,15 +55,15 @@ namespace dynamo
             void(int tag, std::string const& what)
 		> error_handler_type;
 
-		struct ast_visitor
+		struct ast_visitor : nonassignable
 		{
 			ast_visitor(
-				vm::byte_code& code, 
-				diagnostic_sink& diagnostic,
-				error_handler_type const& error_handler)
-				: code(code)
-				, diagnostic(diagnostic)
-				, error_handler(error_handler)
+				vm::byte_code& code_, 
+				diagnostic_sink& diagnostic_,
+				error_handler_type const& error_handler_)
+				: code(code_)
+				, diagnostic(diagnostic_)
+				, error_handler(error_handler_)
 			{}
 
 			typedef bool result_type;
