@@ -16,8 +16,7 @@
 
 #include "dynamo/config.hpp"
 #include "dynamo/ast/ast.hpp"
-#include "dynamo/parse/statement.hpp"
-
+#include "dynamo/error_handler.hpp"
 #include <string>
 #include <boost/optional.hpp>
 
@@ -38,6 +37,7 @@ namespace dynamo { namespace parse
 		{}
 
 		boost::optional<ast::statement_list> parse(std::string const& s) const;
+		boost::optional<ast::statement_list> parse(char const* first, char const* last) const;
 
 		template<typename Iterator>
 		boost::optional<ast::statement_list> parse(
@@ -53,28 +53,16 @@ namespace dynamo { namespace parse
 			return parse(err_handler, first, last);
 		}
 		
+		// The parser definition is intentionally excluded to reduce compile
+		// times for those who only need the const char* version.
+		// If you're getting a linker error because of this, include 
+		// parser_def.hpp
 		template<typename Iterator>
 		static boost::optional<ast::statement_list> parse(
 			error_handler<Iterator>& err_handler,
 			Iterator first, 
-			Iterator last)
-		{
-			err_handler.on_parse_begin(first, last);
-
-			dynamo::parse::statement<	
-				Iterator
-			> stmt(err_handler);
-
-			boost::spirit::ascii::space_type space;
-			dynamo::ast::statement_list ast;
-			bool r = phrase_parse(first, last, +stmt, space, ast);
-			if(r && first == last)
-			{
-				return ast;
-			}
-
-			return boost::none;
-		}
+			Iterator last
+		);
 
 	private:
 

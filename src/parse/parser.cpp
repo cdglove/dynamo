@@ -12,6 +12,7 @@
 // ****************************************************************************
 
 #include "dynamo/parse/parser.hpp"
+#include "dynamo/parse/parser_def.hpp"
 
 namespace dynamo { namespace parse
 {
@@ -20,6 +21,13 @@ namespace dynamo { namespace parse
 		ast::statement_list
 	> parser::parse(std::string const& s) const
 	{
-		return parse(s.begin(), s.end());
+		return parse(s.data(), s.data() + s.length());
+	}
+
+	boost::optional<
+		ast::statement_list
+	> parser::parse(char const* first, char const* last) const
+	{
+		return parse<char const*>(first, last);
 	}
 }}
