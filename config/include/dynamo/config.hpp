@@ -1,5 +1,5 @@
-// Generated from config.hpp.in by CMake 3.0.1
-// Manually added here for build systems that dont
+// Generated from config/config.hpp.in by CMake 3.0.1
+// Manually added here for build systems that don't
 // use CMake.
 
 #ifndef DYNAMO_CONFIG_H
