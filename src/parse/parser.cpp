@@ -11,6 +11,10 @@
 //
 // ****************************************************************************
 
+#if defined(_MSC_VER)
+# pragma warning(disable: 6326 6244 4503)
+#endif
+
 #include "dynamo/parse/parser.hpp"
 #include "dynamo/parse/parser_def.hpp"
 
