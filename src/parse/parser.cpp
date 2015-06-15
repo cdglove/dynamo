@@ -35,3 +35,4 @@ namespace dynamo { namespace parse
 		return parse<char const*>(first, last);
 	}
 }}
+
