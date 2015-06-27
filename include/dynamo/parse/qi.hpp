@@ -20,7 +20,7 @@
 #include <boost/spirit/home/qi/auto.hpp>
 //#include <boost/spirit/home/qi/auxiliary.hpp>
 #include <boost/spirit/home/qi/char.hpp>
-#include <boost/spirit/home/qi/copy.hpp>
+//#include <boost/spirit/home/qi/copy.hpp>
 //#include <boost/spirit/home/qi/binary.hpp>
 #include <boost/spirit/home/qi/directive.hpp>
 #include <boost/spirit/home/qi/nonterminal.hpp>
