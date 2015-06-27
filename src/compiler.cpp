@@ -49,8 +49,8 @@ namespace dynamo
 
 	bool compiler::ast_visitor::operator()(ast::nil) const
 	{ 
-		BOOST_ASSERT(0);
-		return false;
+		// Ignore empty statements.
+		return true;
 	}
 
 	bool compiler::ast_visitor::operator()(float f) const

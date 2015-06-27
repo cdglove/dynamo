@@ -29,6 +29,7 @@ BOOST_AUTO_TEST_CASE( unary_parse )
 	BOOST_CHECK(parser.parse("v;"));
 	BOOST_CHECK(parser.parse("-v;"));
 	BOOST_CHECK(parser.parse("+v;"));
+	BOOST_CHECK(parser.parse(";"));
 }
 
 BOOST_AUTO_TEST_CASE( binary_parse )

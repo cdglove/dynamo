@@ -78,10 +78,13 @@ namespace dynamo { namespace parse
 			///////////////////////////////////////////////////////////////////////
 			// Main statement grammar
 			primary_statement =
-				(	assignment
-				|	expr
-				)
-				> ';'
+				(
+					(	assignment
+					|	expr
+					)
+					> ';'
+				) 
+				| ';'
 				;
 
 			assignment =
