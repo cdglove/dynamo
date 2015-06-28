@@ -13,4 +13,5 @@ Incomplete, but evolving, documentation is available [here](http://cdglove.githu
 
 ## Build Status
 
-**Travis-CI:** [![Build Status](https://travis-ci.org/cdglove/dynamo.svg?branch=master)](https://travis-ci.org/cdglove/dynamo)
+**GCC/Clang (Travis-CI):** [![Build Status](https://travis-ci.org/cdglove/dynamo.svg?branch=master)](https://travis-ci.org/cdglove/dynamo)
+**MSVC (Appveyor):** [![Build status](https://ci.appveyor.com/api/projects/status/84pncyx6bj4xp8ec?svg=true)](https://ci.appveyor.com/project/cdglove/dynamo)
