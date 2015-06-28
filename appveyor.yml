@@ -18,16 +18,16 @@ environment:
     - GENERATOR: ""
       CONFIG: Release
 
-    - GENERATOR: "Visual Studio 12 Win64"
+    - GENERATOR: " Win64"
       CONFIG: Debug
 
-    - GENERATOR: "Visual Studio 12 Win64"
+    - GENERATOR: " Win64"
       CONFIG: Release
 
 build_script:
   - cmd: set BOOST_ROOT=c:\Libraries\boost
   - cmd: call C:\"Program Files (x86)"\"Microsoft Visual Studio 12.0"\VC\vcvarsall.bat
-  - cmake "-GVisual Studio 12 %GENERATOR%" -H. -B_builds
+  - cmake "-GVisual Studio 12%GENERATOR%" -H. -B_builds
   - cmake --build _builds --config "%CONFIG%"
 
 test_script:
