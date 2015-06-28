@@ -20,8 +20,6 @@ env:
 
 matrix:
   exclude:
-    - compiler: gcc
-      env: ASAN=On
     - compiler: clang
       env: GCC_VERSION="4.9"
 
