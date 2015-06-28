@@ -56,4 +56,4 @@ install:
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed ${CXX_LINKER_FLAGS} -lrt"
   - make VERBOSE=1
 script:
-  - ctest -VV; fi
+  - ctest -VV;
