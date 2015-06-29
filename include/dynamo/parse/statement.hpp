@@ -107,7 +107,7 @@ namespace dynamo { namespace parse
 			);
 
 			on_success(assignment,
-				annotation_function(error_handler_.iters)(_val, _1));
+				annotation_function(error_handler_.iters_)(_val, _1));
 		}
 
 		typedef ascii::space_type skp;

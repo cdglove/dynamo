@@ -19,9 +19,7 @@
 
 static void test_expression(std::string expression, bool expect_should_compile)
 {
-	dynamo::error_handler<						 
-		std::string::const_iterator
-	> error_handler(std::cout);	
+	dynamo::diagnostic_sink error_handler(std::cout);	
 
 	dynamo::parse::parser parser(error_handler);
 	boost::optional<dynamo::ast::statement_list> ast;

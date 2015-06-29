@@ -37,6 +37,7 @@ namespace dynamo { namespace vm
         {}
 
         float top() const { return stack_ptr[-1]; };
+		bool has_result() const { return stack_ptr != stack.begin(); }
         void execute(executable& ex);
 
     private:

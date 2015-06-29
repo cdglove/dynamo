@@ -44,20 +44,16 @@ namespace dynamo
 	};
 
 	template <typename Iterator>
-    struct error_handler : diagnostic_sink
+    struct error_handler
     {
         template <typename T0 = void, typename T1 = void, typename T2 = void>
         struct result { typedef void type; };
 
-        error_handler(std::ostream& sink_)
-		  : diagnostic_sink(sink_)
+        error_handler(diagnostic_sink& sink, Iterator first, Iterator last)
+		  : sink_(sink)
+		  , first_(first)
+		  , last_(last)
 		{}
-
-		void on_parse_begin(Iterator first_, Iterator last_)
-		{
-			first = first_;
-			last = last_;
-		}
 
         template <typename Message, typename What>
         void operator()(
@@ -67,26 +63,26 @@ namespace dynamo
         {
             int line = 0;
             Iterator line_start = get_pos(err_pos, line);
-            if (err_pos != last)
+            if (err_pos != last_)
             {
-                outs << message << what << " line " << line << ':' << std::endl;
-                outs << get_line(line_start) << std::endl;
+                sink_() << message << what << " line " << line << ':' << std::endl;
+				sink_() << get_line(line_start) << std::endl;
                 for (; line_start != err_pos; ++line_start)
-                    outs << ' ';
-                outs << '^' << std::endl;
+					sink_() << ' ';
+				sink_() << '^' << std::endl;
             }
             else
             {
-                outs << "Unexpected end of file. ";
-                outs << message << what << " line " << line << std::endl;
+                sink_() << "Unexpected end of file. ";
+                sink_() << message << what << " line " << line << std::endl;
             }
         }
 
         Iterator get_pos(Iterator err_pos, int& line) const
         {
             line = 1;
-            Iterator i = first;
-            Iterator line_start = first;
+            Iterator i = first_;
+            Iterator line_start = first_;
             while (i != err_pos)
             {
                 bool eol = false;
@@ -112,14 +108,15 @@ namespace dynamo
         {
             Iterator i = err_pos;
             // position i to the next EOL
-            while (i != last && (*i != '\r' && *i != '\n'))
+            while (i != last_ && (*i != '\r' && *i != '\n'))
                 ++i;
             return std::string(err_pos, i);
         }
 
-        Iterator first;
-        Iterator last;
-        std::vector<Iterator> iters;
+		diagnostic_sink& sink_;
+        Iterator first_;
+        Iterator last_;
+        std::vector<Iterator> iters_;
     };
 }
 

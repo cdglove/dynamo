@@ -54,10 +54,7 @@ int main()
 
 	dynamo::variable_index local_state;
 	dynamo::vm::machine machine;				    // Our virtual machine -- reusable
-
-	dynamo::error_handler<						    // Our diagnostic printer -- reusable
-		iterator_type
-	> error_handler(std::cout);	
+	dynamo::diagnostic_sink diagnostic(std::cout);  // Out diagnostic printer -- reusable
 	
     while(true)
 	{
@@ -76,9 +73,9 @@ int main()
 			test_expr += line;
 		}
 
-		dynamo::parse::parser parser(error_handler);	// Builds the AST
-		dynamo::compiler compiler(error_handler);		// Compiles the program
-		dynamo::linker linker(error_handler);		    // Links the program
+		dynamo::parse::parser parser(diagnostic);	// Builds the AST
+		dynamo::compiler compiler(diagnostic);		// Compiles the program
+		dynamo::linker linker(diagnostic);		    // Links the program
         
 		boost::optional<
 			dynamo::ast::statement_list
@@ -108,7 +105,14 @@ int main()
 					machine.execute(*exe);
 
 					std::cout << "\nExecution succeeded\n";
-					std::cout << "\nResult: " << machine.top() << "\n";
+					if(machine.has_result())
+					{
+						std::cout << "\nResult: " << machine.top() << "\n";
+					}
+					else
+					{
+						std::cout << "\nNo result (stack clear)" << "\n";
+					}
 				}
 				else
 				{

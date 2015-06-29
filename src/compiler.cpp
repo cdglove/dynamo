@@ -26,7 +26,7 @@ namespace dynamo
 	boost::optional<vm::byte_code> compiler::compile(ast::statement_list const& x)
 	{
 		vm::byte_code code("anonymous");
-		ast_visitor visitor(code, diagnostic, error_handler);
+		ast_visitor visitor(code, sink_, error_handler_);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))
@@ -37,7 +37,7 @@ namespace dynamo
 
 	bool compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
 	{
-		ast_visitor visitor(out_code, diagnostic, error_handler);
+		ast_visitor visitor(out_code, sink_, error_handler_);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))

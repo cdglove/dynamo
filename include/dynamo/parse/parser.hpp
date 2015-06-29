@@ -31,9 +31,8 @@ namespace dynamo { namespace parse
 	{
 	public:
 
-		template<typename Iterator>
-		parser(error_handler<Iterator>& error_handler_)
-			: error_handler_(error_handler_)
+		parser(diagnostic_sink& diagnostic)
+			: diagnostic_(diagnostic)
 		{}
 
 		boost::optional<ast::statement_list> parse(std::string const& s) const;
@@ -44,12 +43,7 @@ namespace dynamo { namespace parse
 			Iterator first, 
 			Iterator last) const
 		{
-			// cglover-todo: make this cast go away.
-			error_handler<Iterator>& err_handler = 
-				static_cast<
-					error_handler<Iterator>&
-				>(error_handler_);
-
+			error_handler<Iterator> err_handler(diagnostic_, first, last);
 			return parse(err_handler, first, last);
 		}
 		
@@ -66,7 +60,7 @@ namespace dynamo { namespace parse
 
 	private:
 
-		diagnostic_sink& error_handler_;
+		diagnostic_sink& diagnostic_;
 	};
 }}
 

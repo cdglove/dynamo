@@ -25,20 +25,19 @@ namespace dynamo { namespace parse
 		Iterator first, 
 		Iterator last)
 	{
-		err_handler.on_parse_begin(first, last);
-
 		dynamo::parse::statement<	
 			Iterator
 		> stmt(err_handler);
 
 		boost::spirit::ascii::space_type space;
 		dynamo::ast::statement_list ast;
+		
 		bool r = phrase_parse(first, last, +stmt, space, ast);
+		
 		if(r && first == last)
 		{
 			return ast;
 		}
-
 		return boost::none;
 	}
 }}

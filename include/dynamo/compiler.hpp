@@ -36,14 +36,14 @@ namespace dynamo
 	{
 	public:
 
-		template <typename ErrorHandler>
-        compiler(ErrorHandler& error_handler_)
-			: diagnostic(error_handler_)
+        compiler(diagnostic_sink& sink)
+			: sink_(sink)
         {
-            error_handler = [&error_handler_](int tag, std::string const& what)
-			{
-				error_handler_("Error! ", what, error_handler_.iters[tag]);
-			};
+			//error_handler = [&error_handler_](int tag, std::string const& what)
+			//{
+			//	error_handler_("Error! ", what, error_handler_.iters[tag]);
+			//};
+			error_handler_ = [](int tag, std::string const& what) {};
         }
 
 		boost::optional<vm::byte_code> compile(ast::statement_list const& x);
@@ -91,8 +91,8 @@ namespace dynamo
 			error_handler_type const& error_handler;
 		};
 
-		diagnostic_sink& diagnostic;
-		error_handler_type error_handler;
+		diagnostic_sink& sink_;
+		error_handler_type error_handler_;
 	};
 }
 

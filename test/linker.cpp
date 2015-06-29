@@ -39,9 +39,7 @@ static void test_expression(
 	dynamo::constant_index const& external,
 	dynamo::variable_index& local)
 {
-	dynamo::error_handler<						 
-		std::string::const_iterator
-	> error_handler(std::cout);	
+	dynamo::diagnostic_sink error_handler(std::cout);	
 
 	dynamo::parse::parser parser(error_handler);
 	boost::optional<dynamo::ast::statement_list> ast;
@@ -88,9 +86,7 @@ BOOST_AUTO_TEST_CASE( state_data )
 
 static void test_fail_linkage(std::string expression)
 {
-	dynamo::error_handler<						 
-		std::string::const_iterator
-	> error_handler(std::cout);	
+	dynamo::diagnostic_sink error_handler(std::cout);	
 
 	dynamo::parse::parser parser(error_handler);
 	boost::optional<dynamo::ast::statement_list> ast;

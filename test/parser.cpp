@@ -17,11 +17,10 @@
 #include <boost/test/unit_test.hpp>
 
 typedef std::string::const_iterator iterator_type;
-typedef dynamo::error_handler<iterator_type> error_handler_type;
 
 BOOST_AUTO_TEST_CASE( unary_parse )
 {
-	error_handler_type diagnostic(std::cout);
+	dynamo::diagnostic_sink diagnostic(std::cout);
 	dynamo::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("1;"));
 	BOOST_CHECK(parser.parse("-1;"));
@@ -34,7 +33,7 @@ BOOST_AUTO_TEST_CASE( unary_parse )
 
 BOOST_AUTO_TEST_CASE( binary_parse )
 {
-	error_handler_type diagnostic(std::cout);
+	dynamo::diagnostic_sink diagnostic(std::cout);
 	dynamo::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("1 + 1;"));
 	BOOST_CHECK(parser.parse("1-1;"));
@@ -52,7 +51,7 @@ BOOST_AUTO_TEST_CASE( binary_parse )
 
 BOOST_AUTO_TEST_CASE( intrinsic_parse )
 {
-	error_handler_type diagnostic(std::cout);
+	dynamo::diagnostic_sink diagnostic(std::cout);
 	dynamo::parse::parser parser(diagnostic);
 	BOOST_CHECK(parser.parse("abs(1);"));
 	BOOST_CHECK(parser.parse("pow(1,2);"));
@@ -66,7 +65,7 @@ BOOST_AUTO_TEST_CASE( intrinsic_parse )
 
 BOOST_AUTO_TEST_CASE( failed_parse )
 {
-	error_handler_type diagnostic(std::cout);
+	dynamo::diagnostic_sink diagnostic(std::cout);
 	dynamo::parse::parser parser(diagnostic);
 	BOOST_CHECK(!parser.parse("1 + 1"));
 	BOOST_CHECK(!parser.parse("1 1;"));
