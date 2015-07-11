@@ -73,10 +73,9 @@ int main()
 			test_expr += line;
 		}
 
-		dynamo::source_index<iterator_type> src_idx;
 		dynamo::parse::string_parser parser(diagnostic);	// Builds the AST
-		dynamo::compiler compiler(diagnostic);		// Compiles the program
-		dynamo::linker linker(diagnostic);		    // Links the program
+		dynamo::compiler compiler(diagnostic);				// Compiles the program
+		dynamo::linker linker(diagnostic);					// Links the program
         
 		boost::optional<
 			dynamo::ast::statement_list
