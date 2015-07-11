@@ -73,7 +73,8 @@ int main()
 			test_expr += line;
 		}
 
-		dynamo::parse::parser parser(diagnostic);	// Builds the AST
+		dynamo::source_index<iterator_type> src_idx;
+		dynamo::parse::string_parser parser(diagnostic);	// Builds the AST
 		dynamo::compiler compiler(diagnostic);		// Compiles the program
 		dynamo::linker linker(diagnostic);		    // Links the program
         
@@ -88,7 +89,7 @@ int main()
 
 			boost::optional<
 				dynamo::vm::byte_code
-			> code = compiler.compile(*ast);
+			> code = compiler.compile(*ast, parser.get_indexed_source());
 
 			if(code)
 			{

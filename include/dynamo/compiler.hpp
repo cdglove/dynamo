@@ -20,14 +20,13 @@
 #include "dynamo/config.hpp"
 #include "dynamo/ast/ast.hpp"
 #include "dynamo/vm/byte_code.hpp"
-#include "dynamo/error_handler.hpp"
 #include "dynamo/nonassignable.hpp"
-#include <boost/function.hpp>
 #include <boost/optional.hpp>
 
 namespace dynamo
 {
 	class diagnostic_sink;
+	class source_index_base;
 
 	///////////////////////////////////////////////////////////////////////////
 	//  The Compiler
@@ -38,32 +37,36 @@ namespace dynamo
 
         compiler(diagnostic_sink& sink)
 			: sink_(sink)
-        {
-			//error_handler = [&error_handler_](int tag, std::string const& what)
-			//{
-			//	error_handler_("Error! ", what, error_handler_.iters[tag]);
-			//};
-			error_handler_ = [](int tag, std::string const& what) {};
-        }
+		{}
 
-		boost::optional<vm::byte_code> compile(ast::statement_list const& x);
-		bool compile(ast::statement_list const& x, vm::byte_code& out_code);
+		boost::optional<
+			vm::byte_code
+		> compile(ast::statement_list const& x);
+		
+		boost::optional<
+			vm::byte_code
+		> compile(ast::statement_list const& x, source_index_base const& index);
+				
+		bool compile(
+			ast::statement_list const& x,
+			vm::byte_code& out_code);
+		
+		bool compile(
+			ast::statement_list const& x, 
+			source_index_base const& index,
+			vm::byte_code& out_code);
 
 	private:
-
-		typedef boost::function<
-            void(int tag, std::string const& what)
-		> error_handler_type;
 
 		struct ast_visitor : nonassignable
 		{
 			ast_visitor(
-				vm::byte_code& code_, 
-				diagnostic_sink& diagnostic_,
-				error_handler_type const& error_handler_)
-				: code(code_)
-				, diagnostic(diagnostic_)
-				, error_handler(error_handler_)
+				vm::byte_code& code, 
+				source_index_base const& src_idx,
+				diagnostic_sink& sink)
+				: code_(code)
+				, sink_(sink)
+				, src_idx_(src_idx)
 			{}
 
 			typedef bool result_type;
@@ -86,13 +89,12 @@ namespace dynamo
 			bool compile_op_token(
 				ast::op_token token) const;
 
-			vm::byte_code& code;
-			diagnostic_sink& diagnostic;
-			error_handler_type const& error_handler;
+			vm::byte_code& code_;
+			diagnostic_sink& sink_;
+			source_index_base const& src_idx_;
 		};
 
 		diagnostic_sink& sink_;
-		error_handler_type error_handler_;
 	};
 }
 

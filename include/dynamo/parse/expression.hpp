@@ -19,8 +19,9 @@
 
 #include "dynamo/config.hpp"
 #include "dynamo/ast/fusion_ast.hpp"
-#include "dynamo/error_handler.hpp"
-#include "dynamo/annotation.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
+#include "dynamo/diagnostic/error.hpp"
+#include "dynamo/diagnostic/annotation.hpp"
 #include "dynamo/parse/qi.hpp"
 
 #include <boost/spirit/include/phoenix_function.hpp>
@@ -38,7 +39,7 @@ namespace dynamo { namespace parse
 	{
 	public:
 
-		expression(error_handler<Iterator>& error_handler_) 
+		expression(source_index<Iterator>& src_index, diagnostic_sink& sink) 
 			: expression::base_type(expr)
 		{
 			// define terminals because of BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
@@ -54,7 +55,7 @@ namespace dynamo { namespace parse
 			qi::_val_type _val;
 
 			namespace phx = boost::phoenix;
-			typedef phx::function<error_handler<Iterator>> error_handler_function;
+			typedef phx::function<error<Iterator>> error_handler_function;
 			typedef phx::function<annotation<Iterator>> annotation_function;
 
 			using qi::on_error;
@@ -138,14 +139,14 @@ namespace dynamo { namespace parse
 			);
 
 			///////////////////////////////////////////////////////////////////////
-			// Error handling: on error in expr, call error_handler.
+			// Error handling: on error in expr, call diagnostic_handler.
 			on_error<fail>(expr,
-				error_handler_function(error_handler_)(
-                "Error! Expecting ", _4, _3)
+				error_handler_function(error<Iterator>(src_index, sink))(
+				"Error! Expecting ", _4, _3)
 			);
 
 			on_success(intrinsic_op,
-				annotation_function(error_handler_.iters_)(_val, _1)
+				annotation_function(src_index)(_val, _1)
 			);
 		}
 

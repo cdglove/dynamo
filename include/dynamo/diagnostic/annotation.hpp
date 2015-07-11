@@ -18,6 +18,7 @@
 
 #include "dynamo/ast/ast.hpp"
 #include "dynamo/nonassignable.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
 
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/bool.hpp>
@@ -39,8 +40,8 @@ namespace dynamo
 
         std::vector<Iterator>& iters;
 
-        annotation(std::vector<Iterator>& iters_)
-          : iters(iters_)
+        annotation(source_index<Iterator>& src)
+          : iters(src.identifier_iterators_)
 		{}
 
         struct set_id

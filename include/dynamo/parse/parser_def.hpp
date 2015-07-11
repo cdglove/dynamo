@@ -20,18 +20,19 @@
 namespace dynamo { namespace parse
 {
 	template<typename Iterator>
-	boost::optional<ast::statement_list> parser::parse(
-		error_handler<Iterator>& err_handler,
-		Iterator first, 
-		Iterator last)
+	boost::optional<
+		ast::statement_list
+	> parser<Iterator>::parse_impl(Iterator first, Iterator last)
 	{
 		dynamo::parse::statement<	
 			Iterator
-		> stmt(err_handler);
+		> stmt(indexed_source_, sink_);
 
 		boost::spirit::ascii::space_type space;
 		dynamo::ast::statement_list ast;
 		
+		indexed_source_.begin_parse(first, last);
+
 		bool r = phrase_parse(first, last, +stmt, space, ast);
 		
 		if(r && first == last)

@@ -13,6 +13,7 @@
 #include "dynamo/vm/machine.hpp"
 #include "dynamo/vm/byte_code.hpp"
 #include "dynamo/parse/parser.hpp"
+#include "dynamo/diagnostic/sink.hpp"
 #include "dynamo/compiler.hpp"
 #include "dynamo/linker.hpp"
 
@@ -39,13 +40,13 @@ static void test_expression(
 	dynamo::constant_index const& external,
 	dynamo::variable_index& local)
 {
-	dynamo::diagnostic_sink error_handler(std::cout);	
+	dynamo::diagnostic_sink diagnostic(std::cout);	
 
-	dynamo::parse::parser parser(error_handler);
+	dynamo::parse::string_parser parser(diagnostic);
 	boost::optional<dynamo::ast::statement_list> ast;
-	dynamo::compiler compiler(error_handler);
+	dynamo::compiler compiler(diagnostic);
 	boost::optional<dynamo::vm::byte_code> code;
-	dynamo::linker linker(error_handler);
+	dynamo::linker linker(diagnostic);
 	boost::optional<dynamo::vm::executable> exe;
 	dynamo::vm::machine vm;
 
@@ -86,13 +87,13 @@ BOOST_AUTO_TEST_CASE( state_data )
 
 static void test_fail_linkage(std::string expression)
 {
-	dynamo::diagnostic_sink error_handler(std::cout);	
+	dynamo::diagnostic_sink diagnostic(std::cout);	
 
-	dynamo::parse::parser parser(error_handler);
+	dynamo::parse::string_parser parser(diagnostic);
 	boost::optional<dynamo::ast::statement_list> ast;
-	dynamo::compiler compiler(error_handler);
+	dynamo::compiler compiler(diagnostic);
 	boost::optional<dynamo::vm::byte_code> code;
-	dynamo::linker linker(error_handler);
+	dynamo::linker linker(diagnostic);
 	boost::optional<dynamo::vm::executable> exe;
 	dynamo::vm::machine vm;
 

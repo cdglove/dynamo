@@ -16,51 +16,97 @@
 
 #include "dynamo/config.hpp"
 #include "dynamo/ast/ast.hpp"
-#include "dynamo/error_handler.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
 #include <string>
 #include <boost/optional.hpp>
+
+namespace dynamo 
+{
+	template<typename Iterator>
+	class source_index;
+
+	class diagnostic_sink;
+}
 
 namespace dynamo { namespace parse
 {
 	///////////////////////////////////////////////////////////////////////////
-	// The Parser
+	// Iterator parser
 	// Consumes a sequence of characters and returns an ast on success
 	// or boost::none on failure.
+	// Builds a source_index of iterators used to map ast items to the original
+	// source location.
 	///////////////////////////////////////////////////////////////////////////
+	template<typename Iterator>
 	class parser
 	{
 	public:
 
 		parser(diagnostic_sink& diagnostic)
-			: diagnostic_(diagnostic)
+			: sink_(diagnostic)
 		{}
 
-		boost::optional<ast::statement_list> parse(std::string const& s) const;
-		boost::optional<ast::statement_list> parse(char const* first, char const* last) const;
-
 		template<typename Iterator>
-		boost::optional<ast::statement_list> parse(
-			Iterator first, 
-			Iterator last) const
+		boost::optional<
+			ast::statement_list
+		> parse(Iterator first, Iterator last)
 		{
-			error_handler<Iterator> err_handler(diagnostic_, first, last);
-			return parse(err_handler, first, last);
+			return parse_impl(first, last);
 		}
-		
+
+		source_index<Iterator> const& get_indexed_source()
+		{
+			return indexed_source_;
+		}
+
+	private:
+
+		friend class string_parser;
+
 		// The parser definition is intentionally excluded to reduce compile
 		// times for those who only need the const char* version.
 		// If you're getting a linker error because of this, include 
 		// parser_def.hpp
-		template<typename Iterator>
-		static boost::optional<ast::statement_list> parse(
-			error_handler<Iterator>& err_handler,
-			Iterator first, 
-			Iterator last
-		);
+		boost::optional<
+			ast::statement_list
+		> parse_impl(Iterator first, Iterator last);
+
+		diagnostic_sink& sink_;
+		source_index<Iterator> indexed_source_;
+	};
+
+	///////////////////////////////////////////////////////////////////////////
+	// The Parser
+	// Consumes a sequence of characters and returns an ast on success
+	// or boost::none on failure.
+	// Builds a source_index of iterators used to map ast items to the original
+	// source location.
+	// Makes a copy of the stirng to ensure iterators remain valid.
+	///////////////////////////////////////////////////////////////////////////
+	class string_parser
+	{
+	public:
+
+		typedef std::string::const_iterator iterator_type;
+
+		string_parser(diagnostic_sink& diagnostic)
+			: sink_(diagnostic)
+		{}
+
+		boost::optional<
+			ast::statement_list
+		> parse(std::string src);
+
+		source_index<iterator_type> const& get_indexed_source()
+		{
+			return indexed_source_;
+		}
 
 	private:
 
-		diagnostic_sink& diagnostic_;
+		diagnostic_sink& sink_;
+		source_index<iterator_type> indexed_source_;
+		std::string src_;
 	};
 }}
 

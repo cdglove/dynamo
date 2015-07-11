@@ -13,7 +13,7 @@
 
 #include "dynamo/linker.hpp"
 #include "dynamo/vm/byte_code.hpp"
-#include "dynamo/error_handler.hpp"
+#include "dynamo/diagnostic/sink.hpp"
 #include <boost/foreach.hpp>
 #include <sstream>
 

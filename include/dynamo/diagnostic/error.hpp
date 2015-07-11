@@ -18,44 +18,28 @@
 
 #include "dynamo/config.hpp"
 #include "dynamo/nonassignable.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
+#include "dynamo/diagnostic/sink.hpp"
 #include <iostream>
 #include <vector>
 
 namespace dynamo
 {
 	///////////////////////////////////////////////////////////////////////////////
-	//  The error handler - pretty prints a helpful error when parsing fails
+	//  The diagnostic handler - pretty prints a helpful error when parsing fails
 	///////////////////////////////////////////////////////////////////////////////
-	class diagnostic_sink : nonassignable
-	{
-	public:
-		diagnostic_sink(std::ostream& sink_)
-			: outs(sink_)
-		{}
-
-		std::ostream& operator()() const 
-		{
-			return outs;
-		}
-
-	protected:
-		
-		std::ostream& outs;
-	};
-
 	template <typename Iterator>
-    struct error_handler
+    struct error
     {
         template <typename T0 = void, typename T1 = void, typename T2 = void>
         struct result { typedef void type; };
 
-        error_handler(diagnostic_sink& sink, Iterator first, Iterator last)
-		  : sink_(sink)
-		  , first_(first)
-		  , last_(last)
+		error(source_index<Iterator>& src, diagnostic_sink& sink)
+		  : src_(src)
+		  , sink_(sink)
 		{}
 
-        template <typename Message, typename What>
+		template<typename Message, typename What>
         void operator()(
             Message const& message,
             What const& what,
@@ -63,9 +47,9 @@ namespace dynamo
         {
             int line = 0;
             Iterator line_start = get_pos(err_pos, line);
-            if (err_pos != last_)
+            if (err_pos != src_.last_)
             {
-                sink_() << message << what << " line " << line << ':' << std::endl;
+                sink_() << message << ' ' << what << " line " << line << ':' << std::endl;
 				sink_() << get_line(line_start) << std::endl;
                 for (; line_start != err_pos; ++line_start)
 					sink_() << ' ';
@@ -81,8 +65,8 @@ namespace dynamo
         Iterator get_pos(Iterator err_pos, int& line) const
         {
             line = 1;
-            Iterator i = first_;
-            Iterator line_start = first_;
+            Iterator i = src_.first_;
+            Iterator line_start = src_.first_;
             while (i != err_pos)
             {
                 bool eol = false;
@@ -108,15 +92,13 @@ namespace dynamo
         {
             Iterator i = err_pos;
             // position i to the next EOL
-            while (i != last_ && (*i != '\r' && *i != '\n'))
+            while (i != src_.last_ && (*i != '\r' && *i != '\n'))
                 ++i;
             return std::string(err_pos, i);
         }
 
+		source_index<Iterator>& src_;
 		diagnostic_sink& sink_;
-        Iterator first_;
-        Iterator last_;
-        std::vector<Iterator> iters_;
     };
 }
 

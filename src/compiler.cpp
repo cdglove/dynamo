@@ -14,6 +14,7 @@
 // ****************************************************************************
 
 #include "dynamo/compiler.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
 #include "dynamo/ast/ast.hpp"
 #include "dynamo/vm/byte_code.hpp"
 
@@ -23,21 +24,58 @@
 
 namespace dynamo
 {
-	boost::optional<vm::byte_code> compiler::compile(ast::statement_list const& x)
+	boost::optional<
+		vm::byte_code
+	> compiler::compile(ast::statement_list const& x)
 	{
-		vm::byte_code code("anonymous");
-		ast_visitor visitor(code, sink_, error_handler_);
+		vm::byte_code code_("anonymous");
+		source_index_base null_idx;
+		ast_visitor visitor(code_, null_idx, sink_);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))
 				return boost::none;
 		}
-		return code;
+		return code_;
 	}
 
-	bool compiler::compile(ast::statement_list const& x, vm::byte_code& out_code)
+	boost::optional<
+		vm::byte_code
+	> compiler::compile(
+		ast::statement_list const& x,
+		source_index_base const& indexed_source)
 	{
-		ast_visitor visitor(out_code, sink_, error_handler_);
+		vm::byte_code code_("anonymous");
+		ast_visitor visitor(code_, indexed_source, sink_);
+		BOOST_FOREACH(ast::statement const& s, x)
+		{
+			if(!visitor(s))
+				return boost::none;
+		}
+		return code_;
+	}
+
+	bool compiler::compile(
+		ast::statement_list const& x,
+		vm::byte_code& out_code)
+	{
+		source_index_base null_idx;
+		ast_visitor visitor(out_code, null_idx, sink_);
+		BOOST_FOREACH(ast::statement const& s, x)
+		{
+			if(!visitor(s))
+				return false;
+		}
+
+		return true;
+	}
+
+	bool compiler::compile(
+		ast::statement_list const& x, 
+		source_index_base const& index, 
+		vm::byte_code& out_code)
+	{
+		ast_visitor visitor(out_code, index, sink_);
 		BOOST_FOREACH(ast::statement const& s, x)
 		{
 			if(!visitor(s))
@@ -55,8 +93,8 @@ namespace dynamo
 
 	bool compiler::ast_visitor::operator()(float f) const
 	{
-		code.push(vm::op_flt);
-		code.push(f);
+		code_.push(vm::op_flt);
+		code_.push(f);
 		return true;
 	}
 
@@ -100,9 +138,9 @@ namespace dynamo
 	{
 		if(x.args.size() != intrinsic_paramcount[x.intrinsic])
 		{
-			error_handler(x.id, "Parameter count mismatch.");
+			src_idx_(sink_, "Error!", "Parameter count mismatch.", x.id);
 
-			diagnostic() << "Expected "
+			sink_() << "Expected "
 						 << intrinsic_paramcount[x.intrinsic]
 						 << " parameters but was supplied with " 
 						 << x.args.size() 
@@ -134,14 +172,14 @@ namespace dynamo
 	bool compiler::ast_visitor::operator()(ast::assignment const& x) const
 	{
 		(*this)(x.rhs);
-		int const* slot = code.find_variable(x.lhs);
+		int const* slot = code_.find_variable(x.lhs);
 		if(slot == NULL)
 		{
-			slot = code.add_variable(x.lhs);
+			slot = code_.add_variable(x.lhs);
 		}
 
-		code.push(vm::op_store);
-		code.push(*slot);
+		code_.push(vm::op_store);
+		code_.push(*slot);
 		return true;
 	}
 
@@ -152,22 +190,22 @@ namespace dynamo
 
 	bool compiler::ast_visitor::operator()(ast::identifier const& x) const
 	{
-		int const* lcl_slot = code.find_variable(x);
+		int const* lcl_slot = code_.find_variable(x);
 		if(lcl_slot)
 		{
-			code.push(vm::op_load);
-			code.push(*lcl_slot);
+			code_.push(vm::op_load);
+			code_.push(*lcl_slot);
 			return true;
 		}
 
-		int const* ext_slot = code.find_constant(x);
+		int const* ext_slot = code_.find_constant(x);
 		if(ext_slot == NULL)
 		{
-			ext_slot = code.add_constant(x);
+			ext_slot = code_.add_constant(x);
 		}
 
-		code.push(vm::op_loadc);
-		code.push(*ext_slot);
+		code_.push(vm::op_loadc);
+		code_.push(*ext_slot);
 		return true;
 	}
 
@@ -227,14 +265,14 @@ namespace dynamo
 	{
 		switch(token)
 		{
-		case ast::op_add:		code.push(vm::op_add); break; 
-		case ast::op_subtract:  code.push(vm::op_sub); break;	
-		case ast::op_multiply:  code.push(vm::op_mul); break;
-		case ast::op_divide:    code.push(vm::op_div); break;
-		case ast::op_pow:		code.push(vm::op_pow); break; 
-		case ast::op_abs:		code.push(vm::op_abs); break; 
-		case ast::op_not:		code.push(vm::op_not); break;
-		case ast::op_negative:	code.push(vm::op_neg); break; 
+		case ast::op_add:		code_.push(vm::op_add); break; 
+		case ast::op_subtract:  code_.push(vm::op_sub); break;	
+		case ast::op_multiply:  code_.push(vm::op_mul); break;
+		case ast::op_divide:    code_.push(vm::op_div); break;
+		case ast::op_pow:		code_.push(vm::op_pow); break; 
+		case ast::op_abs:		code_.push(vm::op_abs); break; 
+		case ast::op_not:		code_.push(vm::op_not); break;
+		case ast::op_negative:	code_.push(vm::op_neg); break; 
 		case ast::op_positive:				     	   break;	
 		default: BOOST_ASSERT(0); return false;
 		}

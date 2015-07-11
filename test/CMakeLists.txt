@@ -29,16 +29,18 @@ endfunction(add_include_test)
 
 add_include_test("" compiler)
 add_include_test("" linker)
-add_include_test("" error_handler)
-add_include_test("" annotation)
+add_include_test(diagnostic annotation)
+add_include_test(diagnostic error)
+add_include_test(diagnostic sink)
+add_include_test(diagnostic source_index)
 add_include_test(ast ast)
 add_include_test(ast fusion_ast)
-add_include_test(vm machine)
-add_include_test(vm byte_code)
-add_include_test(vm executable)
 add_include_test(parse parser)
 add_include_test(parse expression)
 add_include_test(parse statement)
+add_include_test(vm machine)
+add_include_test(vm byte_code)
+add_include_test(vm executable)
 
 # -----------------------------------------------------------------------------
 # Function to add a normal test with all of the proper includes, etc.

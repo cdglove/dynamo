@@ -17,27 +17,11 @@
 #define _DYNAMO_PARSER_STATEMENT_HPP_
 #pragma once
 
-///////////////////////////////////////////////////////////////////////////////
-// Spirit v2.5 allows you to suppress automatic generation
-// of predefined terminals to speed up compilation. With
-// BOOST_SPIRIT_NO_PREDEFINED_TERMINALS defined, you are
-// responsible in creating instances of the terminals that
-// you need (e.g. see qi::uint_type uint_ below).
-#define BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-// Define this to enable debugging
-//#define BOOST_SPIRIT_QI_DEBUG
-
-#if defined(_MSC_VER)
-# pragma warning(disable: 4345)
-#endif
-
 #include "dynamo/config.hpp"
 #include "dynamo/ast/fusion_ast.hpp"
-#include "dynamo/error_handler.hpp"
-#include "dynamo/annotation.hpp"
+#include "dynamo/diagnostic/source_index.hpp"
+#include "dynamo/diagnostic/error.hpp"
+#include "dynamo/diagnostic/annotation.hpp"
 #include "dynamo/parse/expression.hpp"
 #include "dynamo/parse/qi.hpp"
 
@@ -56,9 +40,9 @@ namespace dynamo { namespace parse
 	{
 	public:
 
-		statement(error_handler<Iterator>& error_handler_) 
+		statement(source_index<Iterator>& src_index, diagnostic_sink& sink) 
 			: statement::base_type(primary_statement)
-			, expr(error_handler_)
+			, expr(src_index, sink)
 		{
 			// define terminals because of BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
 			//qi::eol_type eol;
@@ -68,7 +52,7 @@ namespace dynamo { namespace parse
 			qi::_val_type _val;
 
 			namespace phx = boost::phoenix;
-			typedef phx::function<error_handler<Iterator>> error_handler_function;
+			typedef phx::function<error<Iterator>> error_handler_function;
 			typedef phx::function<annotation<Iterator>> annotation_function;
 
 			using qi::on_error;
@@ -100,14 +84,15 @@ namespace dynamo { namespace parse
 			);
 
 			///////////////////////////////////////////////////////////////////////
-			// Error handling: on error in expr, call error_handler.
+			// Error handling: on error in expr, call diagnostic_handler.
 			on_error<fail>(primary_statement,
-				error_handler_function(error_handler_)(
-                "Error! Expecting ", _4, _3)
+				error_handler_function(error<Iterator>(src_index, sink))(
+				"Error! Expecting ", _4, _3)
 			);
 
 			on_success(assignment,
-				annotation_function(error_handler_.iters_)(_val, _1));
+				annotation_function(src_index)(_val, _1)
+			);
 		}
 
 		typedef ascii::space_type skp;

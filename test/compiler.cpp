@@ -13,23 +13,40 @@
 #include "dynamo/vm/byte_code.hpp"
 #include "dynamo/parse/parser.hpp"
 #include "dynamo/compiler.hpp"
+#include "dynamo/diagnostic/sink.hpp"
 
 #define BOOST_TEST_MODULE Compiler
 #include <boost/test/unit_test.hpp>
 
-static void test_expression(std::string expression, bool expect_should_compile)
+enum Index
 {
-	dynamo::diagnostic_sink error_handler(std::cout);	
+	NO_INDEX,
+	USE_INDEX,
+};
 
-	dynamo::parse::parser parser(error_handler);
+static void test_expression(std::string expression, bool expect_should_compile, Index use_idx)
+{
+	dynamo::diagnostic_sink sink(std::cout);	
+
+	dynamo::parse::string_parser parser(sink);
 	boost::optional<dynamo::ast::statement_list> ast;
-	dynamo::compiler compiler(error_handler);
-	boost::optional<dynamo::vm::byte_code> code;
 	ast = parser.parse(expression);
+
 	BOOST_CHECK(ast);
 	if(ast)
 	{
-		code = compiler.compile(*ast);
+		dynamo::compiler compiler(sink);
+		boost::optional<dynamo::vm::byte_code> code;
+
+		if(use_idx)
+		{
+			code = compiler.compile(*ast, parser.get_indexed_source());
+		}
+		else
+		{
+			code = compiler.compile(*ast);
+		}
+
 		bool compiled = false;
 		if(code)
 		{
@@ -40,9 +57,14 @@ static void test_expression(std::string expression, bool expect_should_compile)
 	}
 }
 
+static void all_tests(Index use_idx)
+{
+	test_expression("div(mul(1,1),2);", true, use_idx);
+	test_expression("mul(1, 2, 3);", false, use_idx);
+}
 
 BOOST_AUTO_TEST_CASE( intrinsics )
 {
-	test_expression("div(mul(1,1),2);", true);
-	test_expression("mul(1, 2, 3);", false);
+	all_tests(USE_INDEX);
+	all_tests(NO_INDEX);
 }
