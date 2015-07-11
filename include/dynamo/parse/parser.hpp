@@ -46,7 +46,6 @@ namespace dynamo { namespace parse
 			: sink_(diagnostic)
 		{}
 
-		template<typename Iterator>
 		boost::optional<
 			ast::statement_list
 		> parse(Iterator first, Iterator last)
